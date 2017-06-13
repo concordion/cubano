@@ -1,0 +1,7 @@
+- [ ] setup CLA, for example using [this CLA](https://gist.github.com/nigelcharman/c7cb396e2f48989be04d1e5afb89ca96) with https://cla-assistant.io/
+- [ ] create CONTRIBUTING.md, for example https://github.com/concordion/concordion/blob/master/CONTRIBUTING.md
+- [ ] ensure that webdriver code can be split into separate module
+- [ ] ensure that web service code can be split into separate module
+- [ ] create Travis build
+- [ ] fix broken demo HelloWorld in Cubano 
+- [ ] add tests

@@ -1,0 +1,184 @@
+apply plugin: 'java'
+apply plugin: 'findbugs'
+apply plugin: 'checkstyle'
+apply plugin: 'eclipse'
+apply plugin: 'jacoco'
+
+// need utf-8 to get text with non-standard chars e.g. curly apostrophes used correctly 
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+// This is a work around for an outstanding issue getting eclipse plugin to honour encoding options for java
+// https://issues.gradle.org/browse/GRADLE-2274
+eclipse {
+    File f = file('.settings')
+
+    if (f.exists()) {
+        f = file('.settings/org.eclipse.core.resources.prefs')
+        f.write('eclipse.preferences.version=1\n')
+        f.append('encoding/<project>=UTF-8')
+    }
+}
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    //mavenLocal()
+    maven {
+        url = 'http://oss.jfrog.org/oss-snapshot-local'
+    }
+    mavenCentral()
+}
+
+configurations {
+    javaDoclet
+}
+
+// A number of libraries we are using include selenium as a dependecy, use this to check
+// gradlew dependencyInsight  --dependency org.seleniumhq.selenium:selenium-java --configuration testCompile
+// Enable this to confirm:
+/*
+configurations.all {
+    resolutionStrategy {
+        // fail eagerly on version conflict (includes transitive dependencies)
+        // e.g. multiple different versions of the same dependency (group and name are equal)
+        failOnVersionConflict()
+    }
+}
+*/
+
+ext {
+    seleniumVersion = '3.4.0'
+}
+
+dependencies {
+    javaDoclet 'ch.raffael.pegdown-doclet:pegdown-doclet:1.3'
+
+    //compile files('libs/ojdbc7.jar')
+    //testCompile 'commons-beanutils:commons-beanutils:1.9.2'
+
+    // Database
+    compile 'org.codejargon:fluentjdbc:1.3.1'
+
+    // Selenium WebDriver    
+    compile 'io.github.bonigarcia:webdrivermanager:1.6.2'
+    compile "org.seleniumhq.selenium:selenium-java:${seleniumVersion}"
+    compile "org.seleniumhq.selenium:selenium-chrome-driver:${seleniumVersion}"
+    compile "org.seleniumhq.selenium:selenium-ie-driver:${seleniumVersion}"
+
+    // Applitools-Eyes
+    //compile ('com.applitools:eyes-selenium-java:2.30') {
+    //    exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
+    //}
+    //
+    //Reporting - note includes jsoup
+    //compile 'com.relevantcodes:extentreports:2.40'
+
+    compile 'org.jsoup:jsoup:1.8.3'
+
+    // Html Elements
+    compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.17') {
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
+    }
+
+    //compile ('ru.yandex.qatools.ashot:ashot:1.5.2') {
+    //    exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
+    //}
+
+    // Logging
+    compile 'org.slf4j:slf4j-api:1.7.18'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+
+    // Concordion 
+    compile 'org.concordion:concordion:2.1.0'
+    compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
+    compile 'org.concordion:concordion-timestamp-formatter-extension:1.1.2'
+    compile 'org.concordion:concordion-run-totals-extension:1.1.0'
+    compile 'org.concordion:concordion-logging-tooltip-extension:1.1.2'
+    compile 'org.concordion:concordion-embed-extension:1.1.2'
+    compile 'org.concordion:concordion-executeonlyif-extension:0.2.1'
+    compile 'org.concordion:concordion-logback-extension:2.0.0-SNAPSHOT'
+    compile 'org.concordion:concordion-storyboard-extension:2.0.0-SNAPSHOT'
+
+    // JUnit
+    compile "junit:junit:4.12"
+    compile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+
+    // Find Bugs Annotations
+    //testCompile 'net.sourceforge.findbugs:annotations:1.3.2'
+}
+
+checkstyle {
+    // toolVersion = '6.19'
+    ignoreFailures = true
+
+    // Using default location /config/checkstyle/checkstyle.xml
+    //configFile = new File("checkstyle.xml")
+
+    // Exclude other source sets
+    //sourceSets = [sourceSets.main, sourceSets.test]
+}
+
+findbugs {
+    toolVersion = "3.0.1"
+    ignoreFailures = true
+    // Exclude other source sets
+    //sourceSets = [sourceSets.main, sourceSets.test]
+}
+
+javadoc {
+    outputs.upToDateWhen { false } // ensure the task runs each time, even if no changes to code
+
+    options.windowTitle = 'Test Automation Framework'
+    options.docTitle = 'Test Automation Framework'
+    options.overview = 'src/main/javadoc/overview.md'
+
+    // Allows us to use markdown in overview document (and all javadoc comments)
+    options.docletpath = configurations.javaDoclet.files.asType(List)
+    options.doclet = 'ch.raffael.doclets.pegdown.PegdownDoclet'
+
+    exclude '**/demo/*.*'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.5'
+
+    // To download through proxy, need to update <project root>\gradle\wrapper\gradle-wrapper.properties and change 
+    //     distributionUrl property from https... to http...
+    // and uncomment follow line    
+    // distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
+
+}
+
+test {
+    //include '**/Specification.*'
+    //exclude '**/demo/*.*'
+
+    // Pass through all supplied system properties - excluding those containing '.' as some of these system properties introduce JNA incompatibility issues
+    System.properties.each { k, v ->
+        if (!k.contains(".")) {
+            println "Passing system property $k: $v"
+            systemProperty k, v
+        }
+    }
+
+    // need utf-8 to get text with non-standard chars e.g. apostrophes comparing successfully 
+    systemProperty 'file.encoding', 'UTF-8'
+
+    // Logback Configuration
+    if (System.getProperty('logback.configurationFile') != null) systemProperty 'logback.configurationFile', System.getProperty('logback.configurationFile')
+
+    // Parallel Runner
+    if (System.getProperty('concordion.run.threadCount') != null) {
+        systemProperty 'concordion.extensions', 'org.concordion.ext.ParallelRunExtension'
+        systemProperty 'concordion.run.threadCount', System.getProperty('concordion.run.threadCount')
+    }
+
+    systemProperty 'concordion.output.dir', "$reporting.baseDir/spec"
+    outputs.upToDateWhen { false } // ensure the tests run each time, even if no changes to test code
+    testLogging.showStandardStreams = true
+    testLogging.showExceptions = true
+}

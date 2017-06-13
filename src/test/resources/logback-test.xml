@@ -1,0 +1,10 @@
+<!-- Logs everything both to standard out and to the log file -->
+
+<configuration>
+	<include resource="logback-include.xml"/>
+
+	<root level="ALL">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="HTML-FILE-PER-TEST" />
+	</root>
+</configuration>
