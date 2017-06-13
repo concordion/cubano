@@ -1,0 +1,79 @@
+<included>
+
+	<!-- Console Logger -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+		<encoder>
+			<pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%ex{short}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Console Logger: info Level and above only -->
+	<appender name="STDOUT-INFO" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>			
+		</filter>
+
+		<filter class="org.concordion.logback.filter.MarkerFilter">
+			<Marker>STEP</Marker>
+			<OnMatch>DENY</OnMatch>
+		</filter>
+		
+		<!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+		<encoder>
+			<pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %-5level %logger{36} - %msg%n%ex{5}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Classic Text based Log File -->
+	<appender name="FILE-PER-TEST" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<discriminator>
+			<Key>testname</Key>
+			<DefaultValue>build/testrun</DefaultValue>
+		</discriminator>
+		<sift>
+			<appender name="FILE-${testname}" class="ch.qos.logback.core.FileAppender">
+				<!-- location is determined by concordion.output.dir property in gradle.build file --> 
+				<File>${testname}.log</File>
+				<append>false</append>				
+				<layout class="ch.qos.logback.classic.PatternLayout">
+ 					<pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern> 
+				</layout>
+			</appender>
+		</sift>
+	</appender>
+	    
+	<!-- HTML Log File -->
+	<appender name="HTML-FILE-PER-TEST" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<discriminator>
+			<key>testname</key>
+			<defaultValue>build/testrun</defaultValue>
+		</discriminator>
+		<sift>
+			<appender name="FILE-${testname}" class="ch.qos.logback.core.FileAppender">
+				<file>${testname}Log.html</file> <!-- location is determined by concordion.output.dir property in gradle.build file -->
+				<append>false</append>				
+				
+				<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+					<layout class="org.concordion.logback.html.HTMLLayout">
+						<pattern>%level%message%date{HH:mm:ss.SSS}%file%line</pattern>
+						<stepRecorder>STEP_MARKER</stepRecorder> 	<!-- Options: STEP_MARKER, INFO_LOG_LEVEL, DEBUG_LOG_LEVEL -->
+					</layout>
+			    </encoder>
+			</appender>
+		</sift>
+	</appender>
+
+	<logger name="org.apache.http" level="WARNING"/>
+	<logger name="org.openqa.selenium" level="WARNING"/>
+	<logger name="com.sun.activation.registries.LogSupport" level="WARNING"/>
+	<logger name="groovy.sql.Sql" level="WARNING"/>
+	<logger name="sun.net.www.protocol.http.HttpURLConnection" level="WARNING"/>
+	
+	<!-- TODO: Not really what I wanted, just trying to stop info level going to console appender when running in Jenkins as
+	 this belongs in the test file -->
+	<logger name="selenium.events" additivity="false">
+    	<appender-ref ref="FILE-PER-TEST" />
+  	</logger>
+</included>
+

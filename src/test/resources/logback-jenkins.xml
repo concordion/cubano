@@ -1,0 +1,13 @@
+<!-- 
+Logs information, warning and error level to standard out and everything to the log file
+To use this configuration file pass command line argument of -Dlogback.configurationFile=logback-jenkins.xml 
+-->
+
+<configuration>
+	<include resource="logback-include.xml"/>
+
+	<root level="ALL">
+		<appender-ref ref="STDOUT-INFO" />
+		<appender-ref ref="HTML-FILE-PER-TEST" />
+	</root>
+</configuration>

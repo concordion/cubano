@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<local-project language="javax" version="5.0.12522" xml-version="3" flavor="j2se">
+  <property name="parse-archive-in-archive" value="false" />
+  <property name="include-injected-dependency" value="false" />
+  <property name="relative-to" value="const(THIS_FILE)" />
+  <property name="force-classpath" value="false" />
+  <property name="detail-mode" value="true" />
+  <property name="restructuring-system-file" value="structure101-actions.xml" />
+  <property name="hide-deprecated" value="false" />
+  <property name="show-needs-to-compile" value="false" />
+  <property name="project-type" value="classpath" />
+  <property name="hide-externals" value="true" />
+  <property name="physical-layering-system-file" value="structure101-spec.xml" />
+  <classpath>
+    <classpathentry kind="lib" path="classes/production/cubano" base="cubano" />
+    <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="build/classes/main" base="cubano_main" />
+    <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="build/classes/main" base="cubano_main" />
+    <classpathentry kind="lib" path="SEPARATOR" />
+  </classpath>
+  <pom-root-files />
+  <grid-set sep="." version="5.0.12522" />
+</local-project>
+
