@@ -17,6 +17,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.concordion.cubano.driver.web.RemoteHttpClientFactory;
+import org.concordion.cubano.driver.web.provider.browserStack.BrowserStackBrowserProvider;
+import org.concordion.cubano.driver.web.provider.sauceLabs.SauceLabsBrowserProvider;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CommandInfo;
@@ -30,8 +32,8 @@ import org.openqa.selenium.remote.http.HttpClient.Factory;
  * Provides everything required to start up a remote browser (desktop or device) - apart from the where to connect.
  * <p>
  * Extend this to provide access to your Selenium grid provider, the framework provides implementations
- * for {@link org.concordion.cubano.driver.web.provider.BrowserStackBrowserProvider BrowserStack}
- * and {@link org.concordion.cubano.driver.web.provider.SauceLabsBrowserProvider SauceLabs}.
+ * for {@link BrowserStackBrowserProvider BrowserStack}
+ * and {@link SauceLabsBrowserProvider SauceLabs}.
  *
  * @author Andrew Sumner
  */
@@ -41,7 +43,6 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
 
     private String browser;
     private String viewPort;
-    private RemoteType remoteType;
     private DesiredCapabilities capabilites;
 
     /**
@@ -66,14 +67,11 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
 
     /**
      * Constructor.
-     *
-     * @param remoteType  Type of system the browser is running on
      * @param browser     Name of the browser
      * @param viewPort    Dimensions of the browser
      * @param capabilites Desired capabilities specific to the selenium grid provider
      */
-    protected void setDetails(RemoteType remoteType, String browser, String viewPort, DesiredCapabilities capabilites) {
-        this.remoteType = remoteType;
+    protected void setDetails(String browser, String viewPort, DesiredCapabilities capabilites) {
         this.browser = browser;
         this.viewPort = viewPort;
         this.capabilites = capabilites;
@@ -87,20 +85,6 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     @Override
     public String getViewPort() {
         return viewPort;
-    }
-
-    @Override
-    public RemoteType getDeviceType() {
-        return remoteType;
-    }
-
-    @Override
-    public String getDeviceName() {
-        if (getDeviceType() == RemoteType.DEVICE) {
-            return getBrowser();
-        } else {
-            return "Desktop";
-        }
     }
 
     private DesiredCapabilities getCapabilites() {
@@ -194,23 +178,13 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
         if (!areEqual(this.getViewPort(), compare.getViewPort())) {
             return false;
         }
-        if (!areEqual(this.getDeviceType(), compare.getDeviceType())) {
-            return false;
-        }
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.browser, this.capabilites, this.remoteType, this.viewPort);
-    }
-
-    /**
-     * @return True if is a desktop browser
-     */
-    public boolean isDesktop() {
-        return getDeviceType() == RemoteType.DESKTOP;
+        return Objects.hash(this.browser, this.capabilites, this.viewPort);
     }
 
     @Override

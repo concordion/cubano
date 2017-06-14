@@ -14,16 +14,6 @@ public interface BrowserProvider {
     public WebDriver createDriver();
 
     /**
-     * @return If running on a PC/MAC returns 'Desktop', otherwise returns name of the device
-     */
-    public String getDeviceName();
-
-    /**
-     * @return Type of device
-     */
-    public RemoteType getDeviceType();
-
-    /**
      * @return Browser name if running a desktop browser, otherwise the name of the device
      */
     public String getBrowser();

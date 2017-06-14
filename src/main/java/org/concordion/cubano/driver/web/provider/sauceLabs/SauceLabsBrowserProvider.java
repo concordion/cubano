@@ -1,9 +1,11 @@
-package org.concordion.cubano.driver.web.provider;
+package org.concordion.cubano.driver.web.provider.sauceLabs;
 
 import java.io.IOException;
 
 import org.concordion.cubano.driver.http.HttpEasy;
 import org.concordion.cubano.driver.http.JsonReader;
+import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
+import org.concordion.cubano.driver.web.provider.SessionDetails;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -138,7 +140,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("screenResolution", DEFAULT_DESKTOP_SCREENSIZE);
         caps.setCapability("name", String.format("%s %s, %s", browserName, browserVersion, platform));
 
-        this.setDetails(RemoteType.DESKTOP, browserName, DEFAULT_DESKTOP_VIEWPORT, caps);
+        this.setDetails(browserName, DEFAULT_DESKTOP_VIEWPORT, caps);
     }
 
     /**
@@ -210,7 +212,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("deviceOrientation", "portrait");
         caps.setCapability("name", "Google Nexus 7C Emulator");
 
-        this.setDetails(RemoteType.DEVICE, "Google Nexus 7C Emulator", "?x?", caps);
+        this.setDetails("Google Nexus 7C Emulator", "?x?", caps);
     }
 
     /**
@@ -222,7 +224,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("deviceOrientation", "portrait");
         caps.setCapability("name", "Samsung Galaxy S4 Emulator");
 
-        this.setDetails(RemoteType.DEVICE, "Samsung Galaxy S4 Emulator", "?x?", caps);
+        this.setDetails("Samsung Galaxy S4 Emulator", "?x?", caps);
     }
 
     /**
@@ -237,7 +239,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("browserName", "Chrome");
         caps.setCapability("name", "Samsung Galaxy S5");
 
-        this.setDetails(RemoteType.DEVICE, "Samsung Galaxy S5", "?x?", caps);
+        this.setDetails("Samsung Galaxy S5", "?x?", caps);
     }
 
     /**
@@ -251,7 +253,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("deviceOrientation", "portrait");
         caps.setCapability("name", "iPhone 6 Plus");
 
-        this.setDetails(RemoteType.DEVICE, "iPhone 6 Plus", "?x?", caps);
+        this.setDetails("iPhone 6 Plus", "?x?", caps);
     }
 
     /**
@@ -266,6 +268,6 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("browserName", "Safari");
         caps.setCapability("name", "iPhone 6");
 
-        this.setDetails(RemoteType.DEVICE, "iPhone 6", "?x?", caps);
+        this.setDetails("iPhone 6", "?x?", caps);
     }
 }

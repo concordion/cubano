@@ -1,8 +1,9 @@
-package org.concordion.cubano.driver.web.provider;
+package org.concordion.cubano.driver.web.provider.local;
 
 import java.io.File;
 import java.io.FilenameFilter;
 
+import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
@@ -281,17 +282,6 @@ public class LocalBrowserProvider implements BrowserProvider {
         String height = browserSize.substring(browserSize.indexOf("x") + 1).trim();
 
         return Integer.parseInt(height);
-    }
-
-
-    @Override
-    public RemoteType getDeviceType() {
-        return RemoteType.DESKTOP;
-    }
-
-    @Override
-    public String getDeviceName() {
-        return "Desktop";
     }
 
     @Override

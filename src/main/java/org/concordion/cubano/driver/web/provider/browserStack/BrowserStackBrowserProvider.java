@@ -1,9 +1,11 @@
-package org.concordion.cubano.driver.web.provider;
+package org.concordion.cubano.driver.web.provider.browserStack;
 
 import java.io.IOException;
 
 import org.concordion.cubano.driver.http.HttpEasy;
 import org.concordion.cubano.driver.http.JsonReader;
+import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
+import org.concordion.cubano.driver.web.provider.SessionDetails;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.SessionId;
@@ -121,7 +123,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("browser_version", browserVersion);
         caps.setCapability("resolution", DEFAULT_DESKTOP_SCREENSIZE);
 
-        this.setDetails(RemoteType.DESKTOP, browserName, DEFAULT_DESKTOP_VIEWPORT, caps);
+        this.setDetails(browserName, DEFAULT_DESKTOP_VIEWPORT, caps);
     }
 
     /**
@@ -194,7 +196,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("platform", "ANDROID");
         caps.setCapability("device", "Samsung Galaxy S5");
 
-        this.setDetails(RemoteType.DEVICE, "Samsung Galaxy S5", "1080x1920", caps);
+        this.setDetails("Samsung Galaxy S5", "1080x1920", caps);
     }
 
     /**
@@ -207,7 +209,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("platform", "MAC");
         caps.setCapability("device", "iPhone 6S Plus");
 
-        this.setDetails(RemoteType.DEVICE, "iPhone 6S Plus", "?x?", caps);
+        this.setDetails("iPhone 6S Plus", "?x?", caps);
     }
 
     /**
@@ -220,6 +222,6 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("platform", "ANDROID");
         caps.setCapability("device", "Google Nexus 5");
 
-        this.setDetails(RemoteType.DEVICE, "Google Nexus 5", "1080x1920", caps);
+        this.setDetails("Google Nexus 5", "1080x1920", caps);
     }
 }
