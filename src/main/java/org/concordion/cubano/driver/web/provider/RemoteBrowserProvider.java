@@ -52,15 +52,6 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     }
 
     /**
-     * Get the session details.
-     *
-     * @param sessionId Session Id
-     * @return Details
-     * @throws IOException
-     */
-    public abstract SessionDetails getSessionDetails(SessionId sessionId) throws IOException;
-
-    /**
      * @return URL to access the remote driver.
      */
     protected abstract String getRemoteDriverUrl();

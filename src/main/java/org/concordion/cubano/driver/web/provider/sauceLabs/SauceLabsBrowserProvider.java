@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.concordion.cubano.driver.http.HttpEasy;
 import org.concordion.cubano.driver.http.JsonReader;
 import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
-import org.concordion.cubano.driver.web.provider.SessionDetails;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -99,31 +98,6 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
     @Override
     protected String getRemoteDriverUrl() {
         return REMOTE_URL.replace("[USER_NAME]", Config.getRemoteUserName()).replace("[API_KEY]", Config.getRemoteApiKey());
-    }
-
-    @Override
-    public SessionDetails getSessionDetails(SessionId sessionId) throws IOException {
-        JsonElement value;
-        String url = "https://saucelabs.com/rest/v1/" + Config.getRemoteUserName() + "/jobs/" + sessionId;
-
-        JsonReader reader = HttpEasy.request()
-                .path(url)
-                .authorization(Config.getRemoteUserName(), Config.getRemoteApiKey())
-                .header("Accept", TYPE).header("Content-type", TYPE)
-                .get()
-                .getJsonReader();
-
-        SessionDetails details = new SessionDetails();
-
-        details.setProviderName("SauceLabs");
-
-        //TODO - remove beta when this interface becomes the default
-        details.setBrowserUrl("https://www.saucelabs.com/beta/tests/" + sessionId);
-
-        value = reader.jsonPath("video_url");
-        details.setVideoUrl((value == null ? "" : value.getAsString()));
-
-        return details;
     }
 
     /**

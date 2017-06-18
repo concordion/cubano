@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.concordion.cubano.driver.http.HttpEasy;
 import org.concordion.cubano.driver.http.JsonReader;
 import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
-import org.concordion.cubano.driver.web.provider.SessionDetails;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.SessionId;
@@ -84,31 +83,6 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
     @Override
     protected String getRemoteDriverUrl() {
         return REMOTE_URL.replace("[USER_NAME]", Config.getRemoteUserName()).replace("[API_KEY]", Config.getRemoteApiKey());
-    }
-
-    @Override
-    public SessionDetails getSessionDetails(SessionId sessionId) throws IOException {
-        JsonElement value;
-        String url = "https://www.browserstack.com/automate/sessions/" + sessionId + ".json";
-
-        JsonReader json = HttpEasy.request().
-                path(url).
-                authorization(Config.getRemoteUserName(), Config.getRemoteApiKey()).
-                header("Accept", TYPE).header("Content-type", TYPE).
-                get().
-                getJsonReader();
-
-        SessionDetails details = new SessionDetails();
-
-        details.setProviderName("BrowserStack");
-
-        value = json.jsonPath("automation_session.browser_url");
-        details.setBrowserUrl((value == null ? "" : value.getAsString()));
-
-        value = json.jsonPath("automation_session.video_url");
-        details.setVideoUrl(value == null ? "" : value.getAsString());
-
-        return details;
     }
 
     /**
