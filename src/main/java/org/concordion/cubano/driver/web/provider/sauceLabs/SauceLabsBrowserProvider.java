@@ -1,16 +1,9 @@
 package org.concordion.cubano.driver.web.provider.sauceLabs;
 
-import java.io.IOException;
-
-import org.concordion.cubano.driver.http.HttpEasy;
-import org.concordion.cubano.driver.http.JsonReader;
 import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.SessionId;
-
-import com.google.gson.JsonElement;
 
 /**
  * SauceLabs selenium grid provider.
