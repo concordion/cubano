@@ -1,8 +1,5 @@
 package org.concordion.cubano.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Properties;
 
 /**
@@ -13,8 +10,6 @@ import java.util.Properties;
  * @author Andrew Sumner
  */
 public class Config {
-    private static final String CONFIG_FILE = "config.properties";
-    private static final String USER_CONFIG_FILE = "user.properties";
 
     private static Properties properties;
     private static Properties userProperties = null;
@@ -41,46 +36,28 @@ public class Config {
     private static String proxyUsername;
     private static String proxyPassword;
 
-
-    /** Ensure properties have been loaded before any property is used. */
-    static {
-        synchronized (Config.class) {
-            properties = loadFile(CONFIG_FILE);
-
-            if (new File(USER_CONFIG_FILE).exists()) {
-                userProperties = loadFile(USER_CONFIG_FILE);
-            }
-
-            loadCommonProperties();
-        }
+    /**
+     * Prevent this class from being constructed.
+     */
+    protected Config() {
+        this(new DefaultConfigLoader());
     }
 
     /**
      * Prevent this class from being constructed.
      */
-    protected Config() {
+    protected Config(ConfigLoader loader) {
+        this(loader.getProperties(), loader.getUserProperties());
     }
 
-    /**
-     * Read properties from file, will ignoring the case of properties.
-     *
-     * @param filename Name of file to read, expected that it will be located in the projects root folder
-     * @return {@link CaselessProperties}
-     */
-    private static Properties loadFile(final String filename) {
-        Properties prop = new CaselessProperties();
+    protected Config(Properties properties) {
+        this(properties, null);
+    }
 
-        // if (!new File(filename).exists()) {
-        // return prop;
-        // }
-
-        try (InputStream input = new FileInputStream(filename);) {
-            prop.load(input);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to read properties file.", e);
-        }
-
-        return prop;
+    protected Config(Properties properties, Properties userProperties) {
+        this.properties = properties;
+        this.userProperties = userProperties;
+        loadCommonProperties();
     }
 
     private static void loadCommonProperties() {
