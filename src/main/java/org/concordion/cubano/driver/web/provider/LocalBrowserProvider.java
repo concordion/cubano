@@ -1,4 +1,4 @@
-package org.concordion.cubano.driver.web.provider.local;
+package org.concordion.cubano.driver.web.provider;
 
 import java.io.File;
 import java.io.FilenameFilter;
