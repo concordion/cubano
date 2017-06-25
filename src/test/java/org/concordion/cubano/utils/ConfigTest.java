@@ -121,7 +121,7 @@ public class ConfigTest {
 
         assertThat(config.getBrowserSize(), is("1280x1024"));
         assertThat(config.getBrowserExe(), is("/bin/firefox"));
-        assertThat(config.activatePlugins(), is(true));
+        assertThat(config.shouldActivatePlugins(), is(true));
     }
 
     @Test

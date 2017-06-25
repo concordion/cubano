@@ -224,8 +224,18 @@ public class Config {
      * Activate developer plugins - FireFox only browser supported currently and will add FireBug and FirePath.
      *
      * @return true or false
+     * @deprecated use shouldActivatePlugins
      */
     public static boolean activatePlugins() {
+        return shouldActivatePlugins();
+    }
+
+    /**
+     * Activate developer plugins - FireFox only browser supported currently and will add FireBug and FirePath.
+     *
+     * @return true or false
+     */
+    public static boolean shouldActivatePlugins() {
         return activatePlugins;
     }
 

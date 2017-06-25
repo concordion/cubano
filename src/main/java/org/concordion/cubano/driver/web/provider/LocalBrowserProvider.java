@@ -152,7 +152,7 @@ public class LocalBrowserProvider implements BrowserProvider {
             capabilities.setCapability(FirefoxDriver.BINARY, Config.getBrowserExe());
         }
 
-        if (Config.activatePlugins()) {
+        if (Config.shouldActivatePlugins()) {
             FirefoxProfile profile = new FirefoxProfile();
 
             try {
