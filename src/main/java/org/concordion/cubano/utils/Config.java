@@ -3,9 +3,12 @@ package org.concordion.cubano.utils;
 import java.util.Properties;
 
 /**
- * Reads and supplies properties from the config.properties file that are required by the framework.
+ * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
  * <p>
- * This class can be extended by an AppConfig class to provide application specific properties.
+ * An optional <code>user.properties</code> file can set user specific values and allow overriding of defaults.
+ * The <code>user.properties</code> file should NEVER be checked into source control.
+ * <p>
+ * This class can be extended by an <code>AppConfig</code> class to provide application specific properties.
  *
  * @author Andrew Sumner
  */
@@ -91,13 +94,15 @@ public class Config {
         System.setProperty("webdriver.timeouts.implicitlywait", getOptionalProperty("webdriver.timeouts.implicitlywait", "0"));
 
         // Proxy
-        proxyIsRequired = Boolean.parseBoolean(getProperty("proxy.required"));
-        proxyHost = getProperty("proxy.host");
-        proxyPort = Integer.parseInt(getProperty("proxy.port"));
+        proxyIsRequired = Boolean.parseBoolean(getOptionalProperty("proxy.required"));
+        if (proxyIsRequired) {
+            proxyHost = getProperty("proxy.host");
+            proxyPort = Integer.parseInt(getProperty("proxy.port"));
 
-        proxyDomain = getOptionalProperty("proxy.domain");
-        proxyUsername = getOptionalProperty("proxy.username");
-        proxyPassword = getOptionalProperty("proxy.password");
+            proxyDomain = getOptionalProperty("proxy.domain");
+            proxyUsername = getOptionalProperty("proxy.username");
+            proxyPassword = getOptionalProperty("proxy.password");
+        }
     }
 
     /**
@@ -180,14 +185,6 @@ public class Config {
         }
 
         return value;
-    }
-
-    /**
-     * Release properties lists held by this class.
-     */
-    protected static void releaseProperties() {
-        properties = null;
-        userProperties = null;
     }
 
     /**
