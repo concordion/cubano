@@ -1,4 +1,7 @@
-package org.concordion.cubano.utils;
+package org.concordion.cubano.driver.web.config;
+
+import org.concordion.cubano.utils.ConfigLoader;
+import org.concordion.cubano.utils.DefaultConfigLoader;
 
 import java.util.Properties;
 
@@ -12,7 +15,7 @@ import java.util.Properties;
  *
  * @author Andrew Sumner
  */
-public class Config {
+public class WebDriverConfig {
 
     private static Properties properties;
     private static Properties userProperties = null;
@@ -42,22 +45,22 @@ public class Config {
     /**
      * Prevent this class from being constructed.
      */
-    protected Config() {
+    protected WebDriverConfig() {
         this(new DefaultConfigLoader());
     }
 
     /**
      * Prevent this class from being constructed.
      */
-    protected Config(ConfigLoader loader) {
+    protected WebDriverConfig(ConfigLoader loader) {
         this(loader.getProperties(), loader.getUserProperties());
     }
 
-    protected Config(Properties properties) {
+    protected WebDriverConfig(Properties properties) {
         this(properties, null);
     }
 
-    protected Config(Properties properties, Properties userProperties) {
+    protected WebDriverConfig(Properties properties, Properties userProperties) {
         this.properties = properties;
         this.userProperties = userProperties;
         loadCommonProperties();

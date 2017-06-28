@@ -8,9 +8,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.concordion.cubano.driver.web.RemoteHttpClientFactory;
-import org.concordion.cubano.driver.web.provider.BrowserStackBrowserProvider;
-import org.concordion.cubano.driver.web.provider.SauceLabsBrowserProvider;
-import org.concordion.cubano.utils.Config;
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CommandInfo;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -91,16 +89,16 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
             throw new RuntimeException(e.getMessage(), e);
         }
 
-        if (Config.isProxyRequired()) {
+        if (WebDriverConfig.isProxyRequired()) {
             HttpClientBuilder builder = HttpClientBuilder.create();
 
-            HttpHost proxy = new HttpHost(Config.getProxyHost(), Config.getProxyPort());
+            HttpHost proxy = new HttpHost(WebDriverConfig.getProxyHost(), WebDriverConfig.getProxyPort());
 
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
 
             credsProvider.setCredentials(
-                    new AuthScope(Config.getProxyHost(), Config.getProxyPort()),
-                    new NTCredentials(Config.getProxyUser(), Config.getProxyPassword(), getWorkstation(), Config.getProxyDomain()));
+                    new AuthScope(WebDriverConfig.getProxyHost(), WebDriverConfig.getProxyPort()),
+                    new NTCredentials(WebDriverConfig.getProxyUser(), WebDriverConfig.getProxyPassword(), getWorkstation(), WebDriverConfig.getProxyDomain()));
             if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
                 credsProvider.setCredentials(
                         new AuthScope(url.getHost(), (url.getPort() > 0 ? url.getPort() : url.getDefaultPort())),

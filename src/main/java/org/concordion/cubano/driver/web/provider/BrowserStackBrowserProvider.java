@@ -1,7 +1,6 @@
 package org.concordion.cubano.driver.web.provider;
 
-import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
-import org.concordion.cubano.utils.Config;
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
@@ -17,7 +16,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
      * Constructor. Uses configuration for browser specified in the configuration file.
      */
     public BrowserStackBrowserProvider() {
-        String browser = Config.getBrowser();
+        String browser = WebDriverConfig.getBrowser();
 
         if (browser == null) {
             browser = "";
@@ -75,7 +74,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
 
     @Override
     protected String getRemoteDriverUrl() {
-        return REMOTE_URL.replace("[USER_NAME]", Config.getRemoteUserName()).replace("[API_KEY]", Config.getRemoteApiKey());
+        return REMOTE_URL.replace("[USER_NAME]", WebDriverConfig.getRemoteUserName()).replace("[API_KEY]", WebDriverConfig.getRemoteApiKey());
     }
 
     /**

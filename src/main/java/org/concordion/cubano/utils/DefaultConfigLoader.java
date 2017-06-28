@@ -13,8 +13,8 @@ public class DefaultConfigLoader implements ConfigLoader {
     private Properties userProperties;
 
     /** Ensure properties have been loaded before any property is used. */
-    DefaultConfigLoader() {
-        synchronized (Config.class) {
+    public DefaultConfigLoader() {
+        synchronized (DefaultConfigLoader.class) {
             properties = loadFile(CONFIG_FILE);
 
             if (new File(USER_CONFIG_FILE).exists()) {

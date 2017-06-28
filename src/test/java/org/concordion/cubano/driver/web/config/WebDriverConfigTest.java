@@ -1,4 +1,4 @@
-package org.concordion.cubano.utils;
+package org.concordion.cubano.driver.web.config;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -6,7 +6,6 @@ import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
@@ -14,7 +13,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-public class ConfigTest {
+public class WebDriverConfigTest {
     @Rule
     public final RestoreSystemProperties restoreSystemProperties
             = new RestoreSystemProperties();
@@ -26,7 +25,7 @@ public class ConfigTest {
         given(properties.getProperty("webdriver.browser")).willReturn("firefox");
         given(properties.getProperty("webdriver.defaultTimeout")).willReturn("30");
 
-        Config config = new Config(properties);
+        WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getEnvironment(), is("UAT"));
         assertThat(config.getBrowser(), is("firefox"));
@@ -45,7 +44,7 @@ public class ConfigTest {
         given(properties.getProperty("proxy.username")).willReturn("me");
         given(properties.getProperty("proxy.password")).willReturn("secret");
 
-        Config config = new Config(properties);
+        WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.isProxyRequired(), is(true));
         assertThat(config.getProxyHost(), is("myproxyhost"));
@@ -67,7 +66,7 @@ public class ConfigTest {
         given(userProperties.getProperty("proxy.host")).willReturn("myotherproxyhost");
         given(userProperties.getProperty("proxy.port")).willReturn("6666");
 
-        Config config = new Config(properties, userProperties);
+        WebDriverConfig config = new WebDriverConfig(properties, userProperties);
 
         assertThat(config.isProxyRequired(), is(true));
         assertThat(config.getProxyHost(), is("myotherproxyhost"));
@@ -81,7 +80,7 @@ public class ConfigTest {
         given(properties.getProperty("SIT.webdriver.defaultTimeout")).willReturn("20");
         given(properties.getProperty("webdriver.defaultTimeout")).willReturn("30");
 
-        Config config = new Config(properties);
+        WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getDefaultTimeout(), is(20));
     }
@@ -91,7 +90,7 @@ public class ConfigTest {
         Properties properties = givenDefaultProperties();
         System.setProperty("environment", "TEST");
 
-        Config config = new Config(properties);
+        WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getEnvironment(), is("test"));
     }
@@ -104,7 +103,7 @@ public class ConfigTest {
         System.setProperty("browser", "chrome");
         given(properties.getProperty("webdriver.browser")).willReturn("firefox");
 
-        Config config = new Config(properties);
+        WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getEnvironment(), is("uat"));
         assertThat(config.getBrowser(), is("chrome"));
@@ -117,7 +116,7 @@ public class ConfigTest {
         given(properties.getProperty("webdriver.firefox.exe")).willReturn("%USERPROFILE%/bin/firefox");
         given(properties.getProperty("webdriver.firefox.activatePlugins")).willReturn("true");
 
-        Config config = new Config(properties);
+        WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getBrowserSize(), is("1280x1024"));
         assertThat(config.getBrowserExe(), is("/bin/firefox"));
@@ -129,7 +128,7 @@ public class ConfigTest {
         assertThat(System.getProperty("webdriver.timeouts.implicitlywait"), is(nullValue()));
 
         Properties properties = givenDefaultProperties();
-        Config config = new Config(properties);
+        WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(System.getProperty("webdriver.timeouts.implicitlywait"), is("0"));
     }
@@ -142,7 +141,7 @@ public class ConfigTest {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("webdriver.timeouts.implicitlywait")).willReturn("9");
 
-        Config config = new Config(properties);
+        WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(System.getProperty("webdriver.timeouts.implicitlywait"), is("9"));
     }
