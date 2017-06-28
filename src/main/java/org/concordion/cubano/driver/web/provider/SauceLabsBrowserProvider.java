@@ -1,15 +1,9 @@
 package org.concordion.cubano.driver.web.provider;
 
-import java.io.IOException;
-
-import org.concordion.cubano.driver.http.HttpEasy;
-import org.concordion.cubano.driver.http.JsonReader;
+import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.SessionId;
-
-import com.google.gson.JsonElement;
 
 /**
  * SauceLabs selenium grid provider.
@@ -99,31 +93,6 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         return REMOTE_URL.replace("[USER_NAME]", Config.getRemoteUserName()).replace("[API_KEY]", Config.getRemoteApiKey());
     }
 
-    @Override
-    public SessionDetails getSessionDetails(SessionId sessionId) throws IOException {
-        JsonElement value;
-        String url = "https://saucelabs.com/rest/v1/" + Config.getRemoteUserName() + "/jobs/" + sessionId;
-
-        JsonReader reader = HttpEasy.request()
-                .path(url)
-                .authorization(Config.getRemoteUserName(), Config.getRemoteApiKey())
-                .header("Accept", TYPE).header("Content-type", TYPE)
-                .get()
-                .getJsonReader();
-
-        SessionDetails details = new SessionDetails();
-
-        details.setProviderName("SauceLabs");
-
-        //TODO - remove beta when this interface becomes the default
-        details.setBrowserUrl("https://www.saucelabs.com/beta/tests/" + sessionId);
-
-        value = reader.jsonPath("video_url");
-        details.setVideoUrl((value == null ? "" : value.getAsString()));
-
-        return details;
-    }
-
     /**
      * Register a desktop browser.
      *
@@ -138,7 +107,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("screenResolution", DEFAULT_DESKTOP_SCREENSIZE);
         caps.setCapability("name", String.format("%s %s, %s", browserName, browserVersion, platform));
 
-        this.setDetails(RemoteType.DESKTOP, browserName, DEFAULT_DESKTOP_VIEWPORT, caps);
+        this.setDetails(browserName, DEFAULT_DESKTOP_VIEWPORT, caps);
     }
 
     /**
@@ -210,7 +179,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("deviceOrientation", "portrait");
         caps.setCapability("name", "Google Nexus 7C Emulator");
 
-        this.setDetails(RemoteType.DEVICE, "Google Nexus 7C Emulator", "?x?", caps);
+        this.setDetails("Google Nexus 7C Emulator", "?x?", caps);
     }
 
     /**
@@ -222,7 +191,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("deviceOrientation", "portrait");
         caps.setCapability("name", "Samsung Galaxy S4 Emulator");
 
-        this.setDetails(RemoteType.DEVICE, "Samsung Galaxy S4 Emulator", "?x?", caps);
+        this.setDetails("Samsung Galaxy S4 Emulator", "?x?", caps);
     }
 
     /**
@@ -237,7 +206,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("browserName", "Chrome");
         caps.setCapability("name", "Samsung Galaxy S5");
 
-        this.setDetails(RemoteType.DEVICE, "Samsung Galaxy S5", "?x?", caps);
+        this.setDetails("Samsung Galaxy S5", "?x?", caps);
     }
 
     /**
@@ -251,7 +220,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("deviceOrientation", "portrait");
         caps.setCapability("name", "iPhone 6 Plus");
 
-        this.setDetails(RemoteType.DEVICE, "iPhone 6 Plus", "?x?", caps);
+        this.setDetails("iPhone 6 Plus", "?x?", caps);
     }
 
     /**
@@ -266,6 +235,6 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("browserName", "Safari");
         caps.setCapability("name", "iPhone 6");
 
-        this.setDetails(RemoteType.DEVICE, "iPhone 6", "?x?", caps);
+        this.setDetails("iPhone 6", "?x?", caps);
     }
 }

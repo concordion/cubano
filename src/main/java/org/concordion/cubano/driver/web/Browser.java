@@ -3,7 +3,6 @@ package org.concordion.cubano.driver.web;
 import org.concordion.cubano.driver.web.pagefactory.PageObjectAwareHtmlElementsLoader;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
-import org.concordion.cubano.driver.web.provider.SessionDetails;
 import org.concordion.cubano.utils.Config;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
 import org.openqa.selenium.WebDriver;
@@ -34,24 +33,6 @@ public class Browser {
      * Constructor - does not start the browser.
      */
     public Browser() {
-    }
-
-    /**
-     * Get the session details from the Selenium grid provider, if not running
-     * on a Selenium grid then returns null.
-     *
-     * @return Sessiond details if running on selenium grid, otherwise null
-     */
-    public SessionDetails getSessionDetails() {
-        if (sessionId == null) {
-            return null;
-        }
-
-        try {
-            return ((RemoteBrowserProvider) browserConfig).getSessionDetails(sessionId);
-        } catch (IOException e) {
-            throw new RuntimeException("Error while getting session details from selenium grid provider", e);
-        }
     }
 
     /**

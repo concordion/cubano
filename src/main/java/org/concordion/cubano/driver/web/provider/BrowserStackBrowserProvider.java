@@ -1,14 +1,8 @@
 package org.concordion.cubano.driver.web.provider;
 
-import java.io.IOException;
-
-import org.concordion.cubano.driver.http.HttpEasy;
-import org.concordion.cubano.driver.http.JsonReader;
+import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.SessionId;
-
-import com.google.gson.JsonElement;
 
 /**
  * BrowserStack selenium grid provider.
@@ -84,31 +78,6 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         return REMOTE_URL.replace("[USER_NAME]", Config.getRemoteUserName()).replace("[API_KEY]", Config.getRemoteApiKey());
     }
 
-    @Override
-    public SessionDetails getSessionDetails(SessionId sessionId) throws IOException {
-        JsonElement value;
-        String url = "https://www.browserstack.com/automate/sessions/" + sessionId + ".json";
-
-        JsonReader json = HttpEasy.request().
-                path(url).
-                authorization(Config.getRemoteUserName(), Config.getRemoteApiKey()).
-                header("Accept", TYPE).header("Content-type", TYPE).
-                get().
-                getJsonReader();
-
-        SessionDetails details = new SessionDetails();
-
-        details.setProviderName("BrowserStack");
-
-        value = json.jsonPath("automation_session.browser_url");
-        details.setBrowserUrl((value == null ? "" : value.getAsString()));
-
-        value = json.jsonPath("automation_session.video_url");
-        details.setVideoUrl(value == null ? "" : value.getAsString());
-
-        return details;
-    }
-
     /**
      * Set remote browser details.
      *
@@ -121,7 +90,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("browser_version", browserVersion);
         caps.setCapability("resolution", DEFAULT_DESKTOP_SCREENSIZE);
 
-        this.setDetails(RemoteType.DESKTOP, browserName, DEFAULT_DESKTOP_VIEWPORT, caps);
+        this.setDetails(browserName, DEFAULT_DESKTOP_VIEWPORT, caps);
     }
 
     /**
@@ -194,7 +163,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("platform", "ANDROID");
         caps.setCapability("device", "Samsung Galaxy S5");
 
-        this.setDetails(RemoteType.DEVICE, "Samsung Galaxy S5", "1080x1920", caps);
+        this.setDetails("Samsung Galaxy S5", "1080x1920", caps);
     }
 
     /**
@@ -207,7 +176,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("platform", "MAC");
         caps.setCapability("device", "iPhone 6S Plus");
 
-        this.setDetails(RemoteType.DEVICE, "iPhone 6S Plus", "?x?", caps);
+        this.setDetails("iPhone 6S Plus", "?x?", caps);
     }
 
     /**
@@ -220,6 +189,6 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
         caps.setCapability("platform", "ANDROID");
         caps.setCapability("device", "Google Nexus 5");
 
-        this.setDetails(RemoteType.DEVICE, "Google Nexus 5", "1080x1920", caps);
+        this.setDetails("Google Nexus 5", "1080x1920", caps);
     }
 }
