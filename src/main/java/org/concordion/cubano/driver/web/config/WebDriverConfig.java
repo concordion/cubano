@@ -13,6 +13,8 @@ import java.util.Properties;
  * <p>
  * This class can be extended by an <code>AppConfig</code> class to provide application specific properties.
  *
+ * TODO Should this be singleton? 
+ * 
  * @author Andrew Sumner
  */
 public class WebDriverConfig {
