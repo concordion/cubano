@@ -14,10 +14,10 @@
 		 
 -->
 <module name="Checker">
-<!-- 	<module name="SuppressWarningsFilter" />
-	<module name="SuppressionFilter">
-		<property name="file" value="${basedir}/checkstyle-supressions.xml"/>
-	</module> -->
+    <module name="SuppressWarningsFilter" />
+    <module name="SuppressionFilter">
+        <property name="file" value="${baseDir}/checkstyle-suppressions.xml"/>
+    </module>
 
 	<property name="severity" value="info"/>
 
@@ -156,20 +156,8 @@
 		<module name="TrailingComment">
 			<metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
 		</module>
-		
-		<!-- CUSTOM: using this instead of FileTabCharacter check below -->
-		<module name="RegexpSinglelineJava">
-			<property name="format" value="^\t* +\t*\S"/>
-			<property name="message" value="Line has leading space characters; indentation should be performed with tabs only."/>
-			<property name="ignoreComments" value="true"/>
-		</module>
+        <module name="Indentation"/>
 	</module>
-	
-	<!-- Forcing tabs rather than spaces 
-	<module name="FileTabCharacter">
-		<property name="severity" value="warning"/>
-	</module>
-	-->
 	
 	<module name="FileLength"/>
 	<module name="SuppressionCommentFilter"/>

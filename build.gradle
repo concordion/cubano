@@ -114,6 +114,7 @@ dependencies {
 checkstyle {
     // toolVersion = '6.19'
     ignoreFailures = true
+    configProperties = ["baseDir" : project(':').file('config/checkstyle')]
 
     // Using default location /config/checkstyle/checkstyle.xml
     //configFile = new File("checkstyle.xml")
