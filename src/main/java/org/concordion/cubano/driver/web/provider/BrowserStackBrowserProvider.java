@@ -1,6 +1,5 @@
 package org.concordion.cubano.driver.web.provider;
 
-import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
