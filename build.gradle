@@ -156,7 +156,7 @@ task wrapper(type: Wrapper) {
 
 test {
     //include '**/Specification.*'
-    //exclude '**/demo/*.*'
+    exclude '**/demo/*.*'
 
     // Pass through all supplied system properties - excluding those containing '.' as some of these system properties introduce JNA incompatibility issues
     System.properties.each { k, v ->
