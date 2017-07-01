@@ -145,7 +145,7 @@ javadoc {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.5'
+    gradleVersion = '4.0'
 
     // To download through proxy, need to update <project root>\gradle\wrapper\gradle-wrapper.properties and change 
     //     distributionUrl property from https... to http...
