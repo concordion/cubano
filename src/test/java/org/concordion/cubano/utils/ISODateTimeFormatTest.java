@@ -6,10 +6,17 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Locale;
 
 import static org.junit.Assert.*;
 
 public class ISODateTimeFormatTest {
+
+    // TODO: Andrew - these tests assume a NZ locale. Let's add other locales.
+    public ISODateTimeFormatTest() {
+        Locale.setDefault(new Locale("en", "NZ"));
+    }
+
     @Test
     public void custom() throws ParseException {
         LocalDateTime date;
