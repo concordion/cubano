@@ -114,6 +114,7 @@ dependencies {
 checkstyle {
     // toolVersion = '6.19'
     ignoreFailures = true
+    configProperties = ["baseDir" : project(':').file('config/checkstyle')]
 
     // Using default location /config/checkstyle/checkstyle.xml
     //configFile = new File("checkstyle.xml")
@@ -144,7 +145,7 @@ javadoc {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '3.5'
+    gradleVersion = '4.0'
 
     // To download through proxy, need to update <project root>\gradle\wrapper\gradle-wrapper.properties and change 
     //     distributionUrl property from https... to http...
@@ -155,7 +156,7 @@ task wrapper(type: Wrapper) {
 
 test {
     //include '**/Specification.*'
-    //exclude '**/demo/*.*'
+    exclude '**/demo/*.*'
 
     // Pass through all supplied system properties - excluding those containing '.' as some of these system properties introduce JNA incompatibility issues
     System.properties.each { k, v ->

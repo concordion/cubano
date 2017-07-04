@@ -12,8 +12,6 @@ import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 /**
  * A wrapper around Selenium WebDriver to make it easier to open and close a
  * specific browser regardless of whether that browser is running locally or

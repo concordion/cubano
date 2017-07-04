@@ -3,7 +3,6 @@ package org.concordion.cubano.driver.web.provider;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.cubano.utils.Config;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
