@@ -1,0 +1,114 @@
+<physical-grid-set sep="." version="5.0.12522">
+  <grid name="Structure Spec" enforce="true" locked="true" strict="false">
+    <row>
+      <cell pattern="" vexpanded="true" illegal="false" visibility="public" drill="true">
+        <grid>
+          <row>
+            <cell name="http" pattern="cubano_main.org.concordion.cubano.driver.http.?" vexpanded="false" illegal="false" visibility="public" drill="true" />
+          </row>
+        </grid>
+      </cell>
+      <cell pattern="" vexpanded="true" illegal="false" visibility="public" drill="true">
+        <grid>
+          <row>
+            <cell name="(2)" pattern="" vexpanded="true" illegal="false" visibility="public" drill="true">
+              <grid>
+                <row>
+                  <cell name="BrowserBasedTest" pattern="cubano_main.org.concordion.cubano.driver.BrowserBasedTest" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                </row>
+                <row>
+                  <cell name="web" pattern="cubano_main.org.concordion.cubano.driver.web.*" vexpanded="false" illegal="false" visibility="public" drill="true" />
+                </row>
+              </grid>
+            </cell>
+          </row>
+        </grid>
+      </cell>
+    </row>
+    <row>
+      <cell pattern="" vexpanded="true" illegal="false" visibility="public" drill="true">
+        <grid>
+          <row>
+            <cell name="cubano_main" pattern="cubano_main.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+              <grid>
+                <row>
+                  <cell name="org" pattern="cubano_main.org.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                    <grid>
+                      <row>
+                        <cell name="concordion" pattern="cubano_main.org.concordion.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                          <grid>
+                            <row>
+                              <cell name="cubano" pattern="cubano_main.org.concordion.cubano.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                <grid>
+                                  <row>
+                                    <cell name="data" pattern="cubano_main.org.concordion.cubano.data.?" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                      <grid>
+                                        <row>
+                                          <cell name="JsonLoader" pattern="cubano_main.org.concordion.cubano.data.JsonLoader" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                        </row>
+                                        <row>
+                                          <cell name="FileReader" pattern="cubano_main.org.concordion.cubano.data.FileReader" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="XMLGregorianCalendarConverter" pattern="cubano_main.org.concordion.cubano.data.XMLGregorianCalendarConverter" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                        </row>
+                                      </grid>
+                                    </cell>
+                                  </row>
+                                  <row>
+                                    <cell name="driver" pattern="cubano_main.org.concordion.cubano.driver.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                      <grid>
+                                        <row>
+                                          <cell name="concordion" pattern="cubano_main.org.concordion.cubano.driver.concordion.?" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                            <grid>
+                                              <row>
+                                                <cell name="ExceptionHtmlCaptureExtension" pattern="cubano_main.org.concordion.cubano.driver.concordion.ExceptionHtmlCaptureExtension" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                              </row>
+                                              <row>
+                                                <cell name="EnvironmentExtension" pattern="cubano_main.org.concordion.cubano.driver.concordion.EnvironmentExtension" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                                <cell name="WebPageContentCard" pattern="cubano_main.org.concordion.cubano.driver.concordion.WebPageContentCard" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                              </row>
+                                            </grid>
+                                          </cell>
+                                        </row>
+                                      </grid>
+                                    </cell>
+                                  </row>
+                                  <row>
+                                    <cell name="utils" pattern="cubano_main.org.concordion.cubano.utils.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                      <grid>
+                                        <row>
+                                          <cell name="data" pattern="cubano_main.org.concordion.cubano.utils.data.?" vexpanded="false" illegal="false" visibility="public" drill="true" />
+                                        </row>
+                                        <row>
+                                          <cell name="ActionWait" pattern="cubano_main.org.concordion.cubano.utils.ActionWait" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="DefaultConfigLoader" pattern="cubano_main.org.concordion.cubano.utils.DefaultConfigLoader" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="XMLGregorianCalendarHelper" pattern="cubano_main.org.concordion.cubano.utils.XMLGregorianCalendarHelper" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                        </row>
+                                        <row>
+                                          <cell name="ActionTimer" pattern="cubano_main.org.concordion.cubano.utils.ActionTimer" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="CaselessProperties" pattern="cubano_main.org.concordion.cubano.utils.CaselessProperties" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="ConfigLoader" pattern="cubano_main.org.concordion.cubano.utils.ConfigLoader" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="Growl" pattern="cubano_main.org.concordion.cubano.utils.Growl" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="ISODateTimeFormat" pattern="cubano_main.org.concordion.cubano.utils.ISODateTimeFormat" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="TimeoutException" pattern="cubano_main.org.concordion.cubano.utils.TimeoutException" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                        </row>
+                                      </grid>
+                                    </cell>
+                                  </row>
+                                </grid>
+                              </cell>
+                            </row>
+                          </grid>
+                        </cell>
+                      </row>
+                    </grid>
+                  </cell>
+                </row>
+              </grid>
+            </cell>
+          </row>
+        </grid>
+      </cell>
+    </row>
+    <description>Top-level breakout</description>
+  </grid>
+</physical-grid-set>
