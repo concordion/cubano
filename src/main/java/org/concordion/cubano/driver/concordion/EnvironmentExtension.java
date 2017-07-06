@@ -217,7 +217,7 @@ public class EnvironmentExtension implements ConcordionExtension, SpecificationP
 
         if (!svnUrl.isEmpty()) {
             String[] repos = {
-                    "/trunk", "/tags/", "/branches/"
+                "/trunk", "/tags/", "/branches/"
             };
 
             for (String repo : repos) {

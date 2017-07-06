@@ -6,10 +6,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.TimeZone;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class ISODateTimeFormatTest {
+
+    public ISODateTimeFormatTest() {
+        TimeZone.setDefault(TimeZone.getTimeZone("NZ"));
+    }
+
     @Test
     public void custom() throws ParseException {
         LocalDateTime date;
