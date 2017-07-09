@@ -143,11 +143,6 @@ public class LocalBrowserProvider implements BrowserProvider {
         addProxyCapabilities(capabilities);
 
         if (!WebDriverConfig.getBrowserExe().isEmpty()) {
-            // TODO Should we do this way?
-//            FirefoxOptions options = new FirefoxOptions();
-//            options.setBinary(WebDriverConfig.getBrowserExe());
-//            capabilities.setCapability(FirefoxDriver.CAPABILITY, options);
-
             capabilities.setCapability(FirefoxDriver.BINARY, WebDriverConfig.getBrowserExe());
         }
 

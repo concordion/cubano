@@ -64,11 +64,11 @@
 		</sift>
 	</appender>
 
-	<logger name="org.apache.http" level="WARNING"/>
-	<logger name="org.openqa.selenium" level="WARNING"/>
-	<logger name="com.sun.activation.registries.LogSupport" level="WARNING"/>
-	<logger name="groovy.sql.Sql" level="WARNING"/>
-	<logger name="sun.net.www.protocol.http.HttpURLConnection" level="WARNING"/>
+    <logger name="org.apache.http" level="WARN"/>
+    <logger name="org.openqa.selenium" level="WARN"/>
+    <logger name="com.sun.activation.registries.LogSupport" level="WARN"/>
+    <logger name="groovy.sql.Sql" level="WARN"/>
+    <logger name="sun.net.www.protocol.http.HttpURLConnection" level="WARN"/>
 	
 	<!-- TODO: Not really what I wanted, just trying to stop info level going to console appender when running in Jenkins as
 	 this belongs in the test file -->
