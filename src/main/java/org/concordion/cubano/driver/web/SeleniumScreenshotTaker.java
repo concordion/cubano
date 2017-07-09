@@ -166,7 +166,7 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
         return "png";
     }
 
-    private static final String CHECK_IN_VEWPORT = "var rect = arguments[0].getBoundingClientRect();" +
+    private static final String CHECK_IN_VIEWPORT = "var rect = arguments[0].getBoundingClientRect();" +
             "return (" +
             "rect.top >= 0 && " +
             "rect.left >= 0 && " +
@@ -183,7 +183,7 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
         // Use the wrapped driver so not logging selenium events
         JavascriptExecutor executor = ((JavascriptExecutor) driver);
 
-        if (!(boolean) executor.executeScript(CHECK_IN_VEWPORT, element)) {
+        if (!(boolean) executor.executeScript(CHECK_IN_VIEWPORT, element)) {
             executor.executeScript("arguments[0].scrollIntoView(true);", element);
         }
 

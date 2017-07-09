@@ -93,16 +93,6 @@ public class SeleniumEventLogger implements WebDriverEventListener {
         for (int i = 0; i < stack.length; i++) {
             String className = stack[i].getClassName();
 
-            // TODO Not sure if still need this, if do need full class name
-            // if (className.contains("FluentWait") || className.contains("WebDriverWait")) {
-            // loopCount++;
-            //
-            // if (loopCount > 1) {
-            // continue;
-            // }
-            // }
-            // || className.startsWith("org.concordion.cubano.driver.web.pagefactory.PageObjectAwareHtmlElementsLoader")
-
             if (className.startsWith("com.sun.proxy.$Proxy")) {
                 proxyNames.add(className);
 
@@ -324,25 +314,17 @@ public class SeleniumEventLogger implements WebDriverEventListener {
 
     @Override
     public void beforeAlertAccept(WebDriver driver) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void afterAlertAccept(WebDriver driver) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void afterAlertDismiss(WebDriver driver) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void beforeAlertDismiss(WebDriver driver) {
-        // TODO Auto-generated method stub
-
     }
 }
