@@ -13,8 +13,8 @@ import java.util.Properties;
  * <p>
  * This class can be extended by an <code>AppConfig</code> class to provide application specific properties.
  *
- * TODO Should this be singleton? 
- * 
+ * TODO Should this be singleton?
+ *
  * @author Andrew Sumner
  */
 public class WebDriverConfig {
@@ -100,14 +100,33 @@ public class WebDriverConfig {
 
         // Proxy
         proxyIsRequired = Boolean.parseBoolean(getOptionalProperty("proxy.required"));
-        if (proxyIsRequired) {
-            proxyHost = getProperty("proxy.host");
-            proxyPort = Integer.parseInt(getProperty("proxy.port"));
 
-            proxyDomain = getOptionalProperty("proxy.domain");
-            proxyUsername = getOptionalProperty("proxy.username");
-            proxyPassword = getOptionalProperty("proxy.password");
+        proxyHost = getProperty("proxy.host", proxyIsRequired);
+        String proxyPortString = getProperty("proxy.port", proxyIsRequired);
+        if (!proxyPortString.isEmpty()) {
+            proxyPort = Integer.parseInt(proxyPortString);
         }
+
+        proxyDomain = getOptionalProperty("proxy.domain");
+        proxyUsername = getOptionalProperty("proxy.username");
+        proxyPassword = getOptionalProperty("proxy.password");
+    }
+
+    /**
+     * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
+     *
+     * @param key Id of the property to look up
+     * @param isRequired true if the property is mandatory, throws RuntimeException if true and property not present
+     * @return Property value if found, throws exception if not found
+     */
+    protected static String getProperty(String key, boolean isRequired) {
+        String value = retrieveProperty(key);
+
+        if (isRequired && value.isEmpty()) {
+            throw new RuntimeException(String.format("Unable to find property %s", key));
+        }
+
+        return value;
     }
 
     /**
@@ -117,13 +136,7 @@ public class WebDriverConfig {
      * @return Property value if found, throws exception if not found
      */
     protected static String getProperty(String key) {
-        String value = retrieveProperty(key);
-
-        if (value.isEmpty()) {
-            throw new RuntimeException(String.format("Unable to find property %s", key));
-        }
-
-        return value;
+        return getProperty(key, false);
     }
 
     /**

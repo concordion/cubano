@@ -19,7 +19,7 @@ public class WebDriverConfigTest {
             = new RestoreSystemProperties();
 
     @Test
-    public void ctor() throws Exception {
+    public void mustSetDefaultProperties() throws Exception {
         Properties properties = mock(Properties.class);
         given(properties.getProperty("environment")).willReturn("UAT");
         given(properties.getProperty("webdriver.browser")).willReturn("firefox");
@@ -31,11 +31,10 @@ public class WebDriverConfigTest {
         assertThat(config.getBrowser(), is("firefox"));
         assertThat(config.getDefaultTimeout(), is(30));
         assertThat(config.isProxyRequired(), is(false));
-
     }
 
     @Test
-    public void ctorWithProxy() {
+    public void canSetProxyProperties() {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("true");
         given(properties.getProperty("proxy.host")).willReturn("myproxyhost");
@@ -52,6 +51,27 @@ public class WebDriverConfigTest {
         assertThat(config.getProxyDomain(), is("mydomain"));
         assertThat(config.getProxyUser(), is("me"));
         assertThat(config.getProxyPassword(), is("secret"));
+    }
+
+    @Test
+    public void canSetProxyPropertiesEvenIfProxyIsFalse() {
+        // TODO Since proxy is used for multiple purposes. Suggest we need to split these different proxies out.
+        Properties properties = givenDefaultProperties();
+        given(properties.getProperty("proxy.required")).willReturn("false");
+        given(properties.getProperty("proxy.host")).willReturn("myproxyhost1");
+        given(properties.getProperty("proxy.port")).willReturn("9991");
+        given(properties.getProperty("proxy.domain")).willReturn("mydomain1");
+        given(properties.getProperty("proxy.username")).willReturn("me1");
+        given(properties.getProperty("proxy.password")).willReturn("secret1");
+
+        WebDriverConfig config = new WebDriverConfig(properties);
+
+        assertThat(config.isProxyRequired(), is(false));
+        assertThat(config.getProxyHost(), is("myproxyhost1"));
+        assertThat(config.getProxyPort(), is(9991));
+        assertThat(config.getProxyDomain(), is("mydomain1"));
+        assertThat(config.getProxyUser(), is("me1"));
+        assertThat(config.getProxyPassword(), is("secret1"));
     }
 
     @Test
