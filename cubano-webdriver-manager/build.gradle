@@ -1,0 +1,5 @@
+dependencies {
+    compile project(':cubano-webdriver')
+
+    compile 'io.github.bonigarcia:webdrivermanager:1.6.2'
+}
