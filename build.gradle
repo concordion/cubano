@@ -103,10 +103,10 @@ subprojects {
     checkstyle {
         // toolVersion = '6.19'
         ignoreFailures = true
-        configProperties = ["baseDir" : project(':').file('config/checkstyle')]
+//        configProperties = ["baseDir" : project(':').file('../config/checkstyle')]
 
         // Using default location /config/checkstyle/checkstyle.xml
-        //configFile = new File("checkstyle.xml")
+        configFile = new File("${rootDir}/config/checkstyle/checkstyle.xml")
 
         // Exclude other source sets
         //sourceSets = [sourceSets.main, sourceSets.test]

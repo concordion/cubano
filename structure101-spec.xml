@@ -38,7 +38,7 @@
             <cell name="cubano-httpeasy_main" pattern="cubano-httpeasy_main.*" vexpanded="false" illegal="false" visibility="public" drill="true">
               <grid>
                 <row>
-                  <cell name="org" pattern="cubano-httpeasy_main.org.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                  <cell name="org" pattern="cubano-httpeasy_main.org.*" vexpanded="false" illegal="false" visibility="public" drill="true">
                     <grid>
                       <row>
                         <cell name="concordion" pattern="cubano-httpeasy_main.org.concordion.*" vexpanded="true" illegal="false" visibility="public" drill="true">
@@ -196,6 +196,49 @@
                                             <grid>
                                               <row>
                                                 <cell name="HttpDownloader" pattern="cubano-http_main.org.concordion.cubano.driver.http.HttpDownloader" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                              </row>
+                                            </grid>
+                                          </cell>
+                                        </row>
+                                      </grid>
+                                    </cell>
+                                  </row>
+                                </grid>
+                              </cell>
+                            </row>
+                          </grid>
+                        </cell>
+                      </row>
+                    </grid>
+                  </cell>
+                </row>
+              </grid>
+            </cell>
+            <cell name="cubano-webdriver-manager_main" pattern="cubano-webdriver-manager_main.*" vexpanded="false" illegal="false" visibility="public" drill="true">
+              <grid>
+                <row>
+                  <cell name="org" pattern="cubano-webdriver-manager_main.org.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                    <grid>
+                      <row>
+                        <cell name="concordion" pattern="cubano-webdriver-manager_main.org.concordion.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                          <grid>
+                            <row>
+                              <cell name="cubano" pattern="cubano-webdriver-manager_main.org.concordion.cubano.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                <grid>
+                                  <row>
+                                    <cell name="driver" pattern="cubano-webdriver-manager_main.org.concordion.cubano.driver.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                      <grid>
+                                        <row>
+                                          <cell name="web" pattern="cubano-webdriver-manager_main.org.concordion.cubano.driver.web.*" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                            <grid>
+                                              <row>
+                                                <cell name="provider" pattern="cubano-webdriver-manager_main.org.concordion.cubano.driver.web.provider.?" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                                  <grid>
+                                                    <row>
+                                                      <cell name="LocalBrowserProvider" pattern="cubano-webdriver-manager_main.org.concordion.cubano.driver.web.provider.LocalBrowserProvider" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                                    </row>
+                                                  </grid>
+                                                </cell>
                                               </row>
                                             </grid>
                                           </cell>
