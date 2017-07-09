@@ -3,7 +3,7 @@ package org.concordion.cubano.driver.web;
 import org.concordion.cubano.driver.web.pagefactory.PageObjectAwareHtmlElementsLoader;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
-import org.concordion.cubano.utils.Config;
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -181,9 +181,9 @@ public class Browser {
      */
     public static BrowserProvider getConfiguredBrowser() {
         try {
-            return (BrowserProvider) Class.forName(Config.getBrowserProvider()).newInstance();
+            return (BrowserProvider) Class.forName(WebDriverConfig.getBrowserProvider()).newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new RuntimeException("Unable to create class " + Config.getBrowserProvider(), e);
+            throw new RuntimeException("Unable to create class " + WebDriverConfig.getBrowserProvider(), e);
         }
 
     }

@@ -1,20 +1,23 @@
-package org.concordion.cubano.utils;
+package org.concordion.cubano.driver.web.config;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import org.concordion.cubano.utils.ConfigLoader;
+import org.concordion.cubano.utils.DefaultConfigLoader;
+
 import java.util.Properties;
 
 /**
- * Reads and supplies properties from the config.properties file that are required by the framework.
+ * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
  * <p>
- * This class can be extended by an AppConfig class to provide application specific properties.
+ * An optional <code>user.properties</code> file can set user specific values and allow overriding of defaults.
+ * The <code>user.properties</code> file should NEVER be checked into source control.
+ * <p>
+ * This class can be extended by an <code>AppConfig</code> class to provide application specific properties.
+ *
+ * TODO Should this be singleton?
  *
  * @author Andrew Sumner
  */
-public class Config {
-    private static final String CONFIG_FILE = "config.properties";
-    private static final String USER_CONFIG_FILE = "user.properties";
+public class WebDriverConfig {
 
     private static Properties properties;
     private static Properties userProperties = null;
@@ -41,46 +44,28 @@ public class Config {
     private static String proxyUsername;
     private static String proxyPassword;
 
-
-    /** Ensure properties have been loaded before any property is used. */
-    static {
-        synchronized (Config.class) {
-            properties = loadFile(CONFIG_FILE);
-
-            if (new File(USER_CONFIG_FILE).exists()) {
-                userProperties = loadFile(USER_CONFIG_FILE);
-            }
-
-            loadCommonProperties();
-        }
+    /**
+     * Prevent this class from being constructed.
+     */
+    protected WebDriverConfig() {
+        this(new DefaultConfigLoader());
     }
 
     /**
      * Prevent this class from being constructed.
      */
-    protected Config() {
+    protected WebDriverConfig(ConfigLoader loader) {
+        this(loader.getProperties(), loader.getUserProperties());
     }
 
-    /**
-     * Read properties from file, will ignoring the case of properties.
-     *
-     * @param filename Name of file to read, expected that it will be located in the projects root folder
-     * @return {@link CaselessProperties}
-     */
-    private static Properties loadFile(final String filename) {
-        Properties prop = new CaselessProperties();
+    protected WebDriverConfig(Properties properties) {
+        this(properties, null);
+    }
 
-        // if (!new File(filename).exists()) {
-        // return prop;
-        // }
-
-        try (InputStream input = new FileInputStream(filename);) {
-            prop.load(input);
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to read properties file.", e);
-        }
-
-        return prop;
+    protected WebDriverConfig(Properties properties, Properties userProperties) {
+        this.properties = properties;
+        this.userProperties = userProperties;
+        loadCommonProperties();
     }
 
     private static void loadCommonProperties() {
@@ -114,9 +99,13 @@ public class Config {
         System.setProperty("webdriver.timeouts.implicitlywait", getOptionalProperty("webdriver.timeouts.implicitlywait", "0"));
 
         // Proxy
-        proxyIsRequired = Boolean.parseBoolean(getProperty("proxy.required"));
-        proxyHost = getProperty("proxy.host");
-        proxyPort = Integer.parseInt(getProperty("proxy.port"));
+        proxyIsRequired = Boolean.parseBoolean(getOptionalProperty("proxy.required"));
+
+        proxyHost = getProperty("proxy.host", proxyIsRequired);
+        String proxyPortString = getProperty("proxy.port", proxyIsRequired);
+        if (!proxyPortString.isEmpty()) {
+            proxyPort = Integer.parseInt(proxyPortString);
+        }
 
         proxyDomain = getOptionalProperty("proxy.domain");
         proxyUsername = getOptionalProperty("proxy.username");
@@ -127,16 +116,27 @@ public class Config {
      * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
      *
      * @param key Id of the property to look up
+     * @param isRequired true if the property is mandatory, throws RuntimeException if true and property not present
      * @return Property value if found, throws exception if not found
      */
-    protected static String getProperty(String key) {
+    protected static String getProperty(String key, boolean isRequired) {
         String value = retrieveProperty(key);
 
-        if (value.isEmpty()) {
+        if (isRequired && value.isEmpty()) {
             throw new RuntimeException(String.format("Unable to find property %s", key));
         }
 
         return value;
+    }
+
+    /**
+     * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
+     *
+     * @param key Id of the property to look up
+     * @return Property value if found, throws exception if not found
+     */
+    protected static String getProperty(String key) {
+        return getProperty(key, false);
     }
 
     /**
@@ -206,14 +206,6 @@ public class Config {
     }
 
     /**
-     * Release properties lists held by this class.
-     */
-    protected static void releaseProperties() {
-        properties = null;
-        userProperties = null;
-    }
-
-    /**
      * @return Configured environment.
      */
     public static String getEnvironment() {
@@ -250,8 +242,18 @@ public class Config {
      * Activate developer plugins - FireFox only browser supported currently and will add FireBug and FirePath.
      *
      * @return true or false
+     * @deprecated use shouldActivatePlugins
      */
     public static boolean activatePlugins() {
+        return shouldActivatePlugins();
+    }
+
+    /**
+     * Activate developer plugins - FireFox only browser supported currently and will add FireBug and FirePath.
+     *
+     * @return true or false
+     */
+    public static boolean shouldActivatePlugins() {
         return activatePlugins;
     }
 

@@ -3,7 +3,7 @@ package org.concordion.cubano.driver.web.provider;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import org.concordion.cubano.utils.Config;
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -42,8 +42,8 @@ public class LocalBrowserProvider implements BrowserProvider {
      * Reads in configuration from the configuration file.
      */
     public LocalBrowserProvider() {
-        browser = Config.getBrowser();
-        browserSize = Config.getBrowserSize();
+        browser = WebDriverConfig.getBrowser();
+        browserSize = WebDriverConfig.getBrowserSize();
         maximised = true;
     }
 
@@ -105,9 +105,9 @@ public class LocalBrowserProvider implements BrowserProvider {
 
         addProxyCapabilities(capabilities);
 
-        if (!Config.getBrowserExe().isEmpty()) {
+        if (!WebDriverConfig.getBrowserExe().isEmpty()) {
             ChromeOptions options = new ChromeOptions();
-            options.setBinary(Config.getBrowserExe());
+            options.setBinary(WebDriverConfig.getBrowserExe());
             capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         }
 
@@ -142,16 +142,16 @@ public class LocalBrowserProvider implements BrowserProvider {
 
         addProxyCapabilities(capabilities);
 
-        if (!Config.getBrowserExe().isEmpty()) {
+        if (!WebDriverConfig.getBrowserExe().isEmpty()) {
             // TODO Should we do this way?
 //            FirefoxOptions options = new FirefoxOptions();
-//            options.setBinary(Config.getBrowserExe());
+//            options.setBinary(WebDriverConfig.getBrowserExe());
 //            capabilities.setCapability(FirefoxDriver.CAPABILITY, options);
 
-            capabilities.setCapability(FirefoxDriver.BINARY, Config.getBrowserExe());
+            capabilities.setCapability(FirefoxDriver.BINARY, WebDriverConfig.getBrowserExe());
         }
 
-        if (Config.activatePlugins()) {
+        if (WebDriverConfig.shouldActivatePlugins()) {
             FirefoxProfile profile = new FirefoxProfile();
 
             try {
@@ -204,9 +204,9 @@ public class LocalBrowserProvider implements BrowserProvider {
 
         addProxyCapabilities(capabilities);
 
-        if (!Config.getBrowserExe().isEmpty()) {
+        if (!WebDriverConfig.getBrowserExe().isEmpty()) {
             OperaOptions options = new OperaOptions();
-            options.setBinary(Config.getBrowserExe());
+            options.setBinary(WebDriverConfig.getBrowserExe());
             capabilities.setCapability(OperaOptions.CAPABILITY, options);
         }
 
@@ -232,12 +232,12 @@ public class LocalBrowserProvider implements BrowserProvider {
      * @param capabilities Desired capabilities
      */
     protected void addProxyCapabilities(DesiredCapabilities capabilities) {
-        if (!Config.isProxyRequired()) {
+        if (!WebDriverConfig.isProxyRequired()) {
             return;
         }
 
-        String browserProxy = Config.getProxyHost() + ":" + Config.getProxyPort();
-        String browserNoProxyList = Config.getNoProxyList();
+        String browserProxy = WebDriverConfig.getProxyHost() + ":" + WebDriverConfig.getProxyPort();
+        String browserNoProxyList = WebDriverConfig.getNoProxyList();
 
         final org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
         proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
