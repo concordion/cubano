@@ -1,5 +1,4 @@
 # cubano
-Test automation framework for [Concordion](http://concordion.org).
 
 Cubano is a "ready-made" framework that provides everything at your fingertips. It's ideal for someone new to testing who wants to bring their software delivery team together around living documentation.
 
