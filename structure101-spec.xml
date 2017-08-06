@@ -157,11 +157,11 @@
                                     <cell name="utils" pattern="cubano-config_main.org.concordion.cubano.utils.?" vexpanded="true" illegal="false" visibility="public" drill="true">
                                       <grid>
                                         <row>
-                                          <cell name="DefaultConfigLoader" pattern="cubano-config_main.org.concordion.cubano.utils.DefaultConfigLoader" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="DefaultConfigLoader" pattern="cubano-config_main.DefaultConfigLoader" vexpanded="false" illegal="false" visibility="public" drill="false" />
                                         </row>
                                         <row>
-                                          <cell name="CaselessProperties" pattern="cubano-config_main.org.concordion.cubano.utils.CaselessProperties" vexpanded="false" illegal="false" visibility="public" drill="false" />
-                                          <cell name="ConfigLoader" pattern="cubano-config_main.org.concordion.cubano.utils.ConfigLoader" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="CaselessProperties" pattern="cubano-config_main.CaselessProperties" vexpanded="false" illegal="false" visibility="public" drill="false" />
+                                          <cell name="ConfigLoader" pattern="cubano-config_main.ConfigLoader" vexpanded="false" illegal="false" visibility="public" drill="false" />
                                         </row>
                                       </grid>
                                     </cell>

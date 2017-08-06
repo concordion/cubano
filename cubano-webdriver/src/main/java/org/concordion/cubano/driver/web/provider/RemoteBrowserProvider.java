@@ -89,16 +89,18 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
             throw new RuntimeException(e.getMessage(), e);
         }
 
-        if (WebDriverConfig.isProxyRequired()) {
+        WebDriverConfig config = WebDriverConfig.getInstance();
+
+        if (config.isProxyRequired()) {
             HttpClientBuilder builder = HttpClientBuilder.create();
 
-            HttpHost proxy = new HttpHost(WebDriverConfig.getProxyHost(), WebDriverConfig.getProxyPort());
+            HttpHost proxy = new HttpHost(config.getProxyHost(), config.getProxyPort());
 
             CredentialsProvider credsProvider = new BasicCredentialsProvider();
 
             credsProvider.setCredentials(
-                    new AuthScope(WebDriverConfig.getProxyHost(), WebDriverConfig.getProxyPort()),
-                    new NTCredentials(WebDriverConfig.getProxyUser(), WebDriverConfig.getProxyPassword(), getWorkstation(), WebDriverConfig.getProxyDomain()));
+                    new AuthScope(config.getProxyHost(), config.getProxyPort()),
+                    new NTCredentials(config.getProxyUser(), config.getProxyPassword(), getWorkstation(), config.getProxyDomain()));
             if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
                 credsProvider.setCredentials(
                         new AuthScope(url.getHost(), (url.getPort() > 0 ? url.getPort() : url.getDefaultPort())),

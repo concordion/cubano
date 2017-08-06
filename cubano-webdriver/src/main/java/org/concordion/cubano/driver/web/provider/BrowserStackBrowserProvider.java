@@ -16,7 +16,7 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
      * Constructor. Uses configuration for browser specified in the configuration file.
      */
     public BrowserStackBrowserProvider() {
-        String browser = WebDriverConfig.getBrowser();
+        String browser = WebDriverConfig.getInstance().getBrowser();
 
         if (browser == null) {
             browser = "";
@@ -74,7 +74,9 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
 
     @Override
     protected String getRemoteDriverUrl() {
-        return REMOTE_URL.replace("[USER_NAME]", WebDriverConfig.getRemoteUserName()).replace("[API_KEY]", WebDriverConfig.getRemoteApiKey());
+        return REMOTE_URL.replace("[USER_NAME]",
+                WebDriverConfig.getInstance().getRemoteUserName()).replace("[API_KEY]",
+                WebDriverConfig.getInstance().getRemoteApiKey());
     }
 
     /**
