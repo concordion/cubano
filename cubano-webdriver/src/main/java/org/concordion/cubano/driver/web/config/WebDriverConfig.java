@@ -84,7 +84,7 @@ public class WebDriverConfig {
         }
 
         // Browser
-        browserProvider = getOptionalProperty("webdriver.browserprovider", "org.concordion.cubano.driver.web.provider.local.LocalBrowserProvider");
+        browserProvider = getOptionalProperty("webdriver.browserprovider", "org.concordion.cubano.driver.web.provider.LocalBrowserProvider");
         browserType = System.getProperty("browser");
         if (browserType == null) {
             browserType = getProperty("webdriver.browser");
