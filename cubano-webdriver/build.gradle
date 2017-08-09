@@ -21,7 +21,7 @@ dependencies {
 
     // TODO remove dependencies
     compile 'org.concordion:concordion:2.1.0'
-    compile 'org.concordion:concordion-logback-extension:2.0.0-SNAPSHOT' {
+    compile('org.concordion:concordion-logback-extension:2.0.0-SNAPSHOT') {
         exclude group: 'org.apache.commons', module: 'commons-io'
     }
     compile 'org.concordion:concordion-storyboard-extension:2.0.0-SNAPSHOT'
