@@ -9,7 +9,6 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -37,19 +36,15 @@ public class WebDriverConfigTest {
     public void canSetProxyProperties() {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("true");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost");
-        given(properties.getProperty("proxy.port")).willReturn("9999");
-        given(properties.getProperty("proxy.domain")).willReturn("mydomain");
-        given(properties.getProperty("proxy.username")).willReturn("me");
+        given(properties.getProperty("proxy.host")).willReturn("myproxyhost:9999");
+        given(properties.getProperty("proxy.username")).willReturn("mydomain\\me");
         given(properties.getProperty("proxy.password")).willReturn("secret");
 
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.isProxyRequired(), is(true));
-        assertThat(config.getProxyHost(), is("myproxyhost"));
-        assertThat(config.getProxyPort(), is(9999));
-        assertThat(config.getProxyDomain(), is("mydomain"));
-        assertThat(config.getProxyUser(), is("me"));
+        assertThat(config.getProxyHost(), is("myproxyhost:9999"));
+        assertThat(config.getProxyUser(), is("mydomain\\me"));
         assertThat(config.getProxyPassword(), is("secret"));
     }
 
@@ -59,8 +54,6 @@ public class WebDriverConfigTest {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("false");
         given(properties.getProperty("proxy.host")).willReturn("myproxyhost1");
-        given(properties.getProperty("proxy.port")).willReturn("9991");
-        given(properties.getProperty("proxy.domain")).willReturn("mydomain1");
         given(properties.getProperty("proxy.username")).willReturn("me1");
         given(properties.getProperty("proxy.password")).willReturn("secret1");
 
@@ -68,8 +61,6 @@ public class WebDriverConfigTest {
 
         assertThat(config.isProxyRequired(), is(false));
         assertThat(config.getProxyHost(), is("myproxyhost1"));
-        assertThat(config.getProxyPort(), is(9991));
-        assertThat(config.getProxyDomain(), is("mydomain1"));
         assertThat(config.getProxyUser(), is("me1"));
         assertThat(config.getProxyPassword(), is("secret1"));
     }
@@ -78,19 +69,16 @@ public class WebDriverConfigTest {
     public void userPropertiesOverrideConfigProperties() {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("false");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost");
-        given(properties.getProperty("proxy.port")).willReturn("9999");
+        given(properties.getProperty("proxy.host")).willReturn("myproxyhost:9999");
 
         Properties userProperties = mock(Properties.class);
         given(userProperties.getProperty("proxy.required")).willReturn("true");
-        given(userProperties.getProperty("proxy.host")).willReturn("myotherproxyhost");
-        given(userProperties.getProperty("proxy.port")).willReturn("6666");
+        given(userProperties.getProperty("proxy.host")).willReturn("myotherproxyhost:6666");
 
         WebDriverConfig config = new WebDriverConfig(properties, userProperties);
 
         assertThat(config.isProxyRequired(), is(true));
-        assertThat(config.getProxyHost(), is("myotherproxyhost"));
-        assertThat(config.getProxyPort(), is(6666));
+        assertThat(config.getProxyHost(), is("myotherproxyhost:6666"));
     }
 
     @Test
