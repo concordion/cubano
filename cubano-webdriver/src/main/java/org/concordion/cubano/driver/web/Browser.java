@@ -181,9 +181,9 @@ public class Browser {
      */
     public static BrowserProvider getConfiguredBrowser() {
         try {
-            return (BrowserProvider) Class.forName(WebDriverConfig.getBrowserProvider()).newInstance();
+            return (BrowserProvider) Class.forName(WebDriverConfig.getInstance().getBrowserProvider()).newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            throw new RuntimeException("Unable to create class " + WebDriverConfig.getBrowserProvider(), e);
+            throw new RuntimeException("Unable to create class " + WebDriverConfig.getInstance().getBrowserProvider(), e);
         }
 
     }

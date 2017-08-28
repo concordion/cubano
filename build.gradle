@@ -79,17 +79,6 @@ subprojects {
         compile 'org.slf4j:slf4j-api:1.7.18'
         compile 'ch.qos.logback:logback-classic:1.2.3'
 
-        // Concordion 
-        compile 'org.concordion:concordion:2.1.0'
-        compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
-        compile 'org.concordion:concordion-timestamp-formatter-extension:1.1.2'
-        compile 'org.concordion:concordion-run-totals-extension:1.1.0'
-        compile 'org.concordion:concordion-logging-tooltip-extension:1.1.2'
-        compile 'org.concordion:concordion-embed-extension:1.1.2'
-        compile 'org.concordion:concordion-executeonlyif-extension:0.2.1'
-        compile 'org.concordion:concordion-logback-extension:2.0.0-SNAPSHOT'
-        compile 'org.concordion:concordion-storyboard-extension:2.0.0-SNAPSHOT'
-
         // JUnit
         testCompile 'junit:junit:4.12'
         testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'

@@ -3,7 +3,6 @@ package org.concordion.cubano.driver.web;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.ext.ScreenshotTaker;
 import org.concordion.ext.StoryboardMarkerFactory;
@@ -62,7 +61,7 @@ public class PageHelper {
      * @param tag            An optional tag to be associated with the snapshot
      */
     public void triggerCheckPage(WebElement triggerElement, String tag) {
-        throw new NotImplementedException();
+        throw new UnsupportedOperationException();
 
         // PageEvent event = new PageEvent(pageObject, triggerElement, tag);
         //

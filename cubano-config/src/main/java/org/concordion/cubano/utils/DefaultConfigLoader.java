@@ -43,7 +43,7 @@ public class DefaultConfigLoader implements ConfigLoader {
 
     @Override
     public Properties getProperties() {
-        return userProperties;
+        return properties;
     }
 
     @Override

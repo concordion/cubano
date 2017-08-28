@@ -18,31 +18,38 @@ import java.util.Properties;
  * @author Andrew Sumner
  */
 public class WebDriverConfig {
-
-    private static Properties properties;
-    private static Properties userProperties = null;
+    private Properties properties;
+    private Properties userProperties = null;
 
     // Environment
-    private static String environment = null;
+    private String environment = null;
 
     // Browser 
-    private static String browserProvider;
-    private static String browserType;
-    private static String browserSize;
-    private static int browserDefaultTimeout;
+    private String browserProvider;
+    private String browserType;
+    private String browserSize;
+    private int browserDefaultTimeout;
 
-    private static String localBrowserExe;
-    private static boolean activatePlugins;
-    private static String remoteUserName;
-    private static String remoteApiKey;
+    private String localBrowserExe;
+    private boolean activatePlugins;
+    private String remoteUserName;
+    private String remoteApiKey;
 
     // Proxy
-    private static boolean proxyIsRequired;
-    private static String proxyHost;
-    private static int proxyPort;
-    private static String proxyDomain;
-    private static String proxyUsername;
-    private static String proxyPassword;
+    private boolean proxyIsRequired;
+    private String proxyHost;
+    private int proxyPort;
+    private String proxyDomain;
+    private String proxyUsername;
+    private String proxyPassword;
+
+    private static class WDCHolder {
+        static final WebDriverConfig INSTANCE = new WebDriverConfig();
+    }
+
+    public static WebDriverConfig getInstance() {
+        return WDCHolder.INSTANCE;
+    }
 
     /**
      * Prevent this class from being constructed.
@@ -68,7 +75,7 @@ public class WebDriverConfig {
         loadCommonProperties();
     }
 
-    private static void loadCommonProperties() {
+    private void loadCommonProperties() {
         // Jenkins might supply value
         environment = System.getProperty("environment", "").toLowerCase();
 
@@ -77,7 +84,7 @@ public class WebDriverConfig {
         }
 
         // Browser
-        browserProvider = getOptionalProperty("webdriver.browserprovider", "org.concordion.cubano.driver.web.provider.local.LocalBrowserProvider");
+        browserProvider = getOptionalProperty("webdriver.browserprovider", "org.concordion.cubano.driver.web.provider.LocalBrowserProvider");
         browserType = System.getProperty("browser");
         if (browserType == null) {
             browserType = getProperty("webdriver.browser");
@@ -119,7 +126,7 @@ public class WebDriverConfig {
      * @param isRequired true if the property is mandatory, throws RuntimeException if true and property not present
      * @return Property value if found, throws exception if not found
      */
-    protected static String getProperty(String key, boolean isRequired) {
+    protected String getProperty(String key, boolean isRequired) {
         String value = retrieveProperty(key);
 
         if (isRequired && value.isEmpty()) {
@@ -135,7 +142,7 @@ public class WebDriverConfig {
      * @param key Id of the property to look up
      * @return Property value if found, throws exception if not found
      */
-    protected static String getProperty(String key) {
+    protected String getProperty(String key) {
         return getProperty(key, false);
     }
 
@@ -145,7 +152,7 @@ public class WebDriverConfig {
      * @param key Id of the property to look up
      * @return Property value if found, empty string if not found
      */
-    protected static String getOptionalProperty(String key) {
+    protected String getOptionalProperty(String key) {
         return retrieveProperty(key);
     }
 
@@ -156,7 +163,7 @@ public class WebDriverConfig {
      * @param defaultValue value to use if property is not found
      * @return Property value if found, defaultValue if not found
      */
-    protected static String getOptionalProperty(String key, String defaultValue) {
+    protected String getOptionalProperty(String key, String defaultValue) {
         String value = retrieveProperty(key);
 
         if (value.isEmpty()) {
@@ -166,7 +173,7 @@ public class WebDriverConfig {
         return value;
     }
 
-    private static String retrieveProperty(String key) {
+    private String retrieveProperty(String key) {
         String value = null;
 
         // prefix = System.getProperty("user.name").toLowerCase();
@@ -185,7 +192,7 @@ public class WebDriverConfig {
         return value;
     }
 
-    private static String retrievePropertyFrom(Properties properties, String key) {
+    private String retrievePropertyFrom(Properties properties, String key) {
         String value = null;
 
         // Attempt to get setting for environment
@@ -208,20 +215,20 @@ public class WebDriverConfig {
     /**
      * @return Configured environment.
      */
-    public static String getEnvironment() {
+    public String getEnvironment() {
         return environment;
     }
 
     // Browser
-    private static boolean useLocalBrowser() {
+    private boolean useLocalBrowser() {
         return !browserType.contains(" ");
     }
 
-    public static String getBrowser() {
+    public String getBrowser() {
         return browserType;
     }
 
-    public static String getBrowserProvider() {
+    public String getBrowserProvider() {
         return browserProvider;
     }
 
@@ -230,7 +237,7 @@ public class WebDriverConfig {
      *
      * @return Path to browser executable
      */
-    public static String getBrowserExe() {
+    public String getBrowserExe() {
         if (localBrowserExe != null && !localBrowserExe.isEmpty()) {
             return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));
         }
@@ -244,7 +251,7 @@ public class WebDriverConfig {
      * @return true or false
      * @deprecated use shouldActivatePlugins
      */
-    public static boolean activatePlugins() {
+    public boolean activatePlugins() {
         return shouldActivatePlugins();
     }
 
@@ -253,7 +260,7 @@ public class WebDriverConfig {
      *
      * @return true or false
      */
-    public static boolean shouldActivatePlugins() {
+    public boolean shouldActivatePlugins() {
         return activatePlugins;
     }
 
@@ -262,7 +269,7 @@ public class WebDriverConfig {
      *
      * @return Size in wxh format
      */
-    public static String getBrowserSize() {
+    public String getBrowserSize() {
         return browserSize;
     }
 
@@ -271,7 +278,7 @@ public class WebDriverConfig {
      *
      * @return timeout
      */
-    public static int getDefaultTimeout() {
+    public int getDefaultTimeout() {
         return browserDefaultTimeout;
     }
 
@@ -280,7 +287,7 @@ public class WebDriverConfig {
      *
      * @return Username
      */
-    public static String getRemoteUserName() {
+    public String getRemoteUserName() {
         return remoteUserName;
     }
 
@@ -289,7 +296,7 @@ public class WebDriverConfig {
      *
      * @return Api Key
      */
-    public static String getRemoteApiKey() {
+    public String getRemoteApiKey() {
         return remoteApiKey;
     }
 
@@ -298,7 +305,7 @@ public class WebDriverConfig {
      *
      * @return true or false
      */
-    public static boolean isProxyRequired() {
+    public boolean isProxyRequired() {
         return proxyIsRequired;
     }
 
@@ -307,7 +314,7 @@ public class WebDriverConfig {
      *
      * @return host
      */
-    public static String getProxyHost() {
+    public String getProxyHost() {
         return proxyHost;
     }
 
@@ -316,7 +323,7 @@ public class WebDriverConfig {
      *
      * @return port
      */
-    public static int getProxyPort() {
+    public int getProxyPort() {
         return proxyPort;
     }
 
@@ -325,7 +332,7 @@ public class WebDriverConfig {
      *
      * @return domain
      */
-    public static String getProxyDomain() {
+    public String getProxyDomain() {
         if (proxyDomain == null) {
             throw new RuntimeException("proxy.domain entry must exist in the user.properties file in the root folder");
         }
@@ -338,7 +345,7 @@ public class WebDriverConfig {
      *
      * @return username
      */
-    public static String getProxyUser() {
+    public String getProxyUser() {
         if (proxyUsername == null) {
             throw new RuntimeException("proxy.username entry must exist in the user.properties file in the root folder");
         }
@@ -351,7 +358,7 @@ public class WebDriverConfig {
      *
      * @return user
      */
-    public static String getProxyPassword() {
+    public String getProxyPassword() {
         if (proxyPassword == null) {
             throw new RuntimeException("proxy.proxypassword entry must exist in the user.properties file in the root folder");
         }
@@ -362,7 +369,7 @@ public class WebDriverConfig {
     /**
      * @return Proxy bypass (noproxy) addresses, eg: "localhost, 127.0.0.1".
      */
-    public static String getNoProxyList() {
+    public String getNoProxyList() {
         return "localhost, 127.0.0.1";
     }
 
