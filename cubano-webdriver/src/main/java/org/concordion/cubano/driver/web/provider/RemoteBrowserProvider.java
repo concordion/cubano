@@ -142,7 +142,23 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
         }
         
         WebDriverConfig config = WebDriverConfig.getInstance();
-    	
+
+// TODO Some research into standards would be advised here.  Seems to be a bit of a free for all around standards.
+// A quick search came up with these usages:
+//              http_proxy='http://username:password@abc.com:port/'
+//              https_proxy='https://username:password@xyz.com:port/'
+//                 
+//         		http_proxy = https://user_id:password@your_proxy:your_port
+//     			http_proxy_user = user_id:password
+//     			https_proxy = https:// user_id:password0@your_proxy:your_port
+//     			https_proxy_user = user_id:password
+//     			ftp_proxy = user_id:password@your_proxy:your_port
+//                 		
+//              -Dhttp.proxyUser=atlaspirate 
+//         		-Dhttp.proxyPassword=yarrrrr 
+//         		-Dhttps.proxyUser=atlaspirate 
+//         		-Dhttps.proxyPassword=yarrrrr
+
         try {
         	String username = null;
         	String password = null;
@@ -154,13 +170,15 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
                 username = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
                 password = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
             }
-            
-            if (username == null) {
-            	username = isNullOrEmpty(config.getProxyUser()) ? System.getenv("HTTPS_PROXY_USER") : config.getProxyUser();
-            }
-            if (password == null) {
-            	password = isNullOrEmpty(config.getProxyPassword()) ? System.getenv("HTTPS_PROXY_PASS") : config.getProxyPassword();
-            }
+    		
+            String envProxyUser = System.getenv("HTTPS_PROXY_USER");
+            String envProxyPass = System.getenv("HTTPS_PROXY_PASS");
+            username = (envProxyUser != null) ? envProxyUser : username;
+            password = (envProxyPass != null) ? envProxyPass : password;
+
+            // apply option value
+            username = (config.getProxyUser() != null) ? config.getProxyUser() : username;
+            password = (config.getProxyPassword() != null) ? config.getProxyPassword() : password;
 
             if (username == null) {
                 return null;
