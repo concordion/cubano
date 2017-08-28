@@ -18,6 +18,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import io.github.bonigarcia.wdm.BrowserManager;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.EdgeDriverManager;
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
@@ -99,7 +100,7 @@ public class LocalBrowserProvider implements BrowserProvider {
      * @return Starts Chrome driver manager and creates a new WebDriver instance.
      */
     protected WebDriver createChromeDriver() {
-        ChromeDriverManager.getInstance().setup();
+    	setupBrowserManager(ChromeDriverManager.getInstance());
 
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
 
@@ -118,7 +119,7 @@ public class LocalBrowserProvider implements BrowserProvider {
      * @return Starts Edge driver manager and creates a new WebDriver instance.
      */
     protected WebDriver createEdgeDriver() {
-        EdgeDriverManager.getInstance().setup();
+    	setupBrowserManager(EdgeDriverManager.getInstance());
 
         DesiredCapabilities capabilities = DesiredCapabilities.edge();
 
@@ -136,7 +137,7 @@ public class LocalBrowserProvider implements BrowserProvider {
      * @return Starts FireFox driver manager and creates a new WebDriver instance.
      */
     protected WebDriver createFireFoxDriver() {
-        FirefoxDriverManager.getInstance().setup();
+    	setupBrowserManager(FirefoxDriverManager.getInstance());
 
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
 
@@ -174,7 +175,7 @@ public class LocalBrowserProvider implements BrowserProvider {
      * @return Starts Internet Explorer driver manager and creates a new WebDriver instance.
      */
     protected WebDriver createInternetExplorerDriver() {
-        InternetExplorerDriverManager.getInstance().setup();
+    	setupBrowserManager(InternetExplorerDriverManager.getInstance());
 
         DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
 
@@ -193,7 +194,7 @@ public class LocalBrowserProvider implements BrowserProvider {
      * @return Starts Opera driver manager and creates a new WebDriver instance.
      */
     protected WebDriver createOperaDriver() {
-        OperaDriverManager.getInstance().setup();
+    	setupBrowserManager(OperaDriverManager.getInstance());
 
         DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
 
@@ -212,7 +213,7 @@ public class LocalBrowserProvider implements BrowserProvider {
      * @return Starts PhantomJs driver manager and creates a new WebDriver instance.
      */
     protected WebDriver createPhantomJsDriver() {
-        PhantomJsDriverManager.getInstance().setup();
+    	setupBrowserManager(PhantomJsDriverManager.getInstance());
 
         DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
 
@@ -221,6 +222,16 @@ public class LocalBrowserProvider implements BrowserProvider {
         return new PhantomJSDriver(capabilities);
     }
 
+    private void setupBrowserManager(BrowserManager instance) {
+    	if (WebDriverConfig.getInstance().getProxyHost() != null) {
+    		instance.proxy(WebDriverConfig.getInstance().getProxyHost());
+    		instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
+    		instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
+        }
+        
+    	instance.setup();
+    }
+    
     /**
      * Add proxy settings to desired capabilities if specified in config file.
      *
@@ -232,7 +243,7 @@ public class LocalBrowserProvider implements BrowserProvider {
             return;
         }
 
-        String browserProxy = config.getProxyHost() + ":" + config.getProxyPort();
+        String browserProxy = config.getProxyHost();
         String browserNoProxyList = config.getNoProxyList();
 
         final org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();

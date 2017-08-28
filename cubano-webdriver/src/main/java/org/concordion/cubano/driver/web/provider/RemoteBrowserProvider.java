@@ -2,9 +2,11 @@ package org.concordion.cubano.driver.web.provider;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.concordion.cubano.driver.web.RemoteHttpClientFactory;
@@ -16,13 +18,17 @@ import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringTokenizer;
 
 /**
  * Provides everything required to start up a remote browser (desktop or device) - apart from the where to connect.
@@ -93,22 +99,13 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
 
         if (config.isProxyRequired()) {
             HttpClientBuilder builder = HttpClientBuilder.create();
-
-            HttpHost proxy = new HttpHost(config.getProxyHost(), config.getProxyPort());
-
-            CredentialsProvider credsProvider = new BasicCredentialsProvider();
-
-            credsProvider.setCredentials(
-                    new AuthScope(config.getProxyHost(), config.getProxyPort()),
-                    new NTCredentials(config.getProxyUser(), config.getProxyPassword(), getWorkstation(), config.getProxyDomain()));
-            if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
-                credsProvider.setCredentials(
-                        new AuthScope(url.getHost(), (url.getPort() > 0 ? url.getPort() : url.getDefaultPort())),
-                        new UsernamePasswordCredentials(url.getUserInfo()));
-            }
-
+            
+            URL proxyURL = getProxyUrl();
+                        
+            HttpHost proxy = new HttpHost(proxyURL.getHost(), proxyURL.getPort());
+            
             builder.setProxy(proxy);
-            builder.setDefaultCredentialsProvider(credsProvider);
+            builder.setDefaultCredentialsProvider(createBasicCredentialsProvider(proxyURL));
 
             Factory factory = new RemoteHttpClientFactory(builder);
 
@@ -117,6 +114,83 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
             return new RemoteWebDriver(executor, getCapabilites());
         } else {
             return new RemoteWebDriver(url, getCapabilites());
+        }
+    }
+
+    private boolean isNullOrEmpty(String string) {
+        return string == null || string.isEmpty();
+    }
+    
+    private URL getProxyUrl() {
+    	WebDriverConfig config = WebDriverConfig.getInstance();
+    	
+        String proxyInput = isNullOrEmpty(config.getProxyHost()) ? System.getenv("HTTPS_PROXY") : config.getProxyHost();
+        if (isNullOrEmpty(proxyInput)) {
+            return null;
+        }
+        try {
+            return new URL(proxyInput.matches("^http[s]?://.*$") ? proxyInput : "http://" + proxyInput);
+        } catch (MalformedURLException e) {
+        	// TODO
+//            log.error("Invalid proxy url {}", proxyInput, e);
+            return null;
+        }
+    }
+
+    private final BasicCredentialsProvider createBasicCredentialsProvider(URL proxyURL) {
+    	if (proxyURL == null) {
+            return null;
+        }
+        
+        WebDriverConfig config = WebDriverConfig.getInstance();
+    	
+        try {
+        	String username = null;
+        	String password = null;
+
+            // apply env value
+            String userInfo = proxyURL.getUserInfo();
+            if (userInfo != null) {
+                StringTokenizer st = new StringTokenizer(userInfo, ":");
+                username = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
+                password = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
+            }
+            
+            if (username == null) {
+            	username = isNullOrEmpty(config.getProxyUser()) ? System.getenv("HTTPS_PROXY_USER") : config.getProxyUser();
+            }
+            if (password == null) {
+            	password = isNullOrEmpty(config.getProxyPassword()) ? System.getenv("HTTPS_PROXY_PASS") : config.getProxyPassword();
+            }
+
+            if (username == null) {
+                return null;
+            }
+
+            String ntlmUsername = username;
+            String ntlmDomain = null;
+            
+            int index = username.indexOf("\\");
+            if (index > 0) {
+                ntlmDomain = username.substring(0, index);
+                ntlmUsername = username.substring(index + 1);                
+            }
+            
+            BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            Credentials creds;
+            AuthScope authScope;
+            
+            authScope = new AuthScope(proxyURL.getHost(), proxyURL.getPort(),  AuthScope.ANY_REALM, AuthSchemes.NTLM);
+            creds = new NTCredentials(ntlmUsername, password, getWorkstation(), ntlmDomain);            
+            credentialsProvider.setCredentials(authScope, creds);
+            
+            authScope = new AuthScope(proxyURL.getHost(), proxyURL.getPort());
+            creds = new UsernamePasswordCredentials(username, password);
+            credentialsProvider.setCredentials(authScope, creds);
+
+            return credentialsProvider;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Invalid encoding.", e);
         }
     }
 
@@ -134,11 +208,11 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
             try {
                 return InetAddress.getLocalHost().getHostName();
             } catch (UnknownHostException ex) {
-                return "Unknown";
+                return null;
             }
         }
     }
-
+    
     /**
      * Indicates whether some other object is "equal to" this one.
      *

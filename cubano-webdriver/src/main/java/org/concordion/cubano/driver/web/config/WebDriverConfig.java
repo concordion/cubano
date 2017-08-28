@@ -38,8 +38,6 @@ public class WebDriverConfig {
     // Proxy
     private boolean proxyIsRequired;
     private String proxyHost;
-    private int proxyPort;
-    private String proxyDomain;
     private String proxyUsername;
     private String proxyPassword;
 
@@ -109,12 +107,6 @@ public class WebDriverConfig {
         proxyIsRequired = Boolean.parseBoolean(getOptionalProperty("proxy.required"));
 
         proxyHost = getProperty("proxy.host", proxyIsRequired);
-        String proxyPortString = getProperty("proxy.port", proxyIsRequired);
-        if (!proxyPortString.isEmpty()) {
-            proxyPort = Integer.parseInt(proxyPortString);
-        }
-
-        proxyDomain = getOptionalProperty("proxy.domain");
         proxyUsername = getOptionalProperty("proxy.username");
         proxyPassword = getOptionalProperty("proxy.password");
     }
@@ -319,36 +311,15 @@ public class WebDriverConfig {
     }
 
     /**
-     * Proxy port number.
-     *
-     * @return port
-     */
-    public int getProxyPort() {
-        return proxyPort;
-    }
-
-    /**
-     * Proxy user's domain.
-     *
-     * @return domain
-     */
-    public String getProxyDomain() {
-        if (proxyDomain == null) {
-            throw new RuntimeException("proxy.domain entry must exist in the user.properties file in the root folder");
-        }
-
-        return proxyDomain;
-    }
-
-    /**
      * Proxy username.
      *
      * @return username
      */
     public String getProxyUser() {
-        if (proxyUsername == null) {
-            throw new RuntimeException("proxy.username entry must exist in the user.properties file in the root folder");
-        }
+// TODO: Not sure that proxy user should fail if not provided
+//        if (proxyUsername == null) {
+//            throw new RuntimeException("proxy.username entry must exist in the user.properties file in the root folder");
+//        }
 
         return proxyUsername;
     }
@@ -359,9 +330,10 @@ public class WebDriverConfig {
      * @return user
      */
     public String getProxyPassword() {
-        if (proxyPassword == null) {
-            throw new RuntimeException("proxy.proxypassword entry must exist in the user.properties file in the root folder");
-        }
+//  TODO: Not sure that proxy password should fail if not provided
+//        if (proxyPassword == null) {
+//            throw new RuntimeException("proxy.proxypassword entry must exist in the user.properties file in the root folder");
+//        }
 
         return proxyPassword;
     }
