@@ -53,15 +53,15 @@ public class WebDriverConfigTest {
         // TODO Since proxy is used for multiple purposes. Suggest we need to split these different proxies out.
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("false");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost1:9991");
-        given(properties.getProperty("proxy.username")).willReturn("mydomain1\\me1");
+        given(properties.getProperty("proxy.host")).willReturn("myproxyhost1");
+        given(properties.getProperty("proxy.username")).willReturn("me1");
         given(properties.getProperty("proxy.password")).willReturn("secret1");
 
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.isProxyRequired(), is(false));
-        assertThat(config.getProxyHost(), is("myproxyhost1:9991"));
-        assertThat(config.getProxyUser(), is("mydomain1\\me1"));
+        assertThat(config.getProxyHost(), is("myproxyhost1"));
+        assertThat(config.getProxyUser(), is("me1"));
         assertThat(config.getProxyPassword(), is("secret1"));
     }
 
@@ -69,8 +69,7 @@ public class WebDriverConfigTest {
     public void userPropertiesOverrideConfigProperties() {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("false");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost");
-        given(properties.getProperty("proxy.port")).willReturn("9999");
+        given(properties.getProperty("proxy.host")).willReturn("myproxyhost:9999");
 
         Properties userProperties = mock(Properties.class);
         given(userProperties.getProperty("proxy.required")).willReturn("true");
