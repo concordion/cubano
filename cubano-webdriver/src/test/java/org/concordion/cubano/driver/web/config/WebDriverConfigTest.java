@@ -53,10 +53,8 @@ public class WebDriverConfigTest {
         // TODO Since proxy is used for multiple purposes. Suggest we need to split these different proxies out.
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("false");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost1");
-        given(properties.getProperty("proxy.port")).willReturn("9991");
-        given(properties.getProperty("proxy.domain")).willReturn("mydomain1");
-        given(properties.getProperty("proxy.username")).willReturn("me1");
+        given(properties.getProperty("proxy.host")).willReturn("myproxyhost1:9991");
+        given(properties.getProperty("proxy.username")).willReturn("mydomain1\\me1");
         given(properties.getProperty("proxy.password")).willReturn("secret1");
 
         WebDriverConfig config = new WebDriverConfig(properties);
