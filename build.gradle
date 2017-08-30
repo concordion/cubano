@@ -1,4 +1,5 @@
 subprojects {
+    apply plugin: 'maven-publish'
     apply plugin: 'java'
     apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
@@ -160,5 +161,64 @@ subprojects {
         outputs.upToDateWhen { false } // ensure the tests run each time, even if no changes to test code
         testLogging.showStandardStreams = true
         testLogging.showExceptions = true
+    }
+
+    // Publishing
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+    
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+    
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                
+                artifact sourcesJar {
+                    classifier "sources"
+                }
+    
+                artifact javadocJar {
+                    classifier "javadoc"
+                }
+                
+                pom.withXml {
+                    asNode().children().last() + {
+                        resolveStrategy = Closure.DELEGATE_FIRST
+    
+                        name project.name
+                        description project.description
+                        url 'http://www.concordion.org'
+                        packaging 'jar'
+                        inceptionYear '2016'
+    
+                        scm {
+                            url 'https://github.com/concordion/cubano.git'
+                        }
+    
+                        developers {
+                            developer {
+                                name 'Andrew Sumner'
+                                email 'andrew.sumner@xtra.co.nz'
+                                roles  { role 'Developer' }
+                            }
+                        }
+                    }
+                    
+                    asNode().dependencies.'*'.findAll() {
+                        it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                            dep.name == it.artifactId.text()
+                        }
+                    }.each() {
+                        it.scope*.value = 'compile'
+                    }
+                }
+            }
+        }
     }
 }
