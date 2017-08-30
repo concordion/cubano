@@ -1,6 +1,6 @@
 
 ext {
-    seleniumVersion = '3.4.0'
+    seleniumVersion = '3.5.3'
 }
 
 dependencies {
@@ -13,7 +13,7 @@ dependencies {
     compile "org.seleniumhq.selenium:selenium-ie-driver:${seleniumVersion}"
 
     // Html Elements
-    compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.17') {
+    compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
 
