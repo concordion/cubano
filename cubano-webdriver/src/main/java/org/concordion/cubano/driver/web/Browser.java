@@ -158,9 +158,10 @@ public class Browser {
         try {
             this.eventFiringDriver.unregister(this.eventListener);
 			this.eventFiringDriver.close();
-            this.eventFiringDriver.quit();
+			// TODO CubanoUpgrade
+			// this.eventFiringDriver.quit();
         } catch (Exception ex) {
-            LOGGER.warn("Exception attempting to quit the browser: " + ex.getMessage());
+			LOGGER.error("Exception attempting to quit the browser: " + ex.getMessage());
         }
 
         this.eventFiringDriver = null;
