@@ -1,9 +1,9 @@
 package org.concordion.cubano.driver.web;
 
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.pagefactory.PageObjectAwareHtmlElementsLoader;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -157,6 +157,7 @@ public class Browser {
 
         try {
             this.eventFiringDriver.unregister(this.eventListener);
+			this.eventFiringDriver.close();
             this.eventFiringDriver.quit();
         } catch (Exception ex) {
             LOGGER.warn("Exception attempting to quit the browser: " + ex.getMessage());
