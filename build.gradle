@@ -1,10 +1,10 @@
 subprojects {
-    //apply plugin: 'maven-publish'
     apply plugin: 'java'
     apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
     apply plugin: 'eclipse'
     apply plugin: 'jacoco'
+    apply plugin: 'maven'
 
     // need utf-8 to get text with non-standard chars e.g. curly apostrophes used correctly 
     tasks.withType(JavaCompile) {
@@ -168,6 +168,10 @@ subprojects {
         classifier = 'sources'
         from sourceSets.main.allSource
     }
+    
+    artifacts {
+    	 archives sourcesJar
+	}
     
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
