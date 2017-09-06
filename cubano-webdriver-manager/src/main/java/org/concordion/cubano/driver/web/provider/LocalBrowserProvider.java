@@ -49,8 +49,19 @@ public class LocalBrowserProvider implements BrowserProvider {
     }
 
     /**
-     * @return A new Selenium WebDriver based on supplied configuration
-     */
+	 * Pass in desire configuration.
+	 * 
+	 * @param browser Name of browser, currently supports chrome, edge, firefox, ie, internetexplorer, opera, phantomjs
+	 */
+	public LocalBrowserProvider(String browser) {
+		this.browser = browser;
+		browserSize = WebDriverConfig.getInstance().getBrowserSize();
+		maximised = true;
+	}
+
+	/**
+	 * @return A new Selenium WebDriver based on supplied configuration
+	 */
     @Override
     public WebDriver createDriver() {
         WebDriver driver;
@@ -141,32 +152,39 @@ public class LocalBrowserProvider implements BrowserProvider {
 
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
 
-        addProxyCapabilities(capabilities);
+		addProxyCapabilities(capabilities);
 
         if (!WebDriverConfig.getInstance().getBrowserExe().isEmpty()) {
             capabilities.setCapability(FirefoxDriver.BINARY, WebDriverConfig.getInstance().getBrowserExe());
         }
 
-        if (WebDriverConfig.getInstance().shouldActivatePlugins()) {
-            FirefoxProfile profile = new FirefoxProfile();
+		// Work around for FireFox not closing, fix comes from here: https://github.com/mozilla/geckodriver/issues/517
+		FirefoxProfile profile = new FirefoxProfile();
 
-            try {
-                File firebug = Plugins.get("firebug");
-                profile.addExtension(firebug);
+		profile.setPreference("browser.tabs.remote.autostart", false);
+		profile.setPreference("browser.tabs.remote.autostart.1", false);
+		profile.setPreference("browser.tabs.remote.autostart.2", false);
+		profile.setPreference("browser.tabs.remote.force-enable", false);
 
-                String version = firebug.getName();
-                version = version.substring(version.indexOf("-") + 1);
-                version = version.substring(0, version.indexOf("-") > 0 ? version.indexOf("-") : version.indexOf("."));
+		// Include Plugins
+		if (WebDriverConfig.getInstance().shouldActivatePlugins()) {
+			try {
+				File firebug = Plugins.get("firebug");
+				profile.addExtension(firebug);
 
-                profile.setPreference("extensions.firebug.currentVersion", version);
+				String version = firebug.getName();
+				version = version.substring(version.indexOf("-") + 1);
+				version = version.substring(0, version.indexOf("-") > 0 ? version.indexOf("-") : version.indexOf("."));
 
-                profile.addExtension(Plugins.get("firepath"));
-            } catch (Exception e) {
-                throw new RuntimeException("Unable to add FireFox plugins", e);
-            }
+				profile.setPreference("extensions.firebug.currentVersion", version);
 
-            capabilities.setCapability(FirefoxDriver.PROFILE, profile);
-        }
+				profile.addExtension(Plugins.get("firepath"));
+			} catch (Exception e) {
+				throw new RuntimeException("Unable to add FireFox plugins", e);
+			}
+		}
+
+		capabilities.setCapability(FirefoxDriver.PROFILE, profile);
 
         return new FirefoxDriver(capabilities);
     }
