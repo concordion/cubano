@@ -152,7 +152,7 @@ public class LocalBrowserProvider implements BrowserProvider {
 
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
 
-		addProxyCapabilities(capabilities);
+        addProxyCapabilities(capabilities);
 
         if (!WebDriverConfig.getInstance().getBrowserExe().isEmpty()) {
             capabilities.setCapability(FirefoxDriver.BINARY, WebDriverConfig.getInstance().getBrowserExe());
@@ -167,21 +167,21 @@ public class LocalBrowserProvider implements BrowserProvider {
 		profile.setPreference("browser.tabs.remote.force-enable", false);
 
 		// Include Plugins
-		if (WebDriverConfig.getInstance().shouldActivatePlugins()) {
-			try {
-				File firebug = Plugins.get("firebug");
-				profile.addExtension(firebug);
+        if (WebDriverConfig.getInstance().shouldActivatePlugins()) {
+            try {
+                File firebug = Plugins.get("firebug");
+                profile.addExtension(firebug);
 
-				String version = firebug.getName();
-				version = version.substring(version.indexOf("-") + 1);
-				version = version.substring(0, version.indexOf("-") > 0 ? version.indexOf("-") : version.indexOf("."));
+                String version = firebug.getName();
+                version = version.substring(version.indexOf("-") + 1);
+                version = version.substring(0, version.indexOf("-") > 0 ? version.indexOf("-") : version.indexOf("."));
 
-				profile.setPreference("extensions.firebug.currentVersion", version);
+                profile.setPreference("extensions.firebug.currentVersion", version);
 
-				profile.addExtension(Plugins.get("firepath"));
-			} catch (Exception e) {
-				throw new RuntimeException("Unable to add FireFox plugins", e);
-			}
+                profile.addExtension(Plugins.get("firepath"));
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to add FireFox plugins", e);
+            }
 		}
 
 		capabilities.setCapability(FirefoxDriver.PROFILE, profile);

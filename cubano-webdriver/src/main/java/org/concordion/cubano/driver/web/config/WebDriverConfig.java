@@ -1,9 +1,12 @@
 package org.concordion.cubano.driver.web.config;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import org.concordion.cubano.utils.ConfigLoader;
 import org.concordion.cubano.utils.DefaultConfigLoader;
-
-import java.util.Properties;
 
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
@@ -109,7 +112,36 @@ public class WebDriverConfig {
         proxyHost = getProperty("proxy.host", proxyIsRequired);
         proxyUsername = getOptionalProperty("proxy.username");
         proxyPassword = getOptionalProperty("proxy.password");
+
+		// Make all WebDriverManager properties system properties
+		Map<String, String> result = getProperties("wdm.");
+
+		for (String key : result.keySet()) {
+			System.setProperty(key, result.get(key));
+		}
     }
+
+	protected Map<String, String> getProperties(String keyPrefix) {
+		Map<String, String> result = new HashMap<>();
+
+		searchPropertiesFrom(properties, keyPrefix, result);
+		searchPropertiesFrom(userProperties, keyPrefix, result);
+
+		return result;
+	}
+
+	private void searchPropertiesFrom(Properties properties, String keyPrefix, Map<String, String> result) {
+		@SuppressWarnings("unchecked")
+		Enumeration<String> en = (Enumeration<String>) properties.propertyNames();
+		while (en.hasMoreElements()) {
+			String propName = en.nextElement();
+			String propValue = properties.getProperty(propName);
+
+			if (propName.startsWith(keyPrefix)) {
+				result.put(propName, propValue);
+			}
+		}
+	}
 
     /**
      * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
