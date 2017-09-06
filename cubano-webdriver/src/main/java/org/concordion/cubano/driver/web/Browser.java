@@ -157,8 +157,6 @@ public class Browser {
 
         try {
             this.eventFiringDriver.unregister(this.eventListener);
-			this.eventFiringDriver.close();
-			// TODO CubanoUpgrade
 			this.eventFiringDriver.quit();
         } catch (Exception ex) {
 			LOGGER.debug("Exception attempting to quit the browser: " + ex.getMessage());
