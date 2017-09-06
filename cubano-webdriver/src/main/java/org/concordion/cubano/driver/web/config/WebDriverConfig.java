@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.concordion.cubano.utils.CaseSensitiveConfigLoader;
 import org.concordion.cubano.utils.ConfigLoader;
 import org.concordion.cubano.utils.DefaultConfigLoader;
 
@@ -73,6 +74,7 @@ public class WebDriverConfig {
     protected WebDriverConfig(Properties properties, Properties userProperties) {
         this.properties = properties;
         this.userProperties = userProperties;
+
         loadCommonProperties();
     }
 
@@ -114,18 +116,18 @@ public class WebDriverConfig {
         proxyPassword = getOptionalProperty("proxy.password");
 
 		// Make all WebDriverManager properties system properties
-		Map<String, String> result = getProperties("wdm.");
+		Map<String, String> result = getPropertiesStartingWith("wdm.");
 
 		for (String key : result.keySet()) {
 			System.setProperty(key, result.get(key));
 		}
     }
 
-	protected Map<String, String> getProperties(String keyPrefix) {
+	protected Map<String, String> getPropertiesStartingWith(String keyPrefix) {
 		Map<String, String> result = new HashMap<>();
 
-		searchPropertiesFrom(properties, keyPrefix, result);
-		searchPropertiesFrom(userProperties, keyPrefix, result);
+		searchPropertiesFrom(new CaseSensitiveConfigLoader().getProperties(), keyPrefix, result);
+		searchPropertiesFrom(new CaseSensitiveConfigLoader().getUserProperties(), keyPrefix, result);
 
 		return result;
 	}
