@@ -117,12 +117,18 @@ public class LocalBrowserProvider implements BrowserProvider {
 
         addProxyCapabilities(capabilities);
 
+		ChromeOptions options = new ChromeOptions();
+		// Workaround for 'Loading of unpacked extensions is disabled by the administrator'
+		// https://stackoverflow.com/questions/43797119/failed-to-load-extension-from-popup-box-while-running-selenium-scripts
+		options.setExperimentalOption("useAutomationExtension", false);
+
         if (!WebDriverConfig.getInstance().getBrowserExe().isEmpty()) {
-            ChromeOptions options = new ChromeOptions();
+
             options.setBinary(WebDriverConfig.getInstance().getBrowserExe());
-            capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+
         }
 
+		capabilities.setCapability(ChromeOptions.CAPABILITY, options);
         return new ChromeDriver(capabilities);
     }
 
