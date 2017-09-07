@@ -122,6 +122,11 @@ public class LocalBrowserProvider implements BrowserProvider {
 		// https://stackoverflow.com/questions/43797119/failed-to-load-extension-from-popup-box-while-running-selenium-scripts
 		options.setExperimentalOption("useAutomationExtension", false);
 
+		// More workarounds https://stackoverflow.com/questions/42979877/chrome-browser-org-openqa-selenium-webdriverexception-unknown-error-cannot-get
+		maximised = false;
+		options.addArguments("start-maximized");
+		options.addArguments("disable-infobars");
+
         if (!WebDriverConfig.getInstance().getBrowserExe().isEmpty()) {
 
             options.setBinary(WebDriverConfig.getInstance().getBrowserExe());
