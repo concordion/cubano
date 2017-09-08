@@ -126,6 +126,7 @@ public class LocalBrowserProvider implements BrowserProvider {
 		maximised = false;
 		options.addArguments("start-maximized");
 		options.addArguments("disable-infobars");
+		options.addArguments("--disable-popup-blocking");
 
         if (!WebDriverConfig.getInstance().getBrowserExe().isEmpty()) {
 
