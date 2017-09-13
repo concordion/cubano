@@ -1,5 +1,6 @@
 package demo;
 
+import org.concordion.api.AfterExample;
 import org.concordion.api.AfterSpecification;
 import org.concordion.api.extension.Extension;
 import org.concordion.cubano.driver.web.Browser;
@@ -32,11 +33,11 @@ public class HelloWorldFixture {
     public String getGreetingFailure() {
         browser.getDriver().navigate().to("http://google.co.nz");
 
-        logger.with()
-                .message("Hello World!")
-                .attachment("This is some data", "data.txt", MediaType.PLAIN_TEXT)
-                .marker(new StoryboardMarker("Hello", "Data", StockCardImage.TEXT, CardResult.SUCCESS))
-                .debug();
+//        logger.with()
+//                .message("Hello World!")
+//                .attachment("This is some data", "data.txt", MediaType.PLAIN_TEXT)
+//                .marker(new StoryboardMarker("Hello", "Data", StockCardImage.TEXT, CardResult.SUCCESS))
+//                .debug();
 
         return "Failed";
     }
@@ -44,13 +45,13 @@ public class HelloWorldFixture {
     public String getGreetingException() {
         browser.getDriver().navigate().to("http://google.co.nz");
 
-        Assert.fail("Frogs legs");
+//        Assert.fail("Frogs legs");
 
         return "Failed";
     }
 
-    @AfterSpecification
-    public void afterSpecification() {
+    @AfterExample
+    public void afterExample() {
         browser.close();
     }
 }

@@ -281,7 +281,8 @@ public class LocalBrowserProvider implements BrowserProvider {
         proxy.setHttpProxy(browserProxy);
         proxy.setFtpProxy(browserProxy);
         proxy.setSslProxy(browserProxy);
-        proxy.setNoProxy(browserNoProxyList);
+        //TODO This was breaking firefox!
+//        proxy.setNoProxy(browserNoProxyList);
 
         capabilities.setCapability(CapabilityType.PROXY, proxy);
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);

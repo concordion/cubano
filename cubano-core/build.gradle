@@ -3,6 +3,7 @@ dependencies {
     compile project(':cubano-http')
     compile project(':cubano-httpeasy') // TODO - pass as configuration
     compile project(':cubano-webdriver')
+    testCompile project(':cubano-webdriver-manager')
 
     compile 'org.concordion:concordion:2.1.0'
     compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
@@ -15,4 +16,7 @@ dependencies {
         exclude group: 'org.apache.commons', module: 'commons-io'
     }
     compile 'org.concordion:concordion-storyboard-extension:2.0.0-SNAPSHOT'
+    
+    // TODO Why have I had to include this? 
+    compile 'org.apache.commons:commons-io:2.5'
 }
