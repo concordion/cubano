@@ -1,0 +1,199 @@
+package org.concordion.cubano.utils;
+
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.concordion.cubano.utils.CaseSensitiveConfigLoader;
+import org.concordion.cubano.utils.ConfigLoader;
+import org.concordion.cubano.utils.DefaultConfigLoader;
+
+/**
+ * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
+ * <p>
+ * An optional <code>user.properties</code> file can set user specific values and allow overriding of defaults.
+ * The <code>user.properties</code> file should NEVER be checked into source control.
+ * <p>
+ * This class can be extended by an <code>AppConfig</code> class to provide application specific properties.
+ *
+ * TODO Should this be singleton?
+ *
+ * @author Andrew Sumner
+ */
+public abstract class Config {
+    private Properties properties;
+    private Properties userProperties = null;
+    private String environment = null;
+    
+    /**
+     * @return Configured environment.
+     */
+    public String getEnvironment() {
+        return environment;
+    }
+
+    /**
+     * Prevent this class from being constructed.
+     */
+    protected Config() {
+        this(new DefaultConfigLoader());
+    }
+
+    /**
+     * Prevent this class from being constructed.
+     */
+    protected Config(ConfigLoader loader) {
+    	this(loader.getProperties(), loader.getUserProperties());
+    }
+
+    protected Config(Properties properties) {
+        this(properties, null);
+    }
+
+    protected Config(Properties properties, Properties userProperties) {
+        this.properties = properties;
+        this.userProperties = userProperties;
+        
+        // Try environment variable first
+        environment = System.getProperty("environment", "").toLowerCase();
+
+        if (environment.isEmpty()) {
+            environment = getProperty("environment");
+        }
+
+        loadProperties();
+    }
+
+    protected abstract void loadProperties();
+
+    /**
+     * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
+     *
+     * @param key Id of the property to look up
+     * @param isRequired true if the property is mandatory, throws RuntimeException if true and property not present
+     * @return Property value if found, throws exception if not found
+     */
+    protected String getProperty(String key, boolean isRequired) {
+        String value = retrieveProperty(key);
+
+        if (isRequired && value.isEmpty()) {
+            throw new RuntimeException(String.format("Unable to find property %s", key));
+        }
+
+        return value;
+    }
+
+    /**
+     * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
+     *
+     * @param key Id of the property to look up
+     * @return Property value if found, throws exception if not found
+     */
+    protected String getProperty(String key) {
+        return getProperty(key, false);
+    }
+
+    /**
+     * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
+     *
+     * @param key Id of the property to look up
+     * @return Property value if found, empty string if not found
+     */
+    protected String getOptionalProperty(String key) {
+        return retrieveProperty(key);
+    }
+
+    /**
+     * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
+     *
+     * @param key          Id of the property to look up
+     * @param defaultValue value to use if property is not found
+     * @return Property value if found, defaultValue if not found
+     */
+    protected String getOptionalProperty(String key, String defaultValue) {
+        String value = retrieveProperty(key);
+
+        if (value.isEmpty()) {
+            return defaultValue;
+        }
+
+        return value;
+    }
+    
+    /**
+     * Returns a map of key value pairs of properties starting with a prefix.
+     * 
+     * @param keyPrefix Search string
+     * @return Map
+     */
+    protected Map<String, String> getPropertiesStartingWith(String keyPrefix) {
+    	return getPropertiesStartingWith(new CaseSensitiveConfigLoader(), keyPrefix);
+    }
+    
+	protected Map<String, String> getPropertiesStartingWith(ConfigLoader loader, String keyPrefix) {
+		Map<String, String> result = new HashMap<>();
+
+		searchPropertiesFrom(loader.getProperties(), keyPrefix, result);
+		searchPropertiesFrom(loader.getUserProperties(), keyPrefix, result);
+
+		return result;
+	}
+
+	private void searchPropertiesFrom(Properties properties, String keyPrefix, Map<String, String> result) {
+		if (properties == null) {
+			return;
+		}
+		
+		@SuppressWarnings("unchecked")
+		Enumeration<String> en = (Enumeration<String>) properties.propertyNames();
+		while (en.hasMoreElements()) {
+			String propName = en.nextElement();
+			String propValue = properties.getProperty(propName);
+
+			if (propName.startsWith(keyPrefix)) {
+				result.put(propName, propValue);
+			}
+		}
+	}
+
+    private String retrieveProperty(String key) {
+        String value = null;
+
+        // prefix = System.getProperty("user.name").toLowerCase();
+        if (userProperties != null) {
+            value = retrievePropertyFrom(userProperties, key);
+        }
+
+        if (value == null) {
+            value = retrievePropertyFrom(properties, key);
+        }
+
+        if (value == null) {
+            value = "";
+        }
+
+        return value;
+    }
+
+    private String retrievePropertyFrom(Properties properties, String key) {
+        String value = null;
+
+        // Attempt to get setting for environment
+        if (environment != null && !environment.isEmpty()) {
+            value = properties.getProperty(environment + "." + key);
+        }
+
+        // Attempt to get default setting
+        if (value == null) {
+            value = properties.getProperty(key);
+        }
+
+        if (value != null) {
+            value = value.trim();
+        }
+
+        return value;
+    }
+
+}

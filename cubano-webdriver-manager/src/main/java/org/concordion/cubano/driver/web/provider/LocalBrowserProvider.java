@@ -253,7 +253,7 @@ public class LocalBrowserProvider implements BrowserProvider {
     }
 
     private void setupBrowserManager(BrowserManager instance) {
-    	if (WebDriverConfig.getInstance().getProxyHost() != null) {
+    	if (!WebDriverConfig.getInstance().getProxyHost().isEmpty()) {
     		instance.proxy(WebDriverConfig.getInstance().getProxyHost());
     		instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
     		instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
