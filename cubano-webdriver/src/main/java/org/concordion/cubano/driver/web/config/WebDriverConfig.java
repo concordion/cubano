@@ -21,12 +21,10 @@ public class WebDriverConfig extends Config {
 
     // Browser 
     private String browserProvider;
-    private String browserType;
     private String browserSize;
+    private boolean browserMaximized;
     private int browserDefaultTimeout;
 
-    private String localBrowserExe;
-    private boolean activatePlugins;
     private String remoteUserName;
     private String remoteApiKey;
 
@@ -58,33 +56,32 @@ public class WebDriverConfig extends Config {
 
     protected void loadProperties() {
         // Browser
-        browserProvider = getOptionalProperty("webdriver.browserprovider", "org.concordion.cubano.driver.web.provider.LocalBrowserProvider");
-        browserType = System.getProperty("browser");
-        if (browserType == null) {
-            browserType = getProperty("webdriver.browser");
+        browserProvider = System.getProperty("browserProvider");
+        if (browserProvider == null) {
+        	browserProvider = getProperty("webdriver.browserProvider");
+        }
+        
+        if (!browserProvider.contains(".")) {
+        	browserProvider = "org.concordion.cubano.driver.web.provider." + browserProvider;
         }
 
         browserDefaultTimeout = Integer.parseInt(getProperty("webdriver.defaultTimeout"));
-        browserSize = getOptionalProperty("webdriver.browserSize");
+        browserSize = getProperty("webdriver.browserSize", null);
+        browserMaximized = getPropertyAsBoolean("webdriver.maximized", "false");
 
-        if (useLocalBrowser()) {
-            localBrowserExe = getOptionalProperty("webdriver." + browserType + ".exe");
-            activatePlugins = Boolean.valueOf(getOptionalProperty("webdriver." + browserType + ".activatePlugins"));
-        }
-
-        remoteUserName = getOptionalProperty("remotewebdriver.userName");
-        remoteApiKey = getOptionalProperty("remotewebdriver.apiKey");
+        remoteUserName = getProperty("remotewebdriver.userName", null);
+        remoteApiKey = getProperty("remotewebdriver.apiKey", null);
 
         // Yandex HtmlElements automatically implement 5 second implicit wait, default to zero so as not to interfere with
         // explicit waits
-        System.setProperty("webdriver.timeouts.implicitlywait", getOptionalProperty("webdriver.timeouts.implicitlywait", "0"));
+        System.setProperty("webdriver.timeouts.implicitlywait", getProperty("webdriver.timeouts.implicitlywait", "0"));
 
         // Proxy
-        proxyIsRequired = Boolean.parseBoolean(getOptionalProperty("proxy.required"));
+        proxyIsRequired = getPropertyAsBoolean("proxy.required", null);
 
-        proxyHost = getProperty("proxy.host", proxyIsRequired);
-        proxyUsername = getOptionalProperty("proxy.username");
-        proxyPassword = getOptionalProperty("proxy.password");
+        proxyHost = proxyIsRequired ? getProperty("proxy.host") : getProperty("proxy.host", null);
+        proxyUsername = getProperty("proxy.username", null);
+        proxyPassword = getProperty("proxy.password", null);
 
 		// Make all WebDriverManager properties system properties
 		Map<String, String> result = getPropertiesStartingWith("wdm.");
@@ -94,49 +91,41 @@ public class WebDriverConfig extends Config {
 		}
     }
 
-    // Browser
-    private boolean useLocalBrowser() {
-        return !browserType.contains(" ");
-    }
-
-    public String getBrowser() {
-        return browserType;
-    }
-
     public String getBrowserProvider() {
         return browserProvider;
     }
 
+    public boolean shouldActivatePlugins(String browserName) {
+    	return WebDriverConfig.getInstance().getPropertyAsBoolean("webdriver." + browserName + ".activatePlugins", null);
+    }
+    
     /**
      * Useful if local browser is not available on path.
      *
      * @return Path to browser executable
      */
-    public String getBrowserExe() {
-        if (localBrowserExe != null && !localBrowserExe.isEmpty()) {
+    public String getBrowserExe(String browserName) {
+    	String localBrowserExe = WebDriverConfig.getInstance().getProperty("webdriver." + browserName + ".exe", null);
+    	
+        if (!localBrowserExe.isEmpty()) {
             return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));
         }
 
         return "";
-    }
-
-    /**
-     * Activate developer plugins - FireFox only browser supported currently and will add FireBug and FirePath.
-     *
-     * @return true or false
-     */
-    public boolean shouldActivatePlugins() {
-        return activatePlugins;
-    }
-
+    }  
+    
     /**
      * Size to set browser window - will default to maximised.
      *
-     * @return Size in wxh format
+     * @return Size in WxH format
      */
     public String getBrowserSize() {
         return browserSize;
     }
+
+	public boolean isBrowserMaximized() {
+		return browserMaximized;
+	}
 
     /**
      * Default timeout in seconds.

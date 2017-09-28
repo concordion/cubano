@@ -3,6 +3,10 @@ package org.concordion.cubano.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class DefaultConfigLoader implements ConfigLoader {
@@ -32,8 +36,11 @@ public class DefaultConfigLoader implements ConfigLoader {
     private Properties loadFile(final String filename) {
         Properties prop = new CaselessProperties();
 
-        try (InputStream input = new FileInputStream(filename);) {
-            prop.load(input);
+        try {
+        	String content = new String(Files.readAllBytes(Paths.get(filename)));
+        	
+        	// By default property files treat \ as an escape character 
+            prop.load(new StringReader(content.replace("\\","\\\\")));
         } catch (Exception e) {
             throw new RuntimeException("Unable to read properties file.", e);
         }

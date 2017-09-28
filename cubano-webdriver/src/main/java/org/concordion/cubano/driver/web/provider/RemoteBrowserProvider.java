@@ -69,12 +69,10 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
         this.capabilites = capabilites;
     }
 
-    @Override
     public String getBrowser() {
         return browser;
     }
 
-    @Override
     public String getViewPort() {
         return viewPort;
     }
@@ -267,12 +265,10 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
         return Objects.hash(this.browser, this.capabilites, this.viewPort);
     }
 
-    @Override
     public boolean isViewPortDefined() {
         return getViewPort() != null && !getViewPort().isEmpty();
     }
 
-    @Override
     public int getViewPortWidth() {
         if (!isViewPortDefined()) {
             return -1;
@@ -283,7 +279,6 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
         return Integer.parseInt(width);
     }
 
-    @Override
     public int getViewPortHeight() {
         if (!isViewPortDefined()) {
             return -1;

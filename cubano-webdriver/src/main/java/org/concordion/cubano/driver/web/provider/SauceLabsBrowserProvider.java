@@ -17,7 +17,8 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
      * Constructor. Uses configuration for browser specified in the configuration file.
      */
     public SauceLabsBrowserProvider() {
-        String browser = WebDriverConfig.getInstance().getBrowser();
+    	//TODO Fix me
+        String browser = null; //WebDriverConfig.getInstance().getBrowser();
 
         if (browser == null) {
             browser = "";

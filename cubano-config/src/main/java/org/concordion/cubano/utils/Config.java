@@ -71,13 +71,12 @@ public abstract class Config {
      * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
      *
      * @param key Id of the property to look up
-     * @param isRequired true if the property is mandatory, throws RuntimeException if true and property not present
      * @return Property value if found, throws exception if not found
      */
-    protected String getProperty(String key, boolean isRequired) {
-        String value = retrieveProperty(key);
+    public String getProperty(String key) {
+    	String value = retrieveProperty(key);
 
-        if (isRequired && value.isEmpty()) {
+        if (value.isEmpty()) {
             throw new RuntimeException(String.format("Unable to find property %s", key));
         }
 
@@ -87,38 +86,38 @@ public abstract class Config {
     /**
      * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
      *
-     * @param key Id of the property to look up
-     * @return Property value if found, throws exception if not found
-     */
-    protected String getProperty(String key) {
-        return getProperty(key, false);
-    }
-
-    /**
-     * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
-     *
-     * @param key Id of the property to look up
-     * @return Property value if found, empty string if not found
-     */
-    protected String getOptionalProperty(String key) {
-        return retrieveProperty(key);
-    }
-
-    /**
-     * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
-     *
      * @param key          Id of the property to look up
      * @param defaultValue value to use if property is not found
      * @return Property value if found, defaultValue if not found
      */
-    protected String getOptionalProperty(String key, String defaultValue) {
+    public String getProperty(String key, String defaultValue) {
         String value = retrieveProperty(key);
 
         if (value.isEmpty()) {
-            return defaultValue;
+        	value = defaultValue == null ? "" : defaultValue;
         }
 
         return value;
+    }
+    
+    public boolean getPropertyAsBoolean(String key, String defaultValue) {
+        String value = retrieveProperty(key);
+
+        if (value.isEmpty()) {
+        	value = defaultValue == null ? "false" : defaultValue;
+        }
+
+        return Boolean.valueOf(value);
+    }
+    
+    public int getPropertyAsInteger(String key, String defaultValue) {
+        String value = retrieveProperty(key);
+
+        if (value.isEmpty()) {
+        	value = defaultValue == null ? "0" : defaultValue;
+        }
+
+        return Integer.valueOf(value);
     }
     
     /**
@@ -127,11 +126,11 @@ public abstract class Config {
      * @param keyPrefix Search string
      * @return Map
      */
-    protected Map<String, String> getPropertiesStartingWith(String keyPrefix) {
+    public Map<String, String> getPropertiesStartingWith(String keyPrefix) {
     	return getPropertiesStartingWith(new CaseSensitiveConfigLoader(), keyPrefix);
     }
     
-	protected Map<String, String> getPropertiesStartingWith(ConfigLoader loader, String keyPrefix) {
+	public Map<String, String> getPropertiesStartingWith(ConfigLoader loader, String keyPrefix) {
 		Map<String, String> result = new HashMap<>();
 
 		searchPropertiesFrom(loader.getProperties(), keyPrefix, result);

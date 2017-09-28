@@ -13,36 +13,4 @@ public interface BrowserProvider {
      */
     public WebDriver createDriver();
 
-    /**
-     * @return Browser name if running a desktop browser, otherwise the name of the device
-     */
-    public String getBrowser();
-
-    /**
-     * ViewPort can mean different things on different devices:
-     * <ul>
-     * <li>Desktop using Applitools-Eyes: internal dimensions of the browser</li>
-     * <li>Desktop: external dimensions of the browser</li>
-     * <li>Device: screen resolution (information only, is not used to set browser size)</li>
-     * </ul>
-     *
-     * @return the viewport size in format '{@literal <width>x<height>}'
-     */
-    public String getViewPort();
-
-    /**
-     * @return The viewport width
-     */
-    public int getViewPortWidth();
-
-    /**
-     * @return The viewport height
-     */
-    public int getViewPortHeight();
-
-    /**
-     * @return The viewport has been supplied
-     */
-    public boolean isViewPortDefined();
-
 }

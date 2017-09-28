@@ -21,13 +21,13 @@ public class WebDriverConfigTest {
     public void mustSetDefaultProperties() throws Exception {
         Properties properties = mock(Properties.class);
         given(properties.getProperty("environment")).willReturn("UAT");
-        given(properties.getProperty("webdriver.browser")).willReturn("firefox");
+        given(properties.getProperty("webdriver.browserProvider")).willReturn("firefox");
         given(properties.getProperty("webdriver.defaultTimeout")).willReturn("30");
 
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getEnvironment(), is("UAT"));
-        assertThat(config.getBrowser(), is("firefox"));
+        assertThat(config.getBrowserProvider(), is("firefox"));
         assertThat(config.getDefaultTimeout(), is(30));
         assertThat(config.isProxyRequired(), is(false));
     }
@@ -108,13 +108,13 @@ public class WebDriverConfigTest {
         Properties properties = givenDefaultProperties();
         System.setProperty("environment", "uat");
         given(properties.getProperty("environment")).willReturn("SIT");
-        System.setProperty("browser", "chrome");
+        System.setProperty("browserProvider", "chrome");
         given(properties.getProperty("webdriver.browser")).willReturn("firefox");
 
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getEnvironment(), is("uat"));
-        assertThat(config.getBrowser(), is("chrome"));
+        assertThat(config.getBrowserProvider(), is("chrome"));
     }
 
     @Test
@@ -127,8 +127,8 @@ public class WebDriverConfigTest {
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getBrowserSize(), is("1280x1024"));
-        assertThat(config.getBrowserExe(), is("/bin/firefox"));
-        assertThat(config.shouldActivatePlugins(), is(true));
+        assertThat(config.getBrowserExe("firefox"), is("/bin/firefox"));
+        assertThat(config.shouldActivatePlugins("firefox"), is(true));
     }
 
     @Test
