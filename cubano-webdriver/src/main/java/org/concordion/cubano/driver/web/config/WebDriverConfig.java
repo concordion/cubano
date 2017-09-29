@@ -24,6 +24,7 @@ public class WebDriverConfig extends Config {
     private String browserSize;
     private boolean browserMaximized;
     private int browserDefaultTimeout;
+    private int restartBrowserTestCount;
 
     private String remoteUserName;
     private String remoteApiKey;
@@ -65,7 +66,9 @@ public class WebDriverConfig extends Config {
         	browserProvider = "org.concordion.cubano.driver.web.provider." + browserProvider;
         }
 
-        browserDefaultTimeout = Integer.parseInt(getProperty("webdriver.defaultTimeout"));
+        
+        restartBrowserTestCount = getPropertyAsInteger("webdriver.resartBrowserTestCount", "0");        
+        browserDefaultTimeout = getPropertyAsInteger("webdriver.defaultTimeout", "0");
         browserSize = getProperty("webdriver.browserSize", null);
         browserMaximized = getPropertyAsBoolean("webdriver.maximized", "false");
 
@@ -135,7 +138,18 @@ public class WebDriverConfig extends Config {
     public int getDefaultTimeout() {
         return browserDefaultTimeout;
     }
-
+    
+    /**
+     * Number of tests to execute before restarting browser, a value of <= zero means that it will not be restarted.
+     * 
+     * This has been added to cater for a memory leak with firefox and gecko driver.
+     *
+     * @return integer
+     */
+    public int getRestartBrowserTestCount() {
+        return restartBrowserTestCount;
+    }
+    
     /**
      * Username for remote selenium grid service.
      *

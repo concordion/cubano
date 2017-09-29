@@ -31,7 +31,11 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(FirefoxDriverManager.getInstance());
+    	boolean useGeckoDriver = WebDriverConfig.getInstance().getPropertyAsBoolean("webdriver." + BROWSER_NAME + ".useGeckoDriver", "true");
+    	
+    	if (useGeckoDriver) {
+    		setupBrowserManager(FirefoxDriverManager.getInstance());
+    	}
 
         DesiredCapabilities capabilities = DesiredCapabilities.firefox();
 
@@ -41,8 +45,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
             capabilities.setCapability(FirefoxDriver.BINARY, WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
         }
         
-        // Set to false to support old style driver
-        capabilities.setCapability("marionette", WebDriverConfig.getInstance().getPropertyAsBoolean("webdriver." + BROWSER_NAME + ".useGeckoDriver", "true"));
+        capabilities.setCapability("marionette", useGeckoDriver);
         
 		// Work around for FireFox not closing, fix comes from here: https://github.com/mozilla/geckodriver/issues/517
 		FirefoxProfile profile = new FirefoxProfile();
@@ -78,6 +81,4 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
  
         return driver;
     }
-  
-
 }
