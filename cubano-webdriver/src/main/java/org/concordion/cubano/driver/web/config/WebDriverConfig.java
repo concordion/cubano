@@ -97,10 +97,6 @@ public class WebDriverConfig extends Config {
         return browserProvider;
     }
 
-    public boolean shouldActivatePlugins(String browserName) {
-    	return WebDriverConfig.getInstance().getPropertyAsBoolean(browserName + ".activatePlugins", null);
-    }
-    
     /**
      * Useful if local browser is not available on path.
      *

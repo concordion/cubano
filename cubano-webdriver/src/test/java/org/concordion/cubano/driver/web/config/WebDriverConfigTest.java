@@ -109,7 +109,7 @@ public class WebDriverConfigTest {
         System.setProperty("environment", "uat");
         given(properties.getProperty("environment")).willReturn("SIT");
         System.setProperty("browserProvider", "chrome");
-        given(properties.getProperty("webdriver.browser")).willReturn("firefox");
+        given(properties.getProperty("webdriver.browserProvider")).willReturn("firefox");
 
         WebDriverConfig config = new WebDriverConfig(properties);
 
@@ -121,14 +121,14 @@ public class WebDriverConfigTest {
     public void localBrowserSettings() {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("webdriver.browserSize")).willReturn("1280x1024");
-        given(properties.getProperty("webdriver.firefox.exe")).willReturn("%USERPROFILE%/bin/firefox");
-        given(properties.getProperty("webdriver.firefox.activatePlugins")).willReturn("true");
-
+        given(properties.getProperty("firefox.exe")).willReturn("%USERPROFILE%/bin/firefox");
+        given(properties.getProperty("firefox.profile")).willReturn("default");
+        
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getBrowserSize(), is("1280x1024"));
         assertThat(config.getBrowserExe("firefox"), is("/bin/firefox"));
-        assertThat(config.shouldActivatePlugins("firefox"), is(true));
+        assertThat(config.getProperty("firefox.profile"), is("default"));
     }
 
     @Test
@@ -157,7 +157,7 @@ public class WebDriverConfigTest {
     private Properties givenDefaultProperties() {
         Properties properties = mock(Properties.class);
         given(properties.getProperty("environment")).willReturn("UAT");
-        given(properties.getProperty("webdriver.browser")).willReturn("firefox");
+        given(properties.getProperty("webdriver.browserProvider")).willReturn("firefox");
         given(properties.getProperty("webdriver.defaultTimeout")).willReturn("30");
         return properties;
     }

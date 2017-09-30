@@ -52,12 +52,11 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         capabilities.setCapability("marionette", useGeckoDriver);
         
         // Profile
-        // TODO Test if profile is causing the issues with firefox.
-        if (!useGeckoDriver) {
-	        String profileName = WebDriverConfig.getInstance().getProperty(BROWSER_NAME + ".profile", "");
+	    String profileName = WebDriverConfig.getInstance().getProperty(BROWSER_NAME + ".profile", "");
+	    if (!profileName.isEmpty()) {
 	        FirefoxProfile profile;
-	        
-	        if (profileName.isEmpty()) {
+	        	        
+	        if (profileName.equals("new")) {
 	        	profile = new FirefoxProfile();
 	        } else {        	
 		        profile = new ProfilesIni().getProfile(profileName);
@@ -71,6 +70,14 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 		        }
 	        }
 	        
+	        if (useGeckoDriver) {
+				// Work around for FireFox not closing, fix comes from here: https://github.com/mozilla/geckodriver/issues/517
+				profile.setPreference("browser.tabs.remote.autostart", false);
+				profile.setPreference("browser.tabs.remote.autostart.1", false);
+				profile.setPreference("browser.tabs.remote.autostart.2", false);
+				profile.setPreference("browser.tabs.remote.force-enable", false);
+	        }
+	        
 	        Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.profile");
 	        
 	        for (String key : properties.keySet()) {
@@ -81,31 +88,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 	        		profile.setPreference(key.substring(start + 1, end), properties.get(key));
 	        	}
 			}
-	        
-			// Work around for FireFox not closing, fix comes from here: https://github.com/mozilla/geckodriver/issues/517
-			profile.setPreference("browser.tabs.remote.autostart", false);
-			profile.setPreference("browser.tabs.remote.autostart.1", false);
-			profile.setPreference("browser.tabs.remote.autostart.2", false);
-			profile.setPreference("browser.tabs.remote.force-enable", false);
-	
-			// Include Plugins
-	        if (WebDriverConfig.getInstance().shouldActivatePlugins(BROWSER_NAME)) {
-	            try {
-	                File firebug = Plugins.get("firebug");
-	                profile.addExtension(firebug);
-	
-	                String version = firebug.getName();
-	                version = version.substring(version.indexOf("-") + 1);
-	                version = version.substring(0, version.indexOf("-") > 0 ? version.indexOf("-") : version.indexOf("."));
-	
-	                profile.setPreference("extensions.firebug.currentVersion", version);
-	
-	                profile.addExtension(Plugins.get("firepath"));
-	            } catch (Exception e) {
-	                throw new RuntimeException("Unable to add FireFox plugins", e);
-	            }
-			}
-	
+
 			capabilities.setCapability(FirefoxDriver.PROFILE, profile);
         }
 
