@@ -65,7 +65,6 @@ public class WebDriverConfig extends Config {
         if (!browserProvider.contains(".")) {
         	browserProvider = "org.concordion.cubano.driver.web.provider." + browserProvider;
         }
-
         
         restartBrowserTestCount = getPropertyAsInteger("webdriver.resartBrowserTestCount", "0");        
         browserDefaultTimeout = getPropertyAsInteger("webdriver.defaultTimeout", "0");
@@ -99,7 +98,7 @@ public class WebDriverConfig extends Config {
     }
 
     public boolean shouldActivatePlugins(String browserName) {
-    	return WebDriverConfig.getInstance().getPropertyAsBoolean("webdriver." + browserName + ".activatePlugins", null);
+    	return WebDriverConfig.getInstance().getPropertyAsBoolean(browserName + ".activatePlugins", null);
     }
     
     /**
@@ -108,7 +107,7 @@ public class WebDriverConfig extends Config {
      * @return Path to browser executable
      */
     public String getBrowserExe(String browserName) {
-    	String localBrowserExe = WebDriverConfig.getInstance().getProperty("webdriver." + browserName + ".exe", null);
+    	String localBrowserExe = WebDriverConfig.getInstance().getProperty(browserName + ".exe", null);
     	
         if (!localBrowserExe.isEmpty()) {
             return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));

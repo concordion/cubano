@@ -42,7 +42,7 @@ public class HelloWorldFixture {
     public String getGreetingFailure() throws InterruptedException {
     	int attempts = 0;
     			
-    	for (int i = 0; i < 2; i++) {
+    	for (int i = 0; i < 200; i++) {
     		attempts ++;
 			
 	        browser.getDriver().navigate().to("http://google.co.nz");
@@ -85,7 +85,7 @@ public class HelloWorldFixture {
     }
 
     public String getGreetingException() {
-        browser.getDriver().navigate().to("http://google.com");
+//        browser.getDriver().navigate().to("http://google.com");
 
 //        Assert.fail("Frogs legs");
 

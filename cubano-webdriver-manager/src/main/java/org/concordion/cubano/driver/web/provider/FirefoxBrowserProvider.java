@@ -1,10 +1,14 @@
 package org.concordion.cubano.driver.web.provider;
 
 import java.io.File;
+import java.util.Map;
+
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
+import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.internal.ProfilesIni;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
@@ -31,7 +35,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
     @Override
     public WebDriver createDriver() {
-    	boolean useGeckoDriver = WebDriverConfig.getInstance().getPropertyAsBoolean("webdriver." + BROWSER_NAME + ".useGeckoDriver", "true");
+    	boolean useGeckoDriver = WebDriverConfig.getInstance().getPropertyAsBoolean(BROWSER_NAME + ".useGeckoDriver", "true");
     	
     	if (useGeckoDriver) {
     		setupBrowserManager(FirefoxDriverManager.getInstance());
@@ -47,9 +51,36 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         
         capabilities.setCapability("marionette", useGeckoDriver);
         
+        // Profile
+        String profileName = WebDriverConfig.getInstance().getProperty(BROWSER_NAME + ".profile", "");
+        FirefoxProfile profile;
+        
+        if (profileName.isEmpty()) {
+        	profile = new FirefoxProfile();
+        } else {        	
+	        profile = new ProfilesIni().getProfile(profileName);
+	        if (profile == null) {
+	        	File folder = new File(profileName);
+	        	if (folder.exists() && folder.isDirectory()) {
+	        		profile = new FirefoxProfile(folder);
+	        	} else {
+	        		throw new InvalidArgumentException(profileName + " does not match an existing Firefox profile or folder");
+	        	}	        	
+	        }
+        }
+        
+        Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.profile");
+        
+        for (String key : properties.keySet()) {
+        	int start = key.indexOf("[");
+        	int end = key.indexOf("]");
+        	
+        	if (start > 0 && end > start) {
+        		profile.setPreference(key.substring(start + 1, end), properties.get(key));
+        	}
+		}
+        
 		// Work around for FireFox not closing, fix comes from here: https://github.com/mozilla/geckodriver/issues/517
-		FirefoxProfile profile = new FirefoxProfile();
-		
 		profile.setPreference("browser.tabs.remote.autostart", false);
 		profile.setPreference("browser.tabs.remote.autostart.1", false);
 		profile.setPreference("browser.tabs.remote.autostart.2", false);
