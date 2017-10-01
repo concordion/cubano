@@ -102,7 +102,8 @@ Values:
 If you are using/creating a profile this can be further customized using:
 * firefox.profile[any.valid.profile.setting] = value
 
-WARNING: At present if a profile is created or used when using the gecko / marionette driver then it suffers from a memory leak. 
+WARNING: At present if a profile is created or used when using the gecko / marionette driver then it suffers from a memory leak. See https://github.com/mozilla/geckodriver/issues/983 and https://stackoverflow.com/questions/46503366/firefox-memory-leak-using-selenium-3-and-firefoxprofile 
+
 
 
 ### Internet Explorer
