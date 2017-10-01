@@ -23,7 +23,7 @@ public class WebDriverConfig extends Config {
     private String browserProvider;
     private String browserSize;
     private boolean browserMaximized;
-    private int browserDefaultTimeout;
+//    private int browserDefaultTimeout;
     private int restartBrowserTestCount;
 
     private String remoteUserName;
@@ -67,7 +67,7 @@ public class WebDriverConfig extends Config {
         }
         
         restartBrowserTestCount = getPropertyAsInteger("webdriver.resartBrowserTestCount", "0");        
-        browserDefaultTimeout = getPropertyAsInteger("webdriver.defaultTimeout", "0");
+//        browserDefaultTimeout = getPropertyAsInteger("webdriver.defaultTimeout", "0");
         browserSize = getProperty("webdriver.browserSize", null);
         browserMaximized = getPropertyAsBoolean("webdriver.maximized", "false");
 
@@ -125,14 +125,14 @@ public class WebDriverConfig extends Config {
 		return browserMaximized;
 	}
 
-    /**
-     * Default timeout in seconds.
-     *
-     * @return timeout
-     */
-    public int getDefaultTimeout() {
-        return browserDefaultTimeout;
-    }
+//    /**
+//     * Default timeout in seconds.
+//     *
+//     * @return timeout
+//     */
+//    public int getDefaultTimeout() {
+//        return browserDefaultTimeout;
+//    }
     
     /**
      * Number of tests to execute before restarting browser, a value of <= zero means that it will not be restarted.
