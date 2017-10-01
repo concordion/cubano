@@ -34,31 +34,29 @@ import com.google.common.net.MediaType;
 /**
  * Fluent wrapper around {@link HttpURLConnection} with full support for HTTP messages such as GET, POST, HEAD, etc
  * and supports the REST and SOAP protocols and parsing JSON and XML responses.
- * <p>
+ * 
  * <p>
  * This is been designed with as a fluent REST API similar to RestEasy and
  * RestAssurred with the only real difference being that it has great proxy
  * support.
  * </p>
- * <p>
+ * 
  * <p>
  * There are two starting points for creating a rest request:
- * <p>
- * 1. {@code HttpEasy.withDefaults()} - allows you to set some settings that apply to
- * all requests such as configuring a proxy
- * 1. {@code HttpEasy.request()} - performs the actual call, these HTTP methods are implemented: GET, HEAD, POST, PUT, DELETE
  * </p>
- * <p>
+ * <ol>
+ * <li>{@code HttpEasy.withDefaults()} - allows you to set some settings that apply to
+ * all requests such as configuring a proxy</li>
+ * <li>{@code HttpEasy.request()} - performs the actual call, these HTTP methods are implemented: GET, HEAD, POST, PUT, DELETE</li>
+ * </ol>
+ * 
  * <p>
  * Note: if your url can contain weird characters you will want to encode it,
  * something like this: myUrl = URLEncoder.encode(myUrl, "UTF-8");
- * </p>
- * <p>
+ * </p> 
  * <p>
  * <b>Example</b>
  * </p>
- * <p>
- * <p>
  * <pre>
  * HttpEasyReader r = HttpEasy.request()
  *                          .baseURI(someUrl)
@@ -69,17 +67,13 @@ import com.google.common.net.MediaType;
  * String id = r.jsonPath("rows[0].doc._id").getAsString();
  * String rev = r.jsonPath("rows[0].doc._rev").getAsString();
  * </pre>
- * </p>
- * <p>
  * <p>
  * <b>Error Handling</b>
  * </p>
  * <p>
- * <p>
  * An IOException is thrown whenever a call returns a response code that is not part of the SUCCESS
  * family (ie 200-299).
  * </p>
- * <p>
  * <p>
  * In order to prevent an exception being thrown for an expected response use
  * one of the following methods:
@@ -88,10 +82,8 @@ import com.google.common.net.MediaType;
  * * request().doNotFailOn(Family... responseFamily)
  * </p>
  * <p>
- * <p>
  * <b>Authentication</b>
  * </p>
- * <p>
  * <p>
  * Supports two formats
  * <p>
@@ -99,51 +91,36 @@ import com.google.common.net.MediaType;
  * * request().authorization(username, password)
  * </p>
  * <p>
- * <p>
  * <b>Host and Certificate Verification</b>
  * </p>
  * <p>
- * <p>
  * There is no fine grained control, its more of an all or nothing approach:
  * </p>
- * <p>
- * <p>
  * <pre>
  * HttpEasy.withDefaults()
  *      .allowAllHosts()
  *      .trustAllCertificates();
  * </pre>
- * </p>
- * <p>
  * <p>
  * <b>Proxy</b>
  * </p>
  * <p>
- * <p>
  * Only basic authentication is supported, although I believe the domain can be added by included "domain/"
  * in front of the username (not tested)
  * </p>
- * <p>
- * <p>
- * <p>
  * <pre>
  * HttpEasy.withDefaults()
  *     .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(user, password))))
  *     .proxyAuth(userName, password)
  *     .bypassProxyForLocalAddresses(true);
  * </pre>
- * </p>
- * <p>
  * <p>
  * <b>Redirects</b>
  * </p>
  * <p>
- * <p>
  * Redirects are NOT automatically followed - at least for REST base calls - even though the documentation
  * for HttpURLConnection says that it should...
  * </p>
- * <p>
- * <p>
  * <pre>
  * HttpEasyReader response = HttpEasy.request()
  *     .doNotFailOn(Family.REDIRECTION)
@@ -155,12 +132,9 @@ import com.google.common.net.MediaType;
  *     ...
  * }
  * </pre>
- * </p>
- * <p>
  * <p>
  * <b>Logging</b>
  * </p>
- * <p>
  * <p>
  * Logging of requests and responses can be enabled by {@link #logRequestDetails} or, if using Eclipse, the TCP/IP Monitor utility.
  * </p>
@@ -283,12 +257,12 @@ public class HttpEasy {
 
     /**
      * Appends parameter to query portion of url.
-     * <p>
+     * 
      * <ul>
      * <li>If value is null then parameter will not be added</li>
      * <li>If value is empty then parameter will be added as 'name='</li>
      * </ul>
-     *
+     * 
      * @param name  Parameter name
      * @param value Parameter value
      * @return A self reference
@@ -313,7 +287,7 @@ public class HttpEasy {
 
     /**
      * If called will cause the request and response details to be logged.
-     * <p>
+     * 
      * <p>
      * An alternative to this if using Eclipse is to use the TCP/IP monitor
      * </p>
@@ -386,7 +360,7 @@ public class HttpEasy {
 
     /**
      * Add a simple text field, if urlEncodedForm() has been used will try to guess the content type.
-     * <p>
+     * 
      * <p>
      * See {@link #field(String, Object, MediaType, String)}
      * </p>
@@ -401,7 +375,7 @@ public class HttpEasy {
 
     /**
      * Add a simple text field, if urlEncodedForm() has been used will try to guess the content type.
-     * <p>
+     * 
      * <p>
      * See {@link #field(String, Object, MediaType, String)}
      * </p>
@@ -417,7 +391,7 @@ public class HttpEasy {
 
     /**
      * Add a simple text field, if urlEncodedForm() has been used will try to guess the content type.
-     * <p>
+     * 
      * <p>
      * See {@link #field(String, Object, MediaType, String)}
      * </p>
@@ -433,7 +407,7 @@ public class HttpEasy {
 
     /**
      * Add a text field or attach file. If value is not a file then it must be easily converted to a string.
-     * <p>
+     * 
      * <p>
      * See {@link #field(String, Object, MediaType, String)}
      * </p>
@@ -454,7 +428,7 @@ public class HttpEasy {
      * <li>If value is not a file then it must be easily converted to a string</li>
      * <li>If value is an InputStream it is assumed to be a file attachment and the file name must be provided</li>
      * </ul>
-     * <p>
+     * 
      * <p>
      * If urlEncodedForm() or dataForm() have not been called then the form type will be auto selected:
      * if field containing a file or input stream has been added then content type will be set to "multipart/form-data"
@@ -482,7 +456,7 @@ public class HttpEasy {
 
     /**
      * Sets the content type request property to the value of the supplied media type.
-     * <p>
+     * 
      * <p>
      * This can only be called once as passing raw data can only support one text block or binary file.
      * With this in mind files are supported but any other objects must be easily converted to a string value.
@@ -498,7 +472,7 @@ public class HttpEasy {
 
     /**
      * Sets the content type request property to the value of the supplied media type.
-     * <p>
+     * 
      * <p>
      * This can only be called once as passing raw data can only support one text block or binary file.
      * With this in mind files are supported but any other objects must be easily converted to a string value.
