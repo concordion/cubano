@@ -15,7 +15,7 @@ import io.github.bonigarcia.wdm.BrowserManager;
  * Provides everything required to start up a local desktop browser
  * <p>
  * Browser drivers are automatically downloaded as required when requesting a browser: see https://github.com/bonigarcia/webdrivermanager for details
- * TODO: How configure proxy, download location and other customisation
+ * </p>
  *
  * @author Andrew Sumner
  */
