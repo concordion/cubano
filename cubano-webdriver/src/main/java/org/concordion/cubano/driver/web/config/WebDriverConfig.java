@@ -121,7 +121,7 @@ public class WebDriverConfig extends Config {
         proxyPort = getProperty("proxy.port", System.getProperty("http.proxyPort", proxyPort));
         proxyUsername = getProperty("proxy.username", System.getProperty("http.proxyUser", proxyUsername));
         proxyPassword = getProperty("proxy.password", System.getProperty("http.proxyPassword", proxyPassword));
-        nonProxyHosts = getProperty("proxy.nonProxyHosts", System.getProperty("http.nonProxyHosts", nonProxyHosts).replaceAll("|", ","));
+        nonProxyHosts = getProperty("proxy.nonProxyHosts", System.getProperty("http.nonProxyHosts", nonProxyHosts)).replaceAll("\\|", ",");
         nonProxyHosts = nonProxyHosts.isEmpty() ? "localhost,127.0.0.1" : nonProxyHosts;
 
 		// Make all WebDriverManager properties system properties
@@ -158,7 +158,7 @@ public class WebDriverConfig extends Config {
      * @return Path to browser executable
      */
     public String getBrowserExe(String browserName) {
-    	String localBrowserExe = WebDriverConfig.getInstance().getProperty(browserName + ".exe", null);
+    	String localBrowserExe = getProperty(browserName + ".exe", null);
     	
         if (!localBrowserExe.isEmpty()) {
             return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));

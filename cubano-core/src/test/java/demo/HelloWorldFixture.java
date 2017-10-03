@@ -1,20 +1,14 @@
 package demo;
 
 import org.concordion.api.AfterExample;
-import org.concordion.api.AfterSpecification;
 import org.concordion.api.extension.Extension;
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.ext.LoggingFormatterExtension;
 import org.concordion.ext.StoryboardExtension;
 import org.concordion.ext.StoryboardLogListener;
-import org.concordion.ext.StoryboardMarker;
-import org.concordion.ext.storyboard.CardResult;
-import org.concordion.ext.storyboard.StockCardImage;
 import org.concordion.integration.junit4.ConcordionRunner;
-import org.concordion.slf4j.ext.MediaType;
 import org.concordion.slf4j.ext.ReportLogger;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
-import org.junit.Assert;
 import org.junit.runner.RunWith;
 
 @RunWith(ConcordionRunner.class)

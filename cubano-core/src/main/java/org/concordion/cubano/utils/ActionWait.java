@@ -257,7 +257,7 @@ public class ActionWait {
                 return e;
             }
         }
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
     }
 
     private boolean hasMoreTime(Clock clock, long end) {

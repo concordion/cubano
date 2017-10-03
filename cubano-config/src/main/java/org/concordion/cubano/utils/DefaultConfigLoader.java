@@ -10,11 +10,11 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 public class DefaultConfigLoader implements ConfigLoader {
-    private final String CONFIG_FILE = "config.properties";
-    private final String USER_CONFIG_FILE = "user.properties";
+    private static final String CONFIG_FILE = "config.properties";
+    private static final String USER_CONFIG_FILE = "user.properties";
 
     private final Properties properties;
-    private Properties userProperties;
+    private final Properties userProperties;
 
     /** Ensure properties have been loaded before any property is used. */
     public DefaultConfigLoader() {
@@ -23,6 +23,8 @@ public class DefaultConfigLoader implements ConfigLoader {
 
             if (new File(USER_CONFIG_FILE).exists()) {
                 userProperties = loadFile(USER_CONFIG_FILE);
+            } else {
+            	userProperties = null;
             }
         }
     }

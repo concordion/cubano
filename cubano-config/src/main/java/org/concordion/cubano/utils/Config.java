@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.concordion.cubano.utils.CaseSensitiveConfigLoader;
-import org.concordion.cubano.utils.ConfigLoader;
-import org.concordion.cubano.utils.DefaultConfigLoader;
-
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
  * <p>
@@ -91,14 +87,14 @@ public abstract class Config {
      * @return Property value if found, defaultValue if not found
      */
     public String getProperty(String key, String defaultValue) {
-        String value = retrieveProperty(key);
-
-        if (value.isEmpty()) {
-        	value = defaultValue == null ? "" : defaultValue;
-        }
-
-        return value;
-    }
+    	String value = retrieveProperty(key);
+	
+	    if (value.isEmpty()) {
+	    	value = defaultValue == null ? "" : defaultValue;
+	    }
+	
+	    return value;
+	}
     
     public boolean getPropertyAsBoolean(String key, String defaultValue) {
         String value = retrieveProperty(key);
@@ -127,14 +123,10 @@ public abstract class Config {
      * @return Map
      */
     public Map<String, String> getPropertiesStartingWith(String keyPrefix) {
-    	return getPropertiesStartingWith(new CaseSensitiveConfigLoader(), keyPrefix);
-    }
-    
-	public Map<String, String> getPropertiesStartingWith(ConfigLoader loader, String keyPrefix) {
 		Map<String, String> result = new HashMap<>();
 
-		searchPropertiesFrom(loader.getProperties(), keyPrefix, result);
-		searchPropertiesFrom(loader.getUserProperties(), keyPrefix, result);
+		searchPropertiesFrom(properties, keyPrefix, result);
+		searchPropertiesFrom(userProperties, keyPrefix, result);
 
 		return result;
 	}

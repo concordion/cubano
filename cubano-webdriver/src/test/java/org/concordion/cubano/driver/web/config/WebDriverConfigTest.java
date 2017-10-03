@@ -4,6 +4,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -14,21 +16,22 @@ import static org.mockito.Mockito.mock;
 
 public class WebDriverConfigTest {
     @Rule
-    public final RestoreSystemProperties restoreSystemProperties
-            = new RestoreSystemProperties();
+    public final RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties();
+    
+    private Enumeration<String> empty = Collections.enumeration(Collections.<String>emptyList());
+    
 
     @Test
     public void mustSetDefaultProperties() throws Exception {
         Properties properties = mock(Properties.class);
         given(properties.getProperty("environment")).willReturn("UAT");
         given(properties.getProperty("webdriver.browserProvider")).willReturn("firefox");
-//        given(properties.getProperty("webdriver.defaultTimeout")).willReturn("30");
+        given((Enumeration<String>)properties.propertyNames()).willReturn(empty);
 
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getEnvironment(), is("UAT"));
-        assertThat(config.getBrowserProvider(), is("firefox"));
-//        assertThat(config.getDefaultTimeout(), is(30));
+        assertThat(config.getBrowserProvider(), is("org.concordion.cubano.driver.web.provider.firefox"));
         assertThat(config.isProxyRequired(), is(false));
     }
 
@@ -79,6 +82,7 @@ public class WebDriverConfigTest {
         given(userProperties.getProperty("proxy.required")).willReturn("true");
         given(userProperties.getProperty("proxy.host")).willReturn("myotherproxyhost");
         given(userProperties.getProperty("proxy.port")).willReturn("6666");
+        given((Enumeration<String>)userProperties.propertyNames()).willReturn(empty);
 
         WebDriverConfig config = new WebDriverConfig(properties, userProperties);
 
@@ -120,7 +124,7 @@ public class WebDriverConfigTest {
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.getEnvironment(), is("uat"));
-        assertThat(config.getBrowserProvider(), is("chrome"));
+        assertThat(config.getBrowserProvider(), is("org.concordion.cubano.driver.web.provider.chrome"));
     }
 
     @Test
@@ -131,7 +135,7 @@ public class WebDriverConfigTest {
         given(properties.getProperty("firefox.profile")).willReturn("default");
         
         WebDriverConfig config = new WebDriverConfig(properties);
-
+       
         assertThat(config.getBrowserSize(), is("1280x1024"));
         assertThat(config.getBrowserExe("firefox"), is("/bin/firefox"));
         assertThat(config.getProperty("firefox.profile"), is("default"));
@@ -165,6 +169,8 @@ public class WebDriverConfigTest {
         given(properties.getProperty("environment")).willReturn("UAT");
         given(properties.getProperty("webdriver.browserProvider")).willReturn("firefox");
         given(properties.getProperty("webdriver.defaultTimeout")).willReturn("30");
+        given((Enumeration<String>)properties.propertyNames()).willReturn(empty);
+        
         return properties;
     }
 
