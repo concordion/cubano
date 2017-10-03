@@ -4,6 +4,6 @@ dependencies {
     compile 'io.github.bonigarcia:webdrivermanager:1.7.1'
     
     // TODO Why have I had to include this? 
-    compile 'org.apache.commons:commons-io:2.5'
+    //compile 'org.apache.commons:commons-io:2.5'
     
 }

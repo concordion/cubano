@@ -13,10 +13,10 @@ dependencies {
     compile 'org.concordion:concordion-embed-extension:1.1.2'
     compile 'org.concordion:concordion-executeonlyif-extension:0.2.1'
     compile('org.concordion:concordion-logback-extension:2.0.0-SNAPSHOT') {
-        exclude group: 'org.apache.commons', module: 'commons-io'
+        // exclude group: 'org.apache.commons', module: 'commons-io'
     }
     compile 'org.concordion:concordion-storyboard-extension:2.0.0-SNAPSHOT'
     
     // TODO Why have I had to include this? 
-    compile 'org.apache.commons:commons-io:2.5'
+    // compile 'org.apache.commons:commons-io:2.5'
 }

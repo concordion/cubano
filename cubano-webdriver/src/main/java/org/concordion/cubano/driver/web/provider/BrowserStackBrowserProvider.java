@@ -17,7 +17,8 @@ public class BrowserStackBrowserProvider extends RemoteBrowserProvider {
      */
     public BrowserStackBrowserProvider() {
     	//TODO Fix me
-        String browser = null; //WebDriverConfig.getInstance().getBrowser();
+        String browser = null; 
+        //WebDriverConfig.getInstance().getBrowser();
 
         if (browser == null) {
             browser = "";

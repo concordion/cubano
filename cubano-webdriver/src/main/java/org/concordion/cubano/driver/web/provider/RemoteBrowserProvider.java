@@ -158,8 +158,8 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
 //         		-Dhttps.proxyPassword=yarrrrr
 
         try {
-        	String username = null;
-        	String password = null;
+			String username = null;
+			String password = null;
 
             // apply env value
             String userInfo = proxyURL.getUserInfo();

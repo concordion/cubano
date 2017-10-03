@@ -18,7 +18,8 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
      */
     public SauceLabsBrowserProvider() {
     	//TODO Fix me
-        String browser = null; //WebDriverConfig.getInstance().getBrowser();
+        String browser = null; 
+        //WebDriverConfig.getInstance().getBrowser();
 
         if (browser == null) {
             browser = "";

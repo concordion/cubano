@@ -2,28 +2,20 @@ package demo;
 
 import java.util.List;
 
-import org.concordion.api.AfterExample;
-import org.concordion.api.AfterSpecification;
 import org.concordion.api.AfterSuite;
 import org.concordion.api.extension.Extension;
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.ext.LoggingFormatterExtension;
 import org.concordion.ext.StoryboardExtension;
 import org.concordion.ext.StoryboardLogListener;
-import org.concordion.ext.StoryboardMarker;
-import org.concordion.ext.storyboard.CardResult;
-import org.concordion.ext.storyboard.StockCardImage;
 import org.concordion.integration.junit4.ConcordionRunner;
-import org.concordion.slf4j.ext.MediaType;
 import org.concordion.slf4j.ext.ReportLogger;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
-import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 @RunWith(ConcordionRunner.class)

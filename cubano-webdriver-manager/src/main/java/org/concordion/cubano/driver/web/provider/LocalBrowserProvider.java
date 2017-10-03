@@ -44,15 +44,16 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         }
 
         String browserProxy = config.getProxyHost();
-        String browserNoProxyList = config.getNoProxyList();
+        String browserNonProxyHosts = config.getNonProxyHosts();
 
         final org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
         proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
         proxy.setHttpProxy(browserProxy);
         proxy.setFtpProxy(browserProxy);
         proxy.setSslProxy(browserProxy);
-        //TODO This was breaking firefox!
-//        proxy.setNoProxy(browserNoProxyList);
+        
+        //TODO This was breaking firefox! See if needs | rather than ,
+        //proxy.setNoProxy(browserNonProxyHosts);
 
         capabilities.setCapability(CapabilityType.PROXY, proxy);
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
