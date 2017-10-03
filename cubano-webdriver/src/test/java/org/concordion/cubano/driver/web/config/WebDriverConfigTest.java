@@ -36,14 +36,17 @@ public class WebDriverConfigTest {
     public void canSetProxyProperties() {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("true");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost:9999");
+        given(properties.getProperty("proxy.host")).willReturn("myproxyhost");
+        given(properties.getProperty("proxy.port")).willReturn("9999");
         given(properties.getProperty("proxy.username")).willReturn("mydomain\\me");
         given(properties.getProperty("proxy.password")).willReturn("secret");
 
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(config.isProxyRequired(), is(true));
-        assertThat(config.getProxyHost(), is("myproxyhost:9999"));
+        assertThat(config.getProxyHost(), is("myproxyhost"));
+        assertThat(config.getProxyPort(), is("9999"));
+        assertThat(config.getProxyAddress(), is("myproxyhost:9999"));
         assertThat(config.getProxyUser(), is("mydomain\\me"));
         assertThat(config.getProxyPassword(), is("secret"));
     }
@@ -69,16 +72,19 @@ public class WebDriverConfigTest {
     public void userPropertiesOverrideConfigProperties() {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("proxy.required")).willReturn("false");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost:9999");
+        given(properties.getProperty("proxy.host")).willReturn("myproxyhost");
+        given(properties.getProperty("proxy.port")).willReturn("9999");
 
         Properties userProperties = mock(Properties.class);
         given(userProperties.getProperty("proxy.required")).willReturn("true");
-        given(userProperties.getProperty("proxy.host")).willReturn("myotherproxyhost:6666");
+        given(userProperties.getProperty("proxy.host")).willReturn("myotherproxyhost");
+        given(userProperties.getProperty("proxy.port")).willReturn("6666");
 
         WebDriverConfig config = new WebDriverConfig(properties, userProperties);
 
         assertThat(config.isProxyRequired(), is(true));
-        assertThat(config.getProxyHost(), is("myotherproxyhost:6666"));
+        assertThat(config.getProxyHost(), is("myotherproxyhost"));
+        assertThat(config.getProxyPort(), is("6666"));
     }
 
     @Test

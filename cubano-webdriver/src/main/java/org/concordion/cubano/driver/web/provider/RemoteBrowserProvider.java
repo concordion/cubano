@@ -121,7 +121,7 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     private URL getProxyUrl() {
     	WebDriverConfig config = WebDriverConfig.getInstance();
     	
-        String proxyInput = isNullOrEmpty(config.getProxyHost()) ? System.getenv("HTTPS_PROXY") : config.getProxyHost();
+        String proxyInput = isNullOrEmpty(config.getProxyAddress()) ? System.getenv("HTTPS_PROXY") : config.getProxyAddress();
         if (isNullOrEmpty(proxyInput)) {
             return null;
         }

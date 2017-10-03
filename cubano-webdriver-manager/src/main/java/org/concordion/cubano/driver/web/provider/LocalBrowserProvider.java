@@ -22,8 +22,8 @@ import io.github.bonigarcia.wdm.BrowserManager;
 public abstract class LocalBrowserProvider implements BrowserProvider {
 
     protected void setupBrowserManager(BrowserManager instance) {
-    	if (!WebDriverConfig.getInstance().getProxyHost().isEmpty()) {
-    		instance.proxy(WebDriverConfig.getInstance().getProxyHost());
+    	if (!WebDriverConfig.getInstance().getProxyAddress().isEmpty()) {
+    		instance.proxy(WebDriverConfig.getInstance().getProxyAddress());
     		instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
     		instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
         }
@@ -43,7 +43,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
             return;
         }
 
-        String browserProxy = config.getProxyHost();
+        String browserProxy = config.getProxyAddress();
         String browserNonProxyHosts = config.getNonProxyHosts();
 
         final org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
