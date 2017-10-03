@@ -25,11 +25,15 @@ public class CaselessProperties extends Properties {
 
     @Override
     public String getProperty(String key) {
-    	return super.getProperty(lookup.get(key));
+    	String realKey = lookup.get(key);
+    	
+    	return super.getProperty(realKey == null ? key : realKey);
     }
 
     @Override
     public String getProperty(String key, String defaultValue) {
-    	return super.getProperty(lookup.get(key), defaultValue);
+    	String realKey = lookup.get(key);
+    	
+    	return super.getProperty(realKey == null ? key : realKey, defaultValue);
     }
 }

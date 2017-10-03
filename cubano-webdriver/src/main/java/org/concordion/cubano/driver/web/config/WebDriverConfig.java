@@ -66,7 +66,7 @@ public class WebDriverConfig extends Config {
         // Browser
         browserProvider = System.getProperty("browserProvider");
         if (browserProvider == null) {
-        	browserProvider = getProperty("webdriver.browserProvider");
+        	browserProvider = getProperty("webdriver.browserProvider", "FirefoxBrowserProvider");
         }
         
         if (!browserProvider.contains(".")) {

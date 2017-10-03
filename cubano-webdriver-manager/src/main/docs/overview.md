@@ -18,9 +18,10 @@ WebDriver manager supports a number of settings, such as the path to download dr
 
 ##### webdriver.browserProvider
 
-The fully qualified name of the browser provider class, if the package is not included then the supplied value will be prefixed with "org.concordion.cubano.driver.web.provider."
+The fully qualified name of the browser provider class
+* If the package is not included then the supplied value will be prefixed with "org.concordion.cubano.driver.web.provider."
 * This may be overridden by setting the system property browserProvider
-* Will fail if not supplied
+* Will default to FirefoxBrowserProvider if not supplied
 
 ##### webdriver.resartBrowserTestCount
 

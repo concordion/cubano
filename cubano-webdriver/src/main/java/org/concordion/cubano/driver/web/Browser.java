@@ -185,7 +185,6 @@ public class Browser {
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new RuntimeException("Unable to create class " + WebDriverConfig.getInstance().getBrowserProvider(), e);
         }
-
     }
 
     /**
