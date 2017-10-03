@@ -151,7 +151,6 @@ public class WebDriverConfigTest {
         assertThat(System.getProperty("webdriver.timeouts.implicitlywait"), is("0"));
     }
 
-
     @Test
     public void implicitWaitCanBeSet() {
         assertThat(System.getProperty("webdriver.timeouts.implicitlywait"), is(nullValue()));
