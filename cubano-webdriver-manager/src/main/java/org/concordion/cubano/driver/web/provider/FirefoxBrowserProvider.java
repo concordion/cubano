@@ -8,6 +8,7 @@ import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
@@ -43,19 +44,21 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     		setupBrowserManager(FirefoxDriverManager.getInstance());
     	}
 
+    	// TODO remove capabilities and stick with options
 	    DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-
-    	capabilities = new FirefoxOptions().setLogLevel(Level.OFF).addTo(capabilities);
-    	
+	    FirefoxOptions options = new FirefoxOptions();
+	    
+	    options.setLogLevel(FirefoxDriverLogLevel.INFO);
+	    options.setLegacy(!useGeckoDriver);
+	    	    	    		    	
 	    addProxyCapabilities(capabilities);
 	
 	    if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
-	        capabilities.setCapability(FirefoxDriver.BINARY, WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
+	    	options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
 	    }
 	    
-	    capabilities.setCapability("marionette", useGeckoDriver);;
-	    
 	    // Profile
+	    // TODO Should we default to NEW?
 	    String profileName = WebDriverConfig.getInstance().getProperty(BROWSER_NAME + ".profile", "");
 	    if (!profileName.isEmpty()) {
 	        FirefoxProfile profile;
@@ -73,8 +76,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 		        	}	        	
 		        }
 	        }
-	        
-	        
+	        	        
 	        Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.profile");
 	        
 	        for (String key : properties.keySet()) {
@@ -86,10 +88,12 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 	        	}
 			}
 	
-			capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+			options.setProfile(profile);
 	    }
 
-		WebDriver driver = new FirefoxDriver(capabilities);
+	    options.merge(capabilities);
+	    
+		WebDriver driver = new FirefoxDriver(options);
 		
 		setBrowserSize(driver);
  

@@ -35,6 +35,8 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * Add proxy settings to desired capabilities if specified in config file.
      *
      * @param capabilities Desired capabilities
+     * 
+     * TODO Use Options rather than capabilities
      */
     protected void addProxyCapabilities(DesiredCapabilities capabilities) {
         WebDriverConfig config = WebDriverConfig.getInstance();
