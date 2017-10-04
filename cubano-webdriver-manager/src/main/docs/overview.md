@@ -12,22 +12,32 @@ The automatic Selenium WebDriver binaries management functionality is provided b
 
 If proxy settings have been configured for the project, WebDriver Manager will be configured to use the proxy settings.
 
-WebDriver manager supports a number of settings, such as the path to download drivers to.  Any settings in the configuration files starting with 'wdm.' will be passed to WebDriver Manager.
+WebDriver manager supports a number of settings, such as the path to download drivers to.  Any settings in the configuration files starting with 'wdm.' will be passed to WebDriver Manager, documentation for these settings can be found at [https://github.com/bonigarcia/webdrivermanager]( - ).
 
 ## Selenium WebDriver Configuration
 
 ##### webdriver.browserProvider
 
-The fully qualified name of the browser provider class
-* If the package is not included then the supplied value will be prefixed with "org.concordion.cubano.driver.web.provider."
+The fully qualified name of the browser provider class, if using one of the built in provider classes the package name is not required as it will default to "org.concordion.cubano.driver.web.provider".
 * This may be overridden by setting the system property browserProvider
-* Will default to FirefoxBrowserProvider if not supplied
 
-##### webdriver.resartBrowserTestCount
+*Local browser options:*
+* ChromeBrowserProvider
+* EdgeBrowserProvider
+* FirefoxBrowserProvider (default)
+* InternetExplorerBrowserProvider
+* OperaBrowserProvider
+    
+These have been choosen as they are the most commonly used browsers and are supported by the Bonigarcia WebDriver Manager and will automatically download the driver executable required to drive the associated browser. 
 
-* Not yet supported
-* If set to any value greater than zero will cause the browser to restart after that many tests have completed
-* Defaults to 0
+If you wish to use an alternative browser you will need to download the browser driver and create a new class implementing the BrowserProvider interface.
+    
+*Local Selenium Grid:*
+* SeleniumGridBrowserProvider (NOT YET DEVELOPED)
+        
+*Remote Selenium Grid:*
+* BrowserStackBrowserProvider (NEEDS WORK)
+* SauceLabsBrowserProvider (NEEDS WORK)
 
 ##### webdriver.browserSize
 
@@ -115,7 +125,7 @@ Will be populated from the following locations in this order:
 
 ### FireFox
 
-*firefox.useGeckoDriver*
+##### firefox.useGeckoDriver
 
 Up to version 47, the driver used to automate Firefox was an extension included with each client. 
 
@@ -125,26 +135,33 @@ The Gecko driver (previously named wires) is an application server implementing 
 
 For older browsers set this property to false, for newer browsers set this to true (default).
 
-*firefox.exe*
+##### firefox.exe
 
 Specify the location of browser if your firefox installation path is not automatically discoverable, eg:
 * %USERPROFILE%/Documents/Mozilla FireFox Portable/FirefoxPortable.exe
 
-*firefox.profile*
+##### firefox.profile
 
 Specifies the profile name, or full path to a folder, of the firefox profile that you wish to use. There is a good write up on the subject at http://toolsqa.com/selenium-webdriver/custom-firefox-profile.
 
 Values:
-* Not set: no profile will be created and the tests uses a clean profile without any extra add ons
+* (Not set): no profile will be created and the tests uses a clean profile without any extra add ons
 * new: will create a new firefox profile
 * default: will use the profile that all users typically use - this will allow you to use any add ons such as firebug and firepath that you may have installed
 * &lt;custom&gt;: name of any other profile you have configured in firefox - it must exist
 * &lt;path&gt;: directory name of a custom profile: it must exist
 
-If you are using/creating a profile this can be further customized using:
-* firefox.profile[any.valid.profile.setting] = value
-
 WARNING: At present if a profile is created or used when using the gecko / marionette driver then it suffers from a memory leak. See https://github.com/mozilla/geckodriver/issues/983 and https://stackoverflow.com/questions/46503366/firefox-memory-leak-using-selenium-3-and-firefoxprofile 
+
+##### firefox.profile[any.valid.profile.setting] = value
+
+If a profile has been chosen then firefox preferences can be set, for example:
+
+    # Work around for FireFox not closing, fix comes from here: https://github.com/mozilla/geckodriver/issues/517
+    firefox.profile[browser.tabs.remote.autostart] = false
+    firefox.profile[browser.tabs.remote.autostart.1] = false
+    firefox.profile[browser.tabs.remote.autostart.2] = false
+    firefox.profile[browser.tabs.remote.force-enable] = false
 
 
 
