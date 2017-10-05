@@ -145,9 +145,11 @@ Specify the location of browser if your firefox installation path is not automat
 Specifies the profile name, or full path to a folder, of the firefox profile that you wish to use. There is a good write up on the subject at http://toolsqa.com/selenium-webdriver/custom-firefox-profile.
 
 Values:
-* (Not set): no profile will be created and the tests uses a clean profile without any extra add ons
-* new: will create a new firefox profile
-* default: will use the profile that all users typically use - this will allow you to use any add ons such as firebug and firepath that you may have installed
+* (not specified): will create a new firefox profile using ``new FirefoxProfile()`` which is the recommended behaviour for firefox
+* none: no profile will be created 
+* default: will use the profile that all users typically use 
+    * this will allow you to use any add ons such as firebug and firepath that you may have installed
+    * it is a great option for test developers who may use the tests to navigate to a page where they can stop the tests and still have the add-ons they need to inspect the page     
 * &lt;custom&gt;: name of any other profile you have configured in firefox - it must exist
 * &lt;path&gt;: directory name of a custom profile: it must exist
 

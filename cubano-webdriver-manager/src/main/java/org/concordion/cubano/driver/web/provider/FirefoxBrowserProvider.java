@@ -60,10 +60,10 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 	    // Profile
 	    // TODO Should we default to NEW?
 	    String profileName = WebDriverConfig.getInstance().getProperty(BROWSER_NAME + ".profile", "");
-	    if (!profileName.isEmpty()) {
+	    if (!profileName.equalsIgnoreCase("none")) {
 	        FirefoxProfile profile;
 	        	        
-	        if (profileName.equals("new")) {
+	        if (profileName.isEmpty()) {
 	        	profile = new FirefoxProfile();
 	        } else {        	
 		        profile = new ProfilesIni().getProfile(profileName);

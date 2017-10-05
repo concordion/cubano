@@ -34,7 +34,7 @@ public class HelloWorldFixture {
     public String getGreetingFailure() throws InterruptedException {
     	int attempts = 0;
     			
-    	for (int i = 0; i < 2; i++) {
+    	for (int i = 0; i < 1; i++) {
     		attempts ++;
 			
 	        browser.getDriver().navigate().to("http://google.co.nz");

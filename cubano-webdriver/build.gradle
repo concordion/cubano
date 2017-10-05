@@ -1,21 +1,10 @@
 
-ext {
-    seleniumVersion = '3.6.0'
-}
-
 dependencies {
 	compile project(':cubano-config')
 	compile project(':cubano-http')
 
     // Selenium WebDriver    
-    compile "org.seleniumhq.selenium:selenium-java:${seleniumVersion}"
-    /*
-    compile "org.seleniumhq.selenium:selenium-firefox-driver:${seleniumVersion}"
-    compile "org.seleniumhq.selenium:selenium-chrome-driver:${seleniumVersion}"
-    compile "org.seleniumhq.selenium:selenium-ie-driver:${seleniumVersion}"    
-    compile "org.seleniumhq.selenium:selenium-edge-driver:${seleniumVersion}"
-    compile "org.seleniumhq.selenium:selenium-opera-driver:${seleniumVersion}"
-	*/
+    compile "org.seleniumhq.selenium:selenium-java:3.6.0"
 	
 	// TODO Move code from MSD to get this
     // Html Elements
