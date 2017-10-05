@@ -8,8 +8,6 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
-
 import io.github.bonigarcia.wdm.BrowserManager;
 
 /**
@@ -23,13 +21,13 @@ import io.github.bonigarcia.wdm.BrowserManager;
 public abstract class LocalBrowserProvider implements BrowserProvider {
 
     protected void setupBrowserManager(BrowserManager instance) {
-    	if (!WebDriverConfig.getInstance().getProxyAddress().isEmpty()) {
-    		instance.proxy(WebDriverConfig.getInstance().getProxyAddress());
-    		instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
-    		instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
+	    	if (!WebDriverConfig.getInstance().getProxyAddress().isEmpty()) {
+	    		instance.proxy(WebDriverConfig.getInstance().getProxyAddress());
+	    		instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
+	    		instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
         }
         
-    	instance.setup();
+    		instance.setup();
     }
     
     

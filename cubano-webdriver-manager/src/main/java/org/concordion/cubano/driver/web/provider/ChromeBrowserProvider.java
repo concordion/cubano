@@ -18,9 +18,9 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
      */
 	@Override
     public WebDriver createDriver() {
-    	setupBrowserManager(ChromeDriverManager.getInstance());
-
-    	ChromeOptions options = new ChromeOptions();
+	    	setupBrowserManager(ChromeDriverManager.getInstance());
+	
+	    	ChromeOptions options = new ChromeOptions();
 
         addProxyCapabilities(options);
 
@@ -55,55 +55,55 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
     }
 	
 	private void addCapabilities(ChromeOptions options) {
-    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.capability.", true);
-    	
-    	for (String key : settings.keySet()) {
+	    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.capability.", true);
+	    	
+	    	for (String key : settings.keySet()) {
        		options.setCapability(key, settings.get(key));
 		}
     }
     
     private void addArguments(ChromeOptions options) {
-    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.argument.", true);
-    	
-    	options.addArguments("test-type");
-    	
-    	for (String key : settings.keySet()) {
-    		options.addArguments(settings.get(key));
+		    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.argument.", true);
+		    	
+		    	options.addArguments("test-type");
+		    	
+		    	for (String key : settings.keySet()) {
+		    		options.addArguments(settings.get(key));
 		}
     }
 
 	private void addOptions(ChromeOptions options) {
 		Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.option.", true);
     	
-    	for (String key : settings.keySet()) {
-    		options.setExperimentalOption(key, settings.get(key));
+	    	for (String key : settings.keySet()) {
+	    		options.setExperimentalOption(key, settings.get(key));
 		}
 	}
 
     private void addPreferences(ChromeOptions options) {
-    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.preference.", true);
-
-    	Map<String, Object> prefs = new HashMap<>();
-    	
-    	for (String key : settings.keySet()) {
-    		prefs.put(key, settings.get(key));
-		}
-    	
-    	if (!prefs.isEmpty()) {
-    		options.setExperimentalOption("prefs", prefs);
-    	}
+	    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.preference.", true);
+	
+	    	Map<String, Object> prefs = new HashMap<>();
+	    	
+	    	for (String key : settings.keySet()) {
+	    		prefs.put(key, settings.get(key));
+			}
+	    	
+	    	if (!prefs.isEmpty()) {
+	    		options.setExperimentalOption("prefs", prefs);
+	    	}
     } 
 
     private void addExtensions(ChromeOptions options) {
-    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.extension.", true);
-    	String projectPath = new File("").getAbsolutePath();
-    	
-    	for (String key : settings.keySet()) {
-    		String extension = settings.get(key);
-    		    		
-    		extension = extension.replace("%PROJECT%", projectPath);
-    		
-    		options.addExtensions(new File(extension));
+	    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.extension.", true);
+	    	String projectPath = new File("").getAbsolutePath();
+	    	
+	    	for (String key : settings.keySet()) {
+	    		String extension = settings.get(key);
+	    		    		
+	    		extension = extension.replace("%PROJECT%", projectPath);
+	    		
+	    		options.addExtensions(new File(extension));
 		}		
 	}
 }

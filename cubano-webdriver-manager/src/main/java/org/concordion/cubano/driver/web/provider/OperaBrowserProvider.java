@@ -1,11 +1,11 @@
 package org.concordion.cubano.driver.web.provider;
 
+import java.util.Map;
+
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.opera.OperaOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
-
 import io.github.bonigarcia.wdm.OperaDriverManager;
 
 public class OperaBrowserProvider extends LocalBrowserProvider {
@@ -16,7 +16,7 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
      */
 	@Override
 	public WebDriver createDriver() {
-    	setupBrowserManager(OperaDriverManager.getInstance());
+    		setupBrowserManager(OperaDriverManager.getInstance());
 
         OperaOptions options = new OperaOptions();
         
@@ -26,10 +26,20 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
             options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
         }
 
+        addCapabilities(options);
+        
         WebDriver driver = new OperaDriver(options);
         
         setBrowserSize(driver);
         
         return driver;
     }
+	
+	private void addCapabilities(OperaOptions options) {
+	    	Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("opera.capability.", true);
+	    	
+	    	for (String key : settings.keySet()) {
+	   		options.setCapability(key, settings.get(key));
+		}
+	}
 }

@@ -27,15 +27,18 @@ The fully qualified name of the browser provider class, if using one of the buil
 * FirefoxBrowserProvider (default)
 * InternetExplorerBrowserProvider
 * OperaBrowserProvider
+* SafarfiBrowserProvider (NOT YET DEVELOPED)
     
 These have been choosen as they are the most commonly used browsers and are supported by the Bonigarcia WebDriver Manager and will automatically download the driver executable required to drive the associated browser. 
 
 If you wish to use an alternative browser you will need to download the browser driver and create a new class implementing the BrowserProvider interface.
     
 *Local Selenium Grid:*
+
 * SeleniumGridBrowserProvider (NOT YET DEVELOPED)
         
 *Remote Selenium Grid:*
+
 * BrowserStackBrowserProvider (NEEDS WORK)
 * SauceLabsBrowserProvider (NEEDS WORK)
 
@@ -163,6 +166,8 @@ Some preferences you may want to consider:
 
 ### Edge
 
+##### ie.capability.&lt;any.valid.capability&gt;
+
 
 ### FireFox
 
@@ -215,8 +220,16 @@ Sets capabilities, for example:
 
 ### Internet Explorer
 
+##### ie.capability.&lt;any.valid.capability&gt;
+
+Sets capabilities
 
 ### Opera
 
+##### opera.capability.&lt;any.valid.capability&gt;
 
-### Phantom JS
+##### opera.exe
+
+Specify the location of browser if your firefox installation path is not automatically discoverable, eg:
+* %USERPROFILE%/Documents/Mozilla FireFox Portable/FirefoxPortable.exe
+
