@@ -2,6 +2,7 @@ package org.concordion.cubano.driver.web.provider;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
@@ -16,7 +17,7 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
 	public WebDriver createDriver() {
     	setupBrowserManager(InternetExplorerDriverManager.getInstance());
 
-        DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
+        InternetExplorerOptions options = new InternetExplorerOptions();
 
         // capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         // "ignore", "accept", or "dismiss".
@@ -24,9 +25,9 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
 
         // capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
 
-        addProxyCapabilities(capabilities);
+        addProxyCapabilities(options);
 
-        WebDriver driver = new InternetExplorerDriver(capabilities);
+        WebDriver driver = new InternetExplorerDriver(options);
         
         setBrowserSize(driver);
         

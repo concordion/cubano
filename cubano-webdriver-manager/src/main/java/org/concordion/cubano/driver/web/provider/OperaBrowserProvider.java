@@ -18,17 +18,15 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
 	public WebDriver createDriver() {
     	setupBrowserManager(OperaDriverManager.getInstance());
 
-        DesiredCapabilities capabilities = DesiredCapabilities.operaBlink();
-
-        addProxyCapabilities(capabilities);
+        OperaOptions options = new OperaOptions();
+        
+        addProxyCapabilities(options);
 
         if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
-            OperaOptions options = new OperaOptions();
             options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
-            capabilities.setCapability(OperaOptions.CAPABILITY, options);
         }
 
-        WebDriver driver = new OperaDriver(capabilities);
+        WebDriver driver = new OperaDriver(options);
         
         setBrowserSize(driver);
         

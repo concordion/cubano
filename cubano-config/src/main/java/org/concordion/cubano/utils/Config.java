@@ -115,7 +115,7 @@ public abstract class Config {
 
         return Integer.valueOf(value);
     }
-    
+        
     /**
      * Returns a map of key value pairs of properties starting with a prefix.
      * 
@@ -123,15 +123,26 @@ public abstract class Config {
      * @return Map
      */
     public Map<String, String> getPropertiesStartingWith(String keyPrefix) {
+    	return getPropertiesStartingWith(keyPrefix, false);
+	}
+    
+    /**
+     * Returns a map of key value pairs of properties starting with a prefix.
+     * 
+     * @param keyPrefix Search string
+     * @param trimPrefix Remove prefix from key in returned set
+     * @return Map
+     */
+    public Map<String, String> getPropertiesStartingWith(String keyPrefix, boolean trimPrefix) {
 		Map<String, String> result = new HashMap<>();
 
-		searchPropertiesFrom(properties, keyPrefix, result);
-		searchPropertiesFrom(userProperties, keyPrefix, result);
+		searchPropertiesFrom(properties, keyPrefix, trimPrefix, result);
+		searchPropertiesFrom(userProperties, keyPrefix, trimPrefix, result);
 
-		return result;
-	}
+		return result;    	
+    }
 
-	private void searchPropertiesFrom(Properties properties, String keyPrefix, Map<String, String> result) {
+	private void searchPropertiesFrom(Properties properties, String keyPrefix, boolean trimPrefix, Map<String, String> result) {
 		if (properties == null) {
 			return;
 		}
@@ -143,6 +154,10 @@ public abstract class Config {
 			String propValue = properties.getProperty(propName);
 
 			if (propName.startsWith(keyPrefix)) {
+				if (trimPrefix) {
+					propName = propName.substring(keyPrefix.length());
+				}
+				
 				result.put(propName, propValue);
 			}
 		}

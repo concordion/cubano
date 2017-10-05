@@ -2,6 +2,7 @@ package org.concordion.cubano.driver.web.provider;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import io.github.bonigarcia.wdm.EdgeDriverManager;
@@ -15,11 +16,11 @@ public class EdgeBrowserProvider extends LocalBrowserProvider {
 	public WebDriver createDriver() {
     	setupBrowserManager(EdgeDriverManager.getInstance());
 
-        DesiredCapabilities capabilities = DesiredCapabilities.edge();
+    	EdgeOptions options = new EdgeOptions();
+        
+        addProxyCapabilities(options);
 
-        addProxyCapabilities(capabilities);
-
-        WebDriver driver = new EdgeDriver(capabilities);
+        WebDriver driver = new EdgeDriver(options);
         
         setBrowserSize(driver);
         

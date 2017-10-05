@@ -44,14 +44,12 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     		setupBrowserManager(FirefoxDriverManager.getInstance());
     	}
 
-    	// TODO remove capabilities and stick with options
-	    DesiredCapabilities capabilities = DesiredCapabilities.firefox();
 	    FirefoxOptions options = new FirefoxOptions();
 	    
 	    options.setLogLevel(FirefoxDriverLogLevel.INFO);
 	    options.setLegacy(!useGeckoDriver);
 	    	    	    		    	
-	    addProxyCapabilities(capabilities);
+	    addProxyCapabilities(options);
 	
 	    if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
 	    	options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
@@ -77,21 +75,12 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 		        }
 	        }
 	        	        
-	        Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.profile");
+	        addProfileProperties(profile);
 	        
-	        for (String key : properties.keySet()) {
-	        	int start = key.indexOf("[");
-	        	int end = key.indexOf("]");
-	        	
-	        	if (start > 0 && end > start) {
-	        		profile.setPreference(key.substring(start + 1, end), properties.get(key));
-	        	}
-			}
-	
 			options.setProfile(profile);
 	    }
 
-	    options.merge(capabilities);
+	    addCapabilities(options);
 	    
 		WebDriver driver = new FirefoxDriver(options);
 		
@@ -99,4 +88,20 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
  
         return driver;
     }
+    
+    private void addProfileProperties(FirefoxProfile profile) {
+    	Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.profile.", true);
+    	
+    	for (String key : properties.keySet()) {
+       		profile.setPreference(key, properties.get(key));
+		}
+    }
+    
+    private void addCapabilities(FirefoxOptions options) {
+    	Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.capability.", true);
+    	
+    	for (String key : properties.keySet()) {
+       		options.setCapability(key, properties.get(key));
+		}
+    }    
 }

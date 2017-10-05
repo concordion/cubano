@@ -119,6 +119,47 @@ Will be populated from the following locations in this order:
 
 ### Chrome
 
+Documentation for the various options is at [https://sites.google.com/a/chromium.org/chromedriver/capabilities]( - ).
+
+##### firefox.capability.&lt;any.valid.capability&gt;
+
+Set desired capabilities.
+
+##### chrome.extension.&lt;number&gt;
+
+"number" is meaningless but must be unique. The path must point to a valid file
+
+If the path contains "%PROJECT%" it will be replaced with root folder of project
+
+##### chrome.argument.&lt;number&gt;
+
+"number" is meaningless but must be unique. The value must be a valid chrome argument.
+
+Will always add argument test-type
+
+// More workarounds https://stackoverflow.com/questions/42979877/chrome-browser-org-openqa-selenium-webdriverexception-unknown-error-cannot-get
+		options.addArguments("disable-infobars");
+		options.addArguments("--disable-popup-blocking");
+		
+
+##### chrome.option..&lt;any.valid.option&gt;
+
+Some options you may want to consider:
+
+[https://stackoverflow.com/questions/43797119/failed-to-load-extension-from-popup-box-while-running-selenium-scripts]( - )
+
+	chrome.option.useAutomationExtension = false
+
+##### chrome.preference.&lt;any.valid.preference&gt;
+
+Some preferences you may want to consider:
+
+[https://stackoverflow.com/questions/43797119/failed-to-load-extension-from-popup-box-while-running-selenium-scripts]( - )
+
+	chrome.preference.useAutomationExtension = false
+
+
+
 
 ### Edge
 
@@ -155,16 +196,21 @@ Values:
 
 WARNING: At present if a profile is created or used when using the gecko / marionette driver then it suffers from a memory leak. See https://github.com/mozilla/geckodriver/issues/983 and https://stackoverflow.com/questions/46503366/firefox-memory-leak-using-selenium-3-and-firefoxprofile 
 
-##### firefox.profile[any.valid.profile.setting] = value
+##### firefox.profile.&lt;any.valid.profile.setting&gt;
 
 If a profile has been chosen then firefox preferences can be set, for example:
 
     # Work around for FireFox not closing, fix comes from here: https://github.com/mozilla/geckodriver/issues/517
-    firefox.profile[browser.tabs.remote.autostart] = false
-    firefox.profile[browser.tabs.remote.autostart.1] = false
-    firefox.profile[browser.tabs.remote.autostart.2] = false
-    firefox.profile[browser.tabs.remote.force-enable] = false
+    firefox.profile.browser.tabs.remote.autostart = false
+    firefox.profile.browser.tabs.remote.autostart.1 = false
+    firefox.profile.browser.tabs.remote.autostart.2 = false
+    firefox.profile.browser.tabs.remote.force-enable = false
 
+##### firefox.capability.&lt;any.valid.capability&gt;
+
+Sets capabilities, for example:
+ 
+    firefox.capability.acceptSslCerts = false
 
 
 ### Internet Explorer

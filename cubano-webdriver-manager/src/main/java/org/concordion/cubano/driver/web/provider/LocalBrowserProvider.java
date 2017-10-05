@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -31,14 +32,13 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     	instance.setup();
     }
     
+    
     /**
      * Add proxy settings to desired capabilities if specified in config file.
      *
-     * @param capabilities Desired capabilities
-     * 
-     * TODO Use Options rather than capabilities
+     * @param capabilities Options  
      */
-    protected void addProxyCapabilities(DesiredCapabilities capabilities) {
+    protected void addProxyCapabilities(MutableCapabilities capabilities) {
         WebDriverConfig config = WebDriverConfig.getInstance();
         
         if (!config.isProxyRequired()) {
@@ -54,7 +54,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         proxy.setFtpProxy(browserProxy);
         proxy.setSslProxy(browserProxy);
         
-        //TODO This was breaking firefox! See if needs | rather than ,
+        //TODO This was breaking firefox! 
         //proxy.setNoProxy(browserNonProxyHosts);
 
         capabilities.setCapability(CapabilityType.PROXY, proxy);
