@@ -20,114 +20,6 @@ public class WebDriverConfigTest {
     public final RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties();
     
     private Enumeration<String> empty = Collections.enumeration(Collections.<String>emptyList());
-    
-
-    @Test
-    public void mustSetDefaultProperties() throws Exception {
-        Properties properties = mock(Properties.class);
-        given(properties.getProperty("environment")).willReturn("UAT");
-        given(properties.getProperty("webdriver.browserProvider")).willReturn("firefox");
-        given((Enumeration<String>)properties.propertyNames()).willReturn(empty);
-
-        WebDriverConfig config = new WebDriverConfig(properties);
-
-        assertThat(config.getEnvironment(), is("UAT"));
-        assertThat(config.getBrowserProvider(), is("org.concordion.cubano.driver.web.provider.firefox"));
-        assertThat(config.isProxyRequired(), is(false));
-    }
-
-    @Test
-    public void canSetProxyProperties() {
-        Properties properties = givenDefaultProperties();
-        given(properties.getProperty("proxy.required")).willReturn("true");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost");
-        given(properties.getProperty("proxy.port")).willReturn("9999");
-        given(properties.getProperty("proxy.username")).willReturn("mydomain\\me");
-        given(properties.getProperty("proxy.password")).willReturn("secret");
-
-        WebDriverConfig config = new WebDriverConfig(properties);
-
-        assertThat(config.isProxyRequired(), is(true));
-        assertThat(config.getProxyHost(), is("myproxyhost"));
-        assertThat(config.getProxyPort(), is("9999"));
-        assertThat(config.getProxyAddress(), is("myproxyhost:9999"));
-        assertThat(config.getProxyUser(), is("mydomain\\me"));
-        assertThat(config.getProxyPassword(), is("secret"));
-    }
-
-    
-    @Test
-    public void canSetProxyPropertiesEvenIfProxyIsFalse() {
-        // TODO Since proxy is used for multiple purposes. Suggest we need to split these different proxies out.
-        Properties properties = givenDefaultProperties();
-        given(properties.getProperty("proxy.required")).willReturn("false");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost1");
-        given(properties.getProperty("proxy.username")).willReturn("me1");
-        given(properties.getProperty("proxy.password")).willReturn("secret1");
-
-        WebDriverConfig config = new WebDriverConfig(properties);
-
-        assertThat(config.isProxyRequired(), is(false));
-        assertThat(config.getProxyHost(), is("myproxyhost1"));
-        assertThat(config.getProxyUser(), is("me1"));
-        assertThat(config.getProxyPassword(), is("secret1"));
-    }
-
-    @Test
-    public void userPropertiesOverrideConfigProperties() {
-        Properties properties = givenDefaultProperties();
-        given(properties.getProperty("proxy.required")).willReturn("false");
-        given(properties.getProperty("proxy.host")).willReturn("myproxyhost");
-        given(properties.getProperty("proxy.port")).willReturn("9999");
-
-        Properties userProperties = mock(Properties.class);
-        given(userProperties.getProperty("proxy.required")).willReturn("true");
-        given(userProperties.getProperty("proxy.host")).willReturn("myotherproxyhost");
-        given(userProperties.getProperty("proxy.port")).willReturn("6666");
-        given((Enumeration<String>)userProperties.propertyNames()).willReturn(empty);
-
-        WebDriverConfig config = new WebDriverConfig(properties, userProperties);
-
-        assertThat(config.isProxyRequired(), is(true));
-        assertThat(config.getProxyHost(), is("myotherproxyhost"));
-        assertThat(config.getProxyPort(), is("6666"));
-    }
-
-    @Test
-    public void environmentPropertiesOverrideDefaultProperties() {
-        Properties properties = givenDefaultProperties();
-        given(properties.getProperty("environment")).willReturn("SIT");
-//        given(properties.getProperty("SIT.webdriver.defaultTimeout")).willReturn("20");
-        given(properties.getProperty("webdriver.defaultTimeout")).willReturn("30");
-
-        WebDriverConfig config = new WebDriverConfig(properties);
-
-//        assertThat(config.getDefaultTimeout(), is(20));
-    }
-
-    @Test
-    public void systemPropertiesAreLowercase() {
-        Properties properties = givenDefaultProperties();
-        System.setProperty("environment", "TEST");
-
-        WebDriverConfig config = new WebDriverConfig(properties);
-
-        assertThat(config.getEnvironment(), is("test"));
-    }
-
-    @Test
-    public void systemPropertiesOverrideProperties() {
-        Properties properties = givenDefaultProperties();
-        System.setProperty("environment", "uat");
-        given(properties.getProperty("environment")).willReturn("SIT");
-        System.setProperty("browserProvider", "chrome");
-        given(properties.getProperty("webdriver.browserProvider")).willReturn("firefox");
-
-        WebDriverConfig config = new WebDriverConfig(properties);
-
-        assertThat(config.getEnvironment(), is("uat"));
-        assertThat(config.getBrowserProvider(), is("org.concordion.cubano.driver.web.provider.chrome"));
-    }
 
     @Test
     public void localBrowserSettings() {
@@ -169,7 +61,6 @@ public class WebDriverConfigTest {
         Properties properties = mock(Properties.class);
         given(properties.getProperty("environment")).willReturn("UAT");
         given(properties.getProperty("webdriver.browserProvider")).willReturn("firefox");
-        given(properties.getProperty("webdriver.defaultTimeout")).willReturn("30");
         given((Enumeration<String>)properties.propertyNames()).willReturn(empty);
         
         return properties;

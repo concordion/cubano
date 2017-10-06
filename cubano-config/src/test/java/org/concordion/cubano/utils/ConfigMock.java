@@ -8,6 +8,10 @@ public class ConfigMock extends Config {
 		super(properties);
 	}
 	
+	public ConfigMock(Properties properties, Properties userProperties) {
+		super(properties, userProperties);
+	}
+	
 	@Override
 	protected void loadProperties() {
 		

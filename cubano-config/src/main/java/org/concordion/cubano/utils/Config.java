@@ -73,7 +73,7 @@ public abstract class Config {
     
     protected void loadSharedProperties() {
         // Try environment variable first
-        environment = System.getProperty("environment", "").toLowerCase();
+        environment = System.getProperty("environment", "");
 
         if (environment.isEmpty()) {
             environment = getProperty("environment");
@@ -110,25 +110,22 @@ public abstract class Config {
 	        
 	        nonProxyHosts = System.getenv("NO_PROXY");
         } else {
+        		proxyHost = "";
         		proxyPort = 80;
         }
         
         proxyIsRequired = getPropertyAsBoolean("proxy.required", null);
-        proxyHost = proxyIsRequired ? getProperty("proxy.host") : getProperty("proxy.host", System.getProperty("http.proxyHost", proxyHost));
+        proxyHost = getProperty("proxy.host", System.getProperty("http.proxyHost", proxyHost));
+        if (proxyIsRequired && proxyHost.isEmpty()) {
+        		getProperty("proxy.host");
+        }
         proxyPort = getPropertyAsInteger("proxy.port", System.getProperty("http.proxyPort", String.valueOf(proxyPort)));
         proxyUsername = getProperty("proxy.username", System.getProperty("http.proxyUser", proxyUsername));
         proxyPassword = getProperty("proxy.password", System.getProperty("http.proxyPassword", proxyPassword));
         nonProxyHosts = getProperty("proxy.nonProxyHosts", System.getProperty("http.nonProxyHosts", nonProxyHosts)).replaceAll("\\|", ",");
         nonProxyHosts = nonProxyHosts.isEmpty() ? "localhost,127.0.0.1" : nonProxyHosts;
-
-		// Make all WebDriverManager properties system properties
-		Map<String, String> result = getPropertiesStartingWith("wdm.");
-
-		for (String key : result.keySet()) {
-			System.setProperty(key, result.get(key));
-		}
     }
-
+    
     private URL getProxyUrl() {
     		String proxyInput = System.getenv("HTTP_PROXY");
     	        
@@ -221,10 +218,10 @@ public abstract class Config {
      * @return Property value if found, throws exception if not found
      */
     public String getProperty(String key) {
-    	String value = retrieveProperty(key);
+    		String value = retrieveProperty(key);
 
         if (value.isEmpty()) {
-            throw new RuntimeException(String.format("Unable to find property %s", key));
+            throw new IllegalArgumentException(String.format("Unable to find property %s", key));
         }
 
         return value;
@@ -238,10 +235,10 @@ public abstract class Config {
      * @return Property value if found, defaultValue if not found
      */
     public String getProperty(String key, String defaultValue) {
-    	String value = retrieveProperty(key);
+    		String value = retrieveProperty(key);
 	
 	    if (value.isEmpty()) {
-	    	value = defaultValue == null ? "" : defaultValue;
+	    		value = defaultValue == null ? "" : defaultValue;
 	    }
 	
 	    return value;
@@ -251,7 +248,7 @@ public abstract class Config {
         String value = retrieveProperty(key);
 
         if (value.isEmpty()) {
-        	value = defaultValue == null ? "false" : defaultValue;
+        		value = defaultValue == null ? "false" : defaultValue;
         }
 
         return Boolean.valueOf(value);
@@ -261,7 +258,7 @@ public abstract class Config {
         String value = retrieveProperty(key);
 
         if (value.isEmpty()) {
-        	value = defaultValue == null ? "0" : defaultValue;
+        		value = defaultValue == null ? "0" : defaultValue;
         }
 
         return Integer.valueOf(value);
@@ -274,7 +271,7 @@ public abstract class Config {
      * @return Map
      */
     public Map<String, String> getPropertiesStartingWith(String keyPrefix) {
-    	return getPropertiesStartingWith(keyPrefix, false);
+    		return getPropertiesStartingWith(keyPrefix, false);
 	}
     
     /**
