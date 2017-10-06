@@ -1,9 +1,15 @@
 package org.concordion.cubano.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
@@ -21,6 +27,14 @@ public abstract class Config {
     private Properties properties;
     private Properties userProperties = null;
     private String environment = null;
+    
+    // Proxy
+    private boolean proxyIsRequired;
+    private String proxyHost;
+    private int proxyPort;
+    private String proxyUsername;
+    private String proxyPassword;
+    private String nonProxyHosts;
     
     /**
      * @return Configured environment.
@@ -50,18 +64,155 @@ public abstract class Config {
     protected Config(Properties properties, Properties userProperties) {
         this.properties = properties;
         this.userProperties = userProperties;
-        
+
+        loadSharedProperties();
+        loadProperties();
+    }
+
+    protected abstract void loadProperties();
+    
+    protected void loadSharedProperties() {
         // Try environment variable first
         environment = System.getProperty("environment", "").toLowerCase();
 
         if (environment.isEmpty()) {
             environment = getProperty("environment");
         }
+        
+        // Proxy
+        URL proxyUrl = getProxyUrl();
+        
+        if (proxyUrl != null) {
+	        	proxyHost = proxyUrl.getHost();
+	        	proxyPort = proxyUrl.getPort();
+	        	        			
+	        	String userInfo = proxyUrl.getUserInfo();
 
-        loadProperties();
+            if (userInfo != null) {
+                StringTokenizer st = new StringTokenizer(userInfo, ":");
+
+                try {
+					proxyUsername = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
+					proxyPassword = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
+				} catch (UnsupportedEncodingException e) {
+					// TODO log this
+					// do nothing
+				}
+            }
+	        
+	        if (proxyUsername == null) { 
+	        		proxyUsername = System.getenv("HTTP_PROXY_USER");
+	        }
+	        
+	        if (proxyPassword == null) {
+	        		proxyPassword = System.getenv("HTTP_PROXY_PASS");
+	        }
+	        
+	        nonProxyHosts = System.getenv("NO_PROXY");
+        } else {
+        		proxyPort = 80;
+        }
+        
+        proxyIsRequired = getPropertyAsBoolean("proxy.required", null);
+        proxyHost = proxyIsRequired ? getProperty("proxy.host") : getProperty("proxy.host", System.getProperty("http.proxyHost", proxyHost));
+        proxyPort = getPropertyAsInteger("proxy.port", System.getProperty("http.proxyPort", String.valueOf(proxyPort)));
+        proxyUsername = getProperty("proxy.username", System.getProperty("http.proxyUser", proxyUsername));
+        proxyPassword = getProperty("proxy.password", System.getProperty("http.proxyPassword", proxyPassword));
+        nonProxyHosts = getProperty("proxy.nonProxyHosts", System.getProperty("http.nonProxyHosts", nonProxyHosts)).replaceAll("\\|", ",");
+        nonProxyHosts = nonProxyHosts.isEmpty() ? "localhost,127.0.0.1" : nonProxyHosts;
+
+		// Make all WebDriverManager properties system properties
+		Map<String, String> result = getPropertiesStartingWith("wdm.");
+
+		for (String key : result.keySet()) {
+			System.setProperty(key, result.get(key));
+		}
     }
 
-    protected abstract void loadProperties();
+    private URL getProxyUrl() {
+    		String proxyInput = System.getenv("HTTP_PROXY");
+    	        
+        try {
+	        	if (proxyInput != null) {
+	        		return new URL(proxyInput.matches("^http[s]?://.*$") ? proxyInput : "http://" + proxyInput);
+	        	}
+        } catch (MalformedURLException e) {
+        	// TODO
+//            log.error("Invalid proxy url {}", proxyInput, e);
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Whether a proxy should be configured for accessing the test application or not, regardless of means of accessing the test 
+     * application, e.g. web browser or api request.
+     *
+     * @return true or false
+     */
+    public boolean isProxyRequired() {
+        return proxyIsRequired;
+    }
+
+    /**
+     * The hostname, or address, of the proxy server.
+     */
+    public String getProxyHost() {
+        return proxyHost;
+    }
+    
+    /**
+     * The port number of the proxy server
+     */
+    public int getProxyPort() {
+        return proxyPort;
+    }
+    
+    /**
+     * The hostname and port of the proxy server in the format host:port.
+     *
+     * @return host:port
+     */
+    public String getProxyAddress() {
+	    	if (proxyHost.isEmpty()) {
+	    		return "";
+	    	}
+	    	
+	    	return proxyHost + ":" + String.valueOf(proxyPort);
+    }
+
+    /**
+     * Username to authenticate connections through the proxy server 
+     *
+     * @return username
+     */
+    public String getProxyUser() {
+        return proxyUsername;
+    }
+
+    /**
+     * Password to authenticate connections through the proxy server.
+     */
+    public String getProxyPassword() {
+        return proxyPassword;
+    }
+
+    /**
+     * Indicates the hosts that should be accessed without going through the proxy. Typically this defines internal hosts. 
+     * The value of this property is a list of hosts, separated by the '|' character. 
+     * In addition the wildcard character '*' can be used for pattern matching. 
+     * 
+     * <p>
+     * For example: proxy.nonProxyHosts=*.foo.com,localhost will indicate that every hosts in the foo.com domain and the localhost should be accessed directly
+     * even if a proxy server is specified.
+     * </p>
+     * <p>
+     * Defaults to "localhost,127.0.0.1". 
+     * </p> 
+     */
+    public String getNonProxyHosts() {
+        return nonProxyHosts;
+    }
 
     /**
      * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".

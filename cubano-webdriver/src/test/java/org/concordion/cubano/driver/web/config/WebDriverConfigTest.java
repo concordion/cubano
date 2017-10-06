@@ -3,6 +3,7 @@ package org.concordion.cubano.driver.web.config;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
+import org.mockito.Mockito;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -54,6 +55,7 @@ public class WebDriverConfigTest {
         assertThat(config.getProxyPassword(), is("secret"));
     }
 
+    
     @Test
     public void canSetProxyPropertiesEvenIfProxyIsFalse() {
         // TODO Since proxy is used for multiple purposes. Suggest we need to split these different proxies out.

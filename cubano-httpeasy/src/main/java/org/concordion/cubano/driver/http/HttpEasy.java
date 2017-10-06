@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
@@ -26,10 +27,13 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.concordion.cubano.utils.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.net.MediaType;
+
+import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.Configurable;
 
 /**
  * Fluent wrapper around {@link HttpURLConnection} with full support for HTTP messages such as GET, POST, HEAD, etc
@@ -166,6 +170,20 @@ public class HttpEasy {
 
     boolean isLogRequestDetails() {
         return logRequestDetails;
+    }
+    
+    static {
+    		// TODO Ideally httpeasy wouldn't dependencies on other components to make it easier to use outside of cubano
+    		HttpEasyConfig config = HttpEasyConfig.getInstance();
+    		
+    		if (config.isProxyRequired()) {
+		    	HttpEasy.withDefaults()
+		        .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.getProxyHost(), config.getProxyPort())))
+		        .proxyAuth(config.getProxyUser(), config.getProxyPassword())
+		        .bypassProxyForLocalAddresses(true);
+    		}
+			
+	
     }
 
     /**
