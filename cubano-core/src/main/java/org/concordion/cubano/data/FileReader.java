@@ -45,7 +45,6 @@ public class FileReader {
      * @return File content or null if file not found
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
     public static List<String> readLines(String filename) throws IOException {
         List<String> result = null;
 

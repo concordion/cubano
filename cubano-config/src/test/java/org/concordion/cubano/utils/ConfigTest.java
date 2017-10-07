@@ -6,13 +6,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -40,7 +36,8 @@ public class ConfigTest {
 
 	// TODO Nigel this needs to be broken down but first need to decide that if 
 	// 		any of the 3 places a proxy can be set should override as a whole, or just individual settings
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void proxySettingsObtainedInOrder() {
     		Properties properties = mock(Properties.class);
     		given(properties.getProperty("environment")).willReturn("UAT");
@@ -116,7 +113,8 @@ public class ConfigTest {
     		given(properties.getProperty("proxy.required")).willReturn("true");
     		
     		exception.expect(IllegalArgumentException.class);
-        Config config = new ConfigMock(properties);
+        @SuppressWarnings("unused")
+		Config config = new ConfigMock(properties);
     }
 
     
@@ -138,6 +136,7 @@ public class ConfigTest {
         Properties properties = mock(Properties.class);
         
         exception.expect(IllegalArgumentException.class);
+        @SuppressWarnings("unused")
         Config config = new ConfigMock(properties);
     }
     
@@ -170,7 +169,8 @@ public class ConfigTest {
         // assertThat(config.getNonProxyHosts(), is(""));
     }
     
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void userPropertiesOverrideConfigProperties() {
         Properties properties = givenDefaultProperties();        
         given(properties.getProperty("a.setting")).willReturn("false");
@@ -236,6 +236,7 @@ public class ConfigTest {
     		assertThat(found.keySet().iterator().next(), is("2"));
     }
     
+	@SuppressWarnings("unchecked")
 	private Properties givenDefaultProperties() {
 	    Properties properties = mock(Properties.class);
 	    

@@ -27,13 +27,10 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.concordion.cubano.utils.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.net.MediaType;
-
-import net.bytebuddy.dynamic.loading.ClassLoadingStrategy.Configurable;
 
 /**
  * Fluent wrapper around {@link HttpURLConnection} with full support for HTTP messages such as GET, POST, HEAD, etc

@@ -1,8 +1,6 @@
 package demo;
 
 import java.util.List;
-import java.util.logging.Level;
-
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -11,23 +9,22 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class testbug {
 	@Test
 	public void run() {
-		DesiredCapabilities capabilities = DesiredCapabilities.firefox();
+		FirefoxOptions options = new FirefoxOptions();
 		  
 		System.setProperty("webdriver.gecko.driver", "C:/Users/andre/.m2/repository/webdriver/geckodriver/win64/0.19.0/geckodriver.exe");
-		capabilities.setCapability("marionette", true);
+		options.setLegacy(false);
 		
 		FirefoxProfile profile = new FirefoxProfile();
 				
-		capabilities.setCapability(FirefoxDriver.PROFILE, profile);
+		options.setProfile(profile);
 		
-		WebDriver driver = new FirefoxDriver(capabilities);
+		WebDriver driver = new FirefoxDriver(options);
 		
 		getBrowserToDoStuffTillItRunsOutOfMemory(driver);
 		

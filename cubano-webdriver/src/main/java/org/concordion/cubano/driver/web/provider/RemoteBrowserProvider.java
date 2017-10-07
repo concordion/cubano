@@ -82,7 +82,6 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public WebDriver createDriver() {
         URL url;
 

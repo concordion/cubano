@@ -3,8 +3,6 @@ package org.concordion.cubano.driver.web.config;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
-import org.mockito.Mockito;
-
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -40,6 +38,7 @@ public class WebDriverConfigTest {
         assertThat(System.getProperty("webdriver.timeouts.implicitlywait"), is(nullValue()));
 
         Properties properties = givenDefaultProperties();
+        @SuppressWarnings("unused")
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(System.getProperty("webdriver.timeouts.implicitlywait"), is("0"));
@@ -52,11 +51,13 @@ public class WebDriverConfigTest {
         Properties properties = givenDefaultProperties();
         given(properties.getProperty("webdriver.timeouts.implicitlywait")).willReturn("9");
 
+        @SuppressWarnings("unused")
         WebDriverConfig config = new WebDriverConfig(properties);
 
         assertThat(System.getProperty("webdriver.timeouts.implicitlywait"), is("9"));
     }
 
+    @SuppressWarnings("unchecked")
     private Properties givenDefaultProperties() {
         Properties properties = mock(Properties.class);
         given(properties.getProperty("environment")).willReturn("UAT");

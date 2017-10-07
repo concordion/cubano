@@ -2,9 +2,6 @@ package org.concordion.cubano.utils;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -27,6 +24,7 @@ public class CaselessPropertiesTest {
 		
 		properties.put("a.SETTING", "value");
 		
+		@SuppressWarnings("unchecked")
 		Enumeration<String> en = (Enumeration<String>) properties.propertyNames();
 		String propName = en.nextElement();
 			
