@@ -36,7 +36,6 @@ public class ConfigTest {
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
-
 	private Enumeration<String> empty = Collections.enumeration(Collections.<String>emptyList());
 
 	// TODO Nigel this needs to be broken down but first need to decide that if 
@@ -49,19 +48,17 @@ public class ConfigTest {
     		
     		// 3. From Environment variable HTTP_PROXY 
     		PowerMockito.mockStatic(System.class);
+    		
     		PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY"))).thenReturn("http://me1:secret1@proxyhost1:9991");
     		PowerMockito.when(System.getenv(Mockito.eq("NO_PROXY"))).thenReturn("no1");
     		
-    		// http.nonProxyHosts returned a value - don't know where it came from
-
-    		// TODO: Nigel - why does above work but these two fail to do anything!
-    		PowerMockito.when(System.getProperty(Mockito.eq("http.nonProxyHosts"))).thenReturn("xxxx");
-    		PowerMockito.when(System.getProperty(Mockito.eq("http.nonProxyHosts"), Mockito.any())).thenReturn("xxxx");
-    		
         PowerMockito.when(System.getProperty(Mockito.any())).thenCallRealMethod();
         PowerMockito.when(System.getProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
-        
-//		PowerMockito.when(System.getProperty(Mockito.eq("http.nonProxyHosts"), Mockito.any())).thenReturn(null);
+        PowerMockito.when(System.setProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
+    		
+    		// http.nonProxyHosts returned a value - don't know where it came from
+    		
+//		System.setProperty("http.nonProxyHosts"), Mockito.any(, null);
         
 //		TODO to test
 //		HTTP_PROXY_USER
@@ -78,20 +75,20 @@ public class ConfigTest {
 		// assertThat(config.getNonProxyHosts(), is("no1"));
 		
 		// 2. System property http.proxyHost
-		PowerMockito.when(System.getProperty(Mockito.eq("http.proxyHost"))).thenReturn("proxyhost2");		
-		PowerMockito.when(System.getProperty(Mockito.eq("http.proxyPort"))).thenReturn(null);
-		PowerMockito.when(System.getProperty(Mockito.eq("http.proxyUser"))).thenReturn("domain\\me2");
-		PowerMockito.when(System.getProperty(Mockito.eq("http.proxyPassword"))).thenReturn(null);
-		PowerMockito.when(System.getProperty(Mockito.eq("http.nonProxyHosts"))).thenReturn("no2");
+		System.setProperty("http.proxyHost", "proxyhost2");		
+//		System.setProperty("http.proxyPort", "9992");
+		System.setProperty("http.proxyUser", "domain\\me2");
+//		System.setProperty("http.proxyPassword", "secret2");
+		System.setProperty("http.nonProxyHosts", "no2");
 		
        
 		config = new ConfigMock(properties);		
 
 		assertThat(config.getProxyHost(), is("proxyhost2"));
-		assertThat(config.getProxyPort(), is(80));
-		assertThat(config.getProxyAddress(), is("proxyhost2:80"));
+		assertThat(config.getProxyPort(), is(9991));
+		assertThat(config.getProxyAddress(), is("proxyhost2:9991"));
 		assertThat(config.getProxyUser(), is("domain\\me2"));
-		// TODO Nigel: Note: this came from HTTP_PROXY rather than h
+		// TODO Nigel: Note: this came from HTTP_PROXY rather than http.proxyPassword
 		assertThat(config.getProxyPassword(), is("secret1"));
 		assertThat(config.getNonProxyHosts(), is("no2"));
 		
@@ -105,14 +102,12 @@ public class ConfigTest {
 		config = new ConfigMock(properties);		
 
 		assertThat(config.getProxyHost(), is("proxyhost3"));
-		assertThat(config.getProxyPort(), is(80));
-		assertThat(config.getProxyAddress(), is("proxyhost3:80"));
+		assertThat(config.getProxyPort(), is(9991));
+		assertThat(config.getProxyAddress(), is("proxyhost3:9991"));
 		assertThat(config.getProxyUser(), is("me3"));
-		assertThat(config.getProxyPassword(), is(""));
+		assertThat(config.getProxyPassword(), is("secret1"));
 		assertThat(config.getNonProxyHosts(), is("no3"));
     }
-    
-
     
     @Test
     public void proxyMustBeConfiguredIfRequired() {
@@ -147,6 +142,17 @@ public class ConfigTest {
     }
     
     @Test
+    public void systemPropertyWillOverrideEnvrionment() throws Exception {
+        Properties properties = givenDefaultProperties();
+
+        System.setProperty("environment", "SIT");
+	
+        Config config = new ConfigMock(properties);
+
+        assertThat(config.getEnvironment(), is("SIT"));
+    }
+    
+    @Test
     public void mustSetDefaultProperties() throws Exception {
         Properties properties = givenDefaultProperties();
 
@@ -164,19 +170,6 @@ public class ConfigTest {
         // assertThat(config.getNonProxyHosts(), is(""));
     }
     
-    @Test
-    public void systemPropertyWillOverrideEnvrionment() throws Exception {
-        Properties properties = givenDefaultProperties();
-
-        // TODO Nigel This not working
-        PowerMockito.mockStatic(System.class);
-		PowerMockito.when(System.getProperty(Mockito.eq("environment"))).thenReturn("SIT");
-
-        Config config = new ConfigMock(properties);
-
-        assertThat(config.getEnvironment(), is("SIT"));
-    }
-
     @Test
     public void userPropertiesOverrideConfigProperties() {
         Properties properties = givenDefaultProperties();        
