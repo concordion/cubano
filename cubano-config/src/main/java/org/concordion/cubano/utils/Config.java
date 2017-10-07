@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
  * <p>
@@ -24,6 +27,9 @@ import java.util.StringTokenizer;
  * @author Andrew Sumner
  */
 public abstract class Config {
+	public static final String DEFAULT_NON_PROXY_HOSTS = "localhost,127.0.0.1";
+	private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
+	
     private Properties properties;
     private Properties userProperties = null;
     private String environment = null;
@@ -79,11 +85,66 @@ public abstract class Config {
             environment = getProperty("environment");
         }
         
-        // Proxy
-        URL proxyUrl = getProxyUrl();
+        proxyIsRequired = getPropertyAsBoolean("proxy.required", null);
         
-        if (proxyUrl != null) {
-	        	proxyHost = proxyUrl.getHost();
+        setProxyViaConfigFile();
+        setProxyViaSystemProperties();
+        setProxyViaEnvironmentVariables();
+        
+        if (proxyIsRequired && proxyHost.isEmpty()) {
+	    		getProperty("proxy.host");
+	    }
+	    
+        nonProxyHosts = nonProxyHosts == null || nonProxyHosts.isEmpty() ? DEFAULT_NON_PROXY_HOSTS : nonProxyHosts;
+    }
+    
+	private void setProxyViaConfigFile() {
+		proxyHost = getProperty("proxy.host", "");
+		
+		if (proxyHost.isEmpty()) {
+			return;
+		}
+		
+		LOGGER.debug("Loading Proxy settings from configuration file(s)");
+		
+        proxyPort = getPropertyAsInteger("proxy.port", "80");
+        proxyUsername = getProperty("proxy.username", "");
+        proxyPassword = getProperty("proxy.password", "");
+        nonProxyHosts = getProperty("proxy.nonProxyHosts", "");
+  	}
+	
+	private void setProxyViaSystemProperties() {
+		if (!proxyHost.isEmpty()) {
+			return;
+		}
+		
+		proxyHost = System.getProperty("http.proxyHost", "");
+		
+		if (proxyHost.isEmpty()) {
+			return;
+		}
+		
+		LOGGER.debug("Loading Proxy settings from http.proxy... system properties");
+		
+        proxyPort = Integer.valueOf(System.getProperty("http.proxyPort", "80"));
+        proxyUsername = System.getProperty("http.proxyUser", "");
+        proxyPassword = System.getProperty("http.proxyPassword", "");
+        nonProxyHosts = System.getProperty("http.nonProxyHosts", "").replaceAll("\\|", ",");
+  	}
+	
+    private void setProxyViaEnvironmentVariables() {
+    		if (!proxyHost.isEmpty()) {
+			return;
+		}
+		
+    		URL proxyUrl = getProxyUrl();
+        
+        if (proxyUrl == null) {
+            proxyHost = "";
+		} else {
+			LOGGER.debug("Loading Proxy settings from HTTP_PROXY environment variable(s)");
+			
+			proxyHost = proxyUrl.getHost();
 	        	proxyPort = proxyUrl.getPort();
 	        	        			
 	        	String userInfo = proxyUrl.getUserInfo();
@@ -109,24 +170,10 @@ public abstract class Config {
 	        }
 	        
 	        nonProxyHosts = System.getenv("NO_PROXY");
-        } else {
-        		proxyHost = "";
-        		proxyPort = 80;
-        }
-        
-        proxyIsRequired = getPropertyAsBoolean("proxy.required", null);
-        proxyHost = getProperty("proxy.host", System.getProperty("http.proxyHost", proxyHost));
-        if (proxyIsRequired && proxyHost.isEmpty()) {
-        		getProperty("proxy.host");
-        }
-        proxyPort = getPropertyAsInteger("proxy.port", System.getProperty("http.proxyPort", String.valueOf(proxyPort)));
-        proxyUsername = getProperty("proxy.username", System.getProperty("http.proxyUser", proxyUsername));
-        proxyPassword = getProperty("proxy.password", System.getProperty("http.proxyPassword", proxyPassword));
-        nonProxyHosts = getProperty("proxy.nonProxyHosts", System.getProperty("http.nonProxyHosts", nonProxyHosts)).replaceAll("\\|", ",");
-        nonProxyHosts = nonProxyHosts.isEmpty() ? "localhost,127.0.0.1" : nonProxyHosts;
-    }
-    
-    private URL getProxyUrl() {
+	    }		
+	}
+
+	private URL getProxyUrl() {
     		String proxyInput = System.getenv("HTTP_PROXY");
     	        
         try {
@@ -134,8 +181,7 @@ public abstract class Config {
 	        		return new URL(proxyInput.matches("^http[s]?://.*$") ? proxyInput : "http://" + proxyInput);
 	        	}
         } catch (MalformedURLException e) {
-        	// TODO
-//            log.error("Invalid proxy url {}", proxyInput, e);
+        		LOGGER.warn("Invalid proxy url {} in HTTP_PROXY environment variable", proxyInput, e);
         }
         
         return null;
@@ -173,6 +219,10 @@ public abstract class Config {
     public String getProxyAddress() {
 	    	if (proxyHost.isEmpty()) {
 	    		return "";
+	    	}
+	    	
+	    	if (proxyPort == 0 || proxyPort == 80) {
+	    		return proxyHost;
 	    	}
 	    	
 	    	return proxyHost + ":" + String.valueOf(proxyPort);

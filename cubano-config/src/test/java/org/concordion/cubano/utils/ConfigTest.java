@@ -12,6 +12,8 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.Generated;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
@@ -34,33 +36,10 @@ public class ConfigTest {
 
 	private Enumeration<String> empty = Collections.enumeration(Collections.<String>emptyList());
 
-	// TODO Nigel this needs to be broken down but first need to decide that if 
-	// 		any of the 3 places a proxy can be set should override as a whole, or just individual settings
-    @SuppressWarnings("unchecked")
 	@Test
     public void proxySettingsObtainedInOrder() {
-    		Properties properties = mock(Properties.class);
-    		given(properties.getProperty("environment")).willReturn("UAT");
-    		given((Enumeration<String>)properties.propertyNames()).willReturn(empty);
-    		
-    		// 3. From Environment variable HTTP_PROXY 
-    		PowerMockito.mockStatic(System.class);
-    		
-    		PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY"))).thenReturn("http://me1:secret1@proxyhost1:9991");
-    		PowerMockito.when(System.getenv(Mockito.eq("NO_PROXY"))).thenReturn("no1");
-    		
-        PowerMockito.when(System.getProperty(Mockito.any())).thenCallRealMethod();
-        PowerMockito.when(System.getProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
-        PowerMockito.when(System.setProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
-    		
-    		// http.nonProxyHosts returned a value - don't know where it came from
-    		
-//		System.setProperty("http.nonProxyHosts"), Mockito.any(, null);
-        
-//		TODO to test
-//		HTTP_PROXY_USER
-//		HTTP_PROXY_PASS
-		
+    		Properties properties = givenDefaultProperties();
+    			
 		Config config = new ConfigMock(properties);
 		
 		assertThat(config.getProxyHost(), is("proxyhost1"));
@@ -104,6 +83,96 @@ public class ConfigTest {
 		assertThat(config.getProxyUser(), is("me3"));
 		assertThat(config.getProxyPassword(), is("secret1"));
 		assertThat(config.getNonProxyHosts(), is("no3"));
+    }
+	
+	@Test
+    public void proxyFromConfigFile() {
+    		Properties properties = givenDefaultProperties();
+    
+    		given(properties.getProperty("proxy.host")).willReturn("proxyhost4");
+		given(properties.getProperty("proxy.port")).willReturn(null);
+		given(properties.getProperty("proxy.username")).willReturn("me4");
+		given(properties.getProperty("proxy.password")).willReturn("secret4");
+		given(properties.getProperty("proxy.nonProxyHosts")).willReturn("no4");
+		
+		Config config = new ConfigMock(properties);		
+
+		assertThat(config.getProxyHost(), is("proxyhost4"));
+		assertThat(config.getProxyPort(), is(80));
+		assertThat(config.getProxyAddress(), is("proxyhost4"));
+		assertThat(config.getProxyUser(), is("me4"));
+		assertThat(config.getProxyPassword(), is("secret4"));
+		assertThat(config.getNonProxyHosts(), is("no4"));
+    }
+	
+	@Test
+    public void proxyFromSystemProperties() {
+    		Properties properties = givenDefaultProperties();
+    			
+		// 2. System property http.proxyHost
+		System.setProperty("http.proxyHost", "proxyhost3");		
+		// System.setProperty("http.proxyPort", null);
+		System.setProperty("http.proxyUser", "domain\\me3");
+		System.setProperty("http.proxyPassword", "secret3");
+		System.setProperty("http.nonProxyHosts", "no3");
+		
+		Config config = new ConfigMock(properties);		
+
+		assertThat(config.getProxyHost(), is("proxyhost3"));
+		// This is the default value
+		assertThat(config.getProxyPort(), is(80));
+		assertThat(config.getProxyAddress(), is("proxyhost3"));
+		assertThat(config.getProxyUser(), is("domain\\me3"));
+		assertThat(config.getProxyPassword(), is("secret3"));
+		assertThat(config.getNonProxyHosts(), is("no3"));
+    }
+
+    @Test
+    public void proxyFromHTTP_PROXY() {
+    		Properties properties = givenDefaultProperties();
+    		
+    		PowerMockito.mockStatic(System.class);
+    		PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY"))).thenReturn("http://me1:secret1@proxyhost1:9991");
+    		//PowerMockito.when(System.getenv(Mockito.eq("NO_PROXY"))).thenReturn("no1");
+    		
+        PowerMockito.when(System.getProperty(Mockito.any())).thenCallRealMethod();
+        PowerMockito.when(System.getProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
+        PowerMockito.when(System.setProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
+        		
+		Config config = new ConfigMock(properties);
+		
+		assertThat(config.getProxyHost(), is("proxyhost1"));
+		assertThat(config.getProxyPort(), is(9991));
+		assertThat(config.getProxyAddress(), is("proxyhost1:9991"));
+		assertThat(config.getProxyUser(), is("me1"));
+		assertThat(config.getProxyPassword(), is("secret1"));
+		
+		// Using default setting
+		assertThat(config.getNonProxyHosts(), is(Config.DEFAULT_NON_PROXY_HOSTS));
+    }
+    
+    @Test
+    public void proxyFromHTTP_PROXY_USER() {
+		Properties properties = givenDefaultProperties();
+		
+		PowerMockito.mockStatic(System.class);
+		PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY"))).thenReturn("http://proxyhost2:9992");
+		PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY_USER"))).thenReturn("me2");
+		PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY_PASS"))).thenReturn("secret2");
+		PowerMockito.when(System.getenv(Mockito.eq("NO_PROXY"))).thenReturn("no2");
+
+		PowerMockito.when(System.getProperty(Mockito.any())).thenCallRealMethod();
+        PowerMockito.when(System.getProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
+        PowerMockito.when(System.setProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
+        
+		Config config = new ConfigMock(properties);
+
+		assertThat(config.getProxyHost(), is("proxyhost2"));
+		assertThat(config.getProxyPort(), is(9992));
+		assertThat(config.getProxyAddress(), is("proxyhost2:9992"));
+		assertThat(config.getProxyUser(), is("me2"));
+		assertThat(config.getProxyPassword(), is("secret2"));
+		assertThat(config.getNonProxyHosts(), is("no2"));
     }
     
     @Test
