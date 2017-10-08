@@ -7,7 +7,8 @@ import java.util.TreeMap;
 /**
  * A {@link Properties} implementation that ignores the case of the properties.
  * 
- * The keys are stored untouched so that if you need the original case you can still get them using <code>Enumeration&lt;String&gt; en = (Enumeration<String>) properties.propertyNames();</code>
+ * The keys are stored untouched so that if you need the original case you can still get them 
+ * using <code>Enumeration&lt;String&gt; en = (Enumeration<String>) properties.propertyNames();</code>
  *
  * @author Andrew Sumner
  */
@@ -18,22 +19,22 @@ public class CaselessProperties extends Properties {
 
     @Override
     public Object put(Object key, Object value) {
-        lookup.put(((String) key).toLowerCase(), (String) key);
-       
-        return super.put(key, value);
+    		lookup.put(((String) key).toLowerCase(), (String) key);
+   
+    		return super.put(key, value);
     }
 
     @Override
     public String getProperty(String key) {
-	    	String realKey = lookup.get(key);
-	    	
-	    	return super.getProperty(realKey == null ? key : realKey);
+		String realKey = lookup.get(key);
+		
+		return super.getProperty(realKey == null ? key : realKey);
     }
 
     @Override
     public String getProperty(String key, String defaultValue) {
-	    	String realKey = lookup.get(key);
-	    	
-	    	return super.getProperty(realKey == null ? key : realKey, defaultValue);
+		String realKey = lookup.get(key);
+		
+		return super.getProperty(realKey == null ? key : realKey, defaultValue);
     }
 }
