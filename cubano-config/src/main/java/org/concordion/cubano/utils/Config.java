@@ -60,7 +60,7 @@ public abstract class Config {
      * Prevent this class from being constructed.
      */
     protected Config(ConfigLoader loader) {
-    	this(loader.getProperties(), loader.getUserProperties());
+    		this(loader.getProperties(), loader.getUserProperties());
     }
 
     protected Config(Properties properties) {

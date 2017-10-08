@@ -63,59 +63,7 @@ If you wish to use implicit rather than explicit waits then configure this value
 If true then the proxy will be set on the requested browser
 * Defaults to false, valid options are true or false
 
-##### proxy.host
-
-The hostname, or address, of the proxy server.
-
-Will be populated from the following locations in this order:
-1. user.properties file proxy.host setting
-1. config.properties file proxy.host setting 
-1. System property http.proxyHost
-1. Environment variable HTTP_PROXY 
-
-##### proxy.port
-
-The port number of the proxy server.
-
-Will be populated from the following locations in this order:
-1. user.properties file proxy.port setting
-1. config.properties file proxy.port setting 
-1. System property http.proxyPort
-1. Environment variable HTTP_PROXY 
-1. Default to port 80
-
-##### proxy.username
-
-Username for proxy authentication, for a NTLM proxy the username can be in the format &lt;domain&gt;\&lt;username&gt;
-
-Will be populated from the following locations in this order:
-1. user.properties file proxy.username setting
-1. config.properties file proxy.username setting 
-1. System property http.proxyUser
-1. Environment variable HTTP_PROXY 
-1. Environment variable HTTP_PROXY_USER
-
-##### proxy.password
-
-Password for proxy authentication.
-
-Will be populated from the following locations in this order:
-1. user.properties file proxy.password setting
-1. config.properties file proxy.password setting 
-1. System property http.proxyPassword
-1. Environment variable HTTP_PROXY 
-1. Environment variable HTTP_PROXY_PASS
-
-##### proxy.nonProxyHosts
-
-Indicates the hosts that should be accessed without going through the proxy. Typically this defines internal hosts. The value of this property is a list of hosts, separated by the ',' character. In addition the wildcard character '*' can be used for pattern matching. For example proxy.nonProxyHosts="*.foo.com,localhost" will indicate that every hosts in the foo.com domain and the localhost should be accessed directly even if a proxy server is specified.
-
-Will be populated from the following locations in this order:
-1. user.properties file proxy.nonProxyHosts setting
-1. config.properties file proxy.nonProxyHosts setting 
-1. System property http.nonProxyHosts (Note: uses | rather than , to separate hosts and will be automatically converted) 
-1. Environment variable NO_PROXY
-1. Default to "localhost,127.0.0.1"
+See cubano-config for more proxy settings.
 
 
 ## Browser Specific Configuration

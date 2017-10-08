@@ -12,8 +12,6 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.annotation.Generated;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
