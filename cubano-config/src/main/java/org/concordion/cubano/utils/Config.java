@@ -37,9 +37,9 @@ public abstract class Config {
     // Proxy
     private boolean proxyIsRequired;
     private String proxyHost;
-    private int proxyPort;
-    private String proxyUsername;
-    private String proxyPassword;
+    private int proxyPort = 0;
+    private String proxyUsername = "";
+    private String proxyPassword = "";
     private String nonProxyHosts;
     
     /**
@@ -161,11 +161,11 @@ public abstract class Config {
 				}
             }
 	        
-	        if (proxyUsername == null) { 
+	        if (proxyUsername == null || proxyUsername.isEmpty()) { 
 	        		proxyUsername = System.getenv("HTTP_PROXY_USER");
 	        }
 	        
-	        if (proxyPassword == null) {
+	        if (proxyPassword == null || proxyPassword.isEmpty()) {
 	        		proxyPassword = System.getenv("HTTP_PROXY_PASS");
 	        }
 	        
