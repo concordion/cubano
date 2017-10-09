@@ -165,6 +165,12 @@ Sets capabilities, for example:
  
     firefox.capability.acceptSslCerts = false
 
+##### firefox.extension.&lt;number&gt;
+
+"number" is meaningless but must be unique. The path must point to a valid file
+
+If the path contains "%PROJECT%" it will be replaced with root folder of project
+
 
 ### Internet Explorer
 

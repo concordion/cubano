@@ -74,6 +74,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
             }
 
             addProfileProperties(profile);
+            addExtensions(profile);
 
             options.setProfile(profile);
         }
@@ -101,5 +102,30 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         for (String key : properties.keySet()) {
             options.setCapability(key, properties.get(key));
         }
-    }    
+    }
+
+    private void addExtensions(FirefoxProfile profile) {
+        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.extension.", true);
+        String projectPath = new File("").getAbsolutePath();
+
+        for (String key : settings.keySet()) {
+            String extension = settings.get(key);
+
+            extension = extension.replace("%PROJECT%", projectPath);
+
+            try {
+                profile.addExtension(new File(extension));
+
+                if (extension.contains("firebug")) {
+                    String version = new File(extension).getName();
+                    version = version.substring(version.indexOf("-") + 1);
+                    version = version.substring(0, version.indexOf("-") > 0 ? version.indexOf("-") : version.indexOf("."));
+
+                    profile.setPreference("extensions.firebug.currentVersion", version);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to add FireFox plugins", e);
+            }
+        }
+    }
 }
