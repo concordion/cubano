@@ -15,9 +15,9 @@
 -->
 <module name="Checker">
     <!--<module name="SuppressWarningsFilter" />-->
-    <!--<module name="SuppressionFilter">-->
-        <!--<property name="file" value="${baseDir}/checkstyle-suppressions.xml"/>-->
-    <!--</module>-->
+    <module name="SuppressionFilter">
+   		<property name="file" value="${config_loc}/suppressions.xml"/>
+	</module>
 
 	<property name="severity" value="info"/>
 

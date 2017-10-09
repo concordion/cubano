@@ -1,6 +1,9 @@
-repositories {
-    maven { url "https://jitpack.io" }
-}
+
+// TODO Nigel: how do I get this working in multiproject
+//repositories {
+//    maven { url "https://jitpack.io" }
+//}
+
 dependencies {
 	compile project(':cubano-config')
 	compile project(':cubano-http')
@@ -9,15 +12,17 @@ dependencies {
     compile "org.seleniumhq.selenium:selenium-java:3.6.0"
 	
     // Html Elements
-    // compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
-    //     exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
-    // }
+  	compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
+        exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
+    }
     
+    /*
     // This uses Jitpack to build and import multiple modules from Github
     // Can revert to above once 1.19 is released
     compile('com.github.yandex-qatools.htmlelements:htmlelements-java:master-SNAPSHOT') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
+    */
 
     compile 'org.jsoup:jsoup:1.8.3'
 
