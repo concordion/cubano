@@ -6,6 +6,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+/**
+ * Loads configuration from config.properties and user.properties located in projects root folder.
+ * 
+ * It also ensures that any single slash character '\' does not require a double slash. This means that
+ * using \ to wrap long property values across multiple lines won't work.
+ */
 public class DefaultConfigLoader implements ConfigLoader {
     private static final String CONFIG_FILE = "config.properties";
     private static final String USER_CONFIG_FILE = "user.properties";
@@ -36,10 +42,10 @@ public class DefaultConfigLoader implements ConfigLoader {
         Properties prop = new CaselessProperties();
 
         try {
-        	String content = new String(Files.readAllBytes(Paths.get(filename)));
-        	
-        	// By default property files treat \ as an escape character 
-            prop.load(new StringReader(content.replace("\\","\\\\")));
+            String content = new String(Files.readAllBytes(Paths.get(filename)));
+
+            // By default property files treat \ as an escape character
+            prop.load(new StringReader(content.replace("\\", "\\\\")));
         } catch (Exception e) {
             throw new RuntimeException("Unable to read properties file.", e);
         }
