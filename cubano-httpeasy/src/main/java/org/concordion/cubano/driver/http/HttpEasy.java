@@ -168,19 +168,18 @@ public class HttpEasy {
     boolean isLogRequestDetails() {
         return logRequestDetails;
     }
-    
+
     static {
-    		// TODO Ideally httpeasy wouldn't dependencies on other components to make it easier to use outside of cubano
-    		HttpEasyConfig config = HttpEasyConfig.getInstance();
-    		
-    		if (config.isProxyRequired()) {
-		    	HttpEasy.withDefaults()
-		        .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.getProxyHost(), config.getProxyPort())))
-		        .proxyAuth(config.getProxyUser(), config.getProxyPassword())
-		        .bypassProxyForLocalAddresses(true);
-    		}
-			
-	
+        // TODO Ideally httpeasy wouldn't dependencies on other components to make it easier to use outside of cubano
+        HttpEasyConfig config = HttpEasyConfig.getInstance();
+
+        if (config.isProxyRequired()) {
+            HttpEasy.withDefaults()
+                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.getProxyHost(), config.getProxyPort())))
+                    .proxyAuth(config.getProxyUser(), config.getProxyPassword())
+                    .bypassProxyForLocalAddresses(true);
+        }
+
     }
 
     /**
@@ -695,23 +694,23 @@ public class HttpEasy {
         }
 
         switch (dataContentType) {
-            case RAW:
-                dataWriter = new RawDataWriter(connection, rawData, rawDataMediaType, rawFileName);
-                break;
+        case RAW:
+            dataWriter = new RawDataWriter(connection, rawData, rawDataMediaType, rawFileName);
+            break;
 
-            case FORM_DATA:
-                dataWriter = new FormDataWriter(connection, url.getQuery(), fields);
-                break;
+        case FORM_DATA:
+            dataWriter = new FormDataWriter(connection, url.getQuery(), fields);
+            break;
 
-            case X_WWW_FORM_URLENCODED:
-                dataWriter = new FormUrlEncodedDataWriter(connection, url.getQuery(), fields);
-                break;
+        case X_WWW_FORM_URLENCODED:
+            dataWriter = new FormUrlEncodedDataWriter(connection, url.getQuery(), fields);
+            break;
 
-            case AUTO_SELECT:
-                break;
+        case AUTO_SELECT:
+            break;
 
-            default:
-                throw new InvalidParameterException(dataContentType.toString() + " is unknown");
+        default:
+            throw new InvalidParameterException(dataContentType.toString() + " is unknown");
         }
 
         return dataWriter;

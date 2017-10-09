@@ -32,54 +32,54 @@ public class HelloWorldFixture {
     ReportLogger logger = ReportLoggerFactory.getReportLogger(HelloWorldFixture.class);
 
     public String getGreetingFailure() throws InterruptedException {
-    	int attempts = 0;
-    			
-    	for (int i = 0; i < 1; i++) {
-    		attempts ++;
-			
-	        browser.getDriver().navigate().to("http://google.co.nz");
-	        
-	        browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys("concordion");
-	        
-	        browser.getDriver().findElement(By.cssSelector("input[name=btnK]")).click();
-	        
-	        WebDriverWait wait = new WebDriverWait(browser.getDriver(), 3);
-	        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foot")));
-	        
-	        boolean exception = false;
-	        
-	        do {
-	        	try {
-			        List<WebElement> results = browser.getDriver().findElements(By.cssSelector("h3[class=r] > a"));
-			        	        
-			        for (WebElement result : results) {
-						if (result.getAttribute("href").equals("http://concordion.org/")) {
-							result.click();
-//							Thread.sleep(1000);
-						}	
-					}
-			        
-			        exception = false;
-					        
-		        } catch (StaleElementReferenceException e) {
-		        	exception = true;
-		        }
-	        } while (exception);
-    	}
-        
-//        logger.with()
-//                .message("Hello World!")
-//                .attachment("This is some data", "data.txt", MediaType.PLAIN_TEXT)
-//                .marker(new StoryboardMarker("Hello", "Data", StockCardImage.TEXT, CardResult.SUCCESS))
-//                .debug();
+        int attempts = 0;
+
+        for (int i = 0; i < 1; i++) {
+            attempts++;
+
+            browser.getDriver().navigate().to("http://google.co.nz");
+
+            browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys("concordion");
+
+            browser.getDriver().findElement(By.cssSelector("input[name=btnK]")).click();
+
+            WebDriverWait wait = new WebDriverWait(browser.getDriver(), 3);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foot")));
+
+            boolean exception = false;
+
+            do {
+                try {
+                    List<WebElement> results = browser.getDriver().findElements(By.cssSelector("h3[class=r] > a"));
+
+                    for (WebElement result : results) {
+                        if (result.getAttribute("href").equals("http://concordion.org/")) {
+                            result.click();
+                            // Thread.sleep(1000);
+                        }
+                    }
+
+                    exception = false;
+
+                } catch (StaleElementReferenceException e) {
+                    exception = true;
+                }
+            } while (exception);
+        }
+
+        // logger.with()
+        // .message("Hello World!")
+        // .attachment("This is some data", "data.txt", MediaType.PLAIN_TEXT)
+        // .marker(new StoryboardMarker("Hello", "Data", StockCardImage.TEXT, CardResult.SUCCESS))
+        // .debug();
 
         return "Failed " + attempts;
     }
 
     public String getGreetingException() {
-//        browser.getDriver().navigate().to("http://google.com");
+        // browser.getDriver().navigate().to("http://google.com");
 
-//        Assert.fail("Frogs legs");
+        // Assert.fail("Frogs legs");
 
         return "Failed";
     }

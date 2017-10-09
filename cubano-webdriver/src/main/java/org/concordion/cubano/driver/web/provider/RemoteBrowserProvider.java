@@ -1,5 +1,17 @@
 package org.concordion.cubano.driver.web.provider;
 
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.StringTokenizer;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -16,18 +28,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
-
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringTokenizer;
 
 /**
  * Provides everything required to start up a remote browser (desktop or device) - apart from the where to connect.
@@ -157,8 +157,8 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
 //         		-Dhttps.proxyPassword=yarrrrr
 
         try {
-			String username = null;
-			String password = null;
+            String username = null;
+            String password = null;
 
             // apply env value
             String userInfo = proxyURL.getUserInfo();

@@ -1,4 +1,6 @@
-
+repositories {
+    maven { url "https://jitpack.io" }
+}
 dependencies {
 	compile project(':cubano-config')
 	compile project(':cubano-http')
@@ -6,9 +8,14 @@ dependencies {
     // Selenium WebDriver    
     compile "org.seleniumhq.selenium:selenium-java:3.6.0"
 	
-	// TODO Move code from MSD to get this
     // Html Elements
-    compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
+    // compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
+    //     exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
+    // }
+    
+    // This uses Jitpack to build and import multiple modules from Github
+    // Can revert to above once 1.19 is released
+    compile('com.github.yandex-qatools.htmlelements:htmlelements-java:master-SNAPSHOT') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
 

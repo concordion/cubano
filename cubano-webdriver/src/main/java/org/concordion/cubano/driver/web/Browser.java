@@ -157,9 +157,9 @@ public class Browser {
 
         try {
             this.eventFiringDriver.unregister(this.eventListener);
-			this.eventFiringDriver.quit();
+            this.eventFiringDriver.quit();
         } catch (Exception ex) {
-			LOGGER.debug("Exception attempting to quit the browser: " + ex.getMessage());
+            LOGGER.debug("Exception attempting to quit the browser: " + ex.getMessage());
         }
 
         this.eventFiringDriver = null;

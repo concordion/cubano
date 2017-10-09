@@ -8,6 +8,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
+
 import io.github.bonigarcia.wdm.BrowserManager;
 
 /**
@@ -21,16 +22,15 @@ import io.github.bonigarcia.wdm.BrowserManager;
 public abstract class LocalBrowserProvider implements BrowserProvider {
 
     protected void setupBrowserManager(BrowserManager instance) {
-	    	if (!WebDriverConfig.getInstance().getProxyAddress().isEmpty()) {
-	    		instance.proxy(WebDriverConfig.getInstance().getProxyAddress());
-	    		instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
-	    		instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
+        if (!WebDriverConfig.getInstance().getProxyAddress().isEmpty()) {
+            instance.proxy(WebDriverConfig.getInstance().getProxyAddress());
+            instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
+            instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
         }
-        
-    		instance.setup();
+
+        instance.setup();
     }
-    
-    
+
     /**
      * Add proxy settings to desired capabilities if specified in config file.
      *
@@ -38,7 +38,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      */
     protected void addProxyCapabilities(MutableCapabilities capabilities) {
         WebDriverConfig config = WebDriverConfig.getInstance();
-        
+
         if (!config.isProxyRequired()) {
             return;
         }
@@ -51,7 +51,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         proxy.setHttpProxy(browserProxy);
         proxy.setFtpProxy(browserProxy);
         proxy.setSslProxy(browserProxy);
-        
+
         //TODO This was breaking firefox! 
         //proxy.setNoProxy(browserNonProxyHosts);
 
@@ -60,13 +60,13 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     }
 
     protected void setBrowserSize(WebDriver driver) {
-	    if (isBrowserSizeDefined()) {
-	        driver.manage().window().setSize(new Dimension(getBrowserWidth(), getBrowserHeight()));
-	    } else if (WebDriverConfig.getInstance().isBrowserMaximized()) {
-	        driver.manage().window().maximize();
-	    }
+        if (isBrowserSizeDefined()) {
+            driver.manage().window().setSize(new Dimension(getBrowserWidth(), getBrowserHeight()));
+        } else if (WebDriverConfig.getInstance().isBrowserMaximized()) {
+            driver.manage().window().maximize();
+        }
     }
-    
+
     private boolean isBrowserSizeDefined() {
         return WebDriverConfig.getInstance().getBrowserSize() != null && !WebDriverConfig.getInstance().getBrowserSize().isEmpty();
     }

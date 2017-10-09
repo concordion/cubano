@@ -1,6 +1,7 @@
 package org.concordion.cubano.driver.http;
 
 import java.util.Properties;
+
 import org.concordion.cubano.utils.Config;
 
 /**
@@ -17,10 +18,10 @@ import org.concordion.cubano.utils.Config;
  */
 public class HttpEasyConfig extends Config {
 
-	protected HttpEasyConfig() {
-    		super();
+    protected HttpEasyConfig() {
+        super();
     }
-    
+
     protected HttpEasyConfig(Properties properties) {
         super(properties);
     }
@@ -28,7 +29,7 @@ public class HttpEasyConfig extends Config {
     protected HttpEasyConfig(Properties properties, Properties userProperties) {
         super(properties, userProperties);
     }
-       
+
     private static class WDCHolder {
         static final HttpEasyConfig INSTANCE = new HttpEasyConfig();
     }
@@ -38,6 +39,6 @@ public class HttpEasyConfig extends Config {
     }
 
     protected void loadProperties() {
-   
+
     }
 }
