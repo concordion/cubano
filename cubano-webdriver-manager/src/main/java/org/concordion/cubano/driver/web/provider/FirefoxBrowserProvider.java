@@ -15,10 +15,11 @@ import org.openqa.selenium.firefox.internal.ProfilesIni;
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
 
 /**
- * Provides everything required to start up a local desktop browser, currently supports chrome, ie and firefox
+ * Automatically download, configure and start the WebDriver Manager and browser for Firefox.
  * <p>
- * Browser drivers are automatically downloaded as required when requesting a browser: see https://github.com/bonigarcia/webdrivermanager for details
- *
+ * See https://github.com/bonigarcia/webdrivermanager for details.
+ * </p>
+ * 
  * @author Andrew Sumner
  */
 public class FirefoxBrowserProvider extends LocalBrowserProvider {

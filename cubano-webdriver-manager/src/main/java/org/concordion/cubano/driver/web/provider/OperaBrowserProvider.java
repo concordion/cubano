@@ -9,6 +9,14 @@ import org.openqa.selenium.opera.OperaOptions;
 
 import io.github.bonigarcia.wdm.OperaDriverManager;
 
+/**
+ * Automatically download, configure and start the WebDriver Manager and browser for Opera.
+ * <p>
+ * See https://github.com/bonigarcia/webdrivermanager for details.
+ * </p>
+ * 
+ * @author Andrew Sumner
+ */
 public class OperaBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "opera";
 

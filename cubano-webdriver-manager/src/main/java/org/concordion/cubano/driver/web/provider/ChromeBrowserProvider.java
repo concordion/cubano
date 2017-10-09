@@ -11,6 +11,14 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 
+/**
+ * Automatically download, configure and start the WebDriver Manager and browser for Chrome.
+ * <p>
+ * See https://github.com/bonigarcia/webdrivermanager for details.
+ * </p>
+ * 
+ * @author Andrew Sumner
+ */
 public class ChromeBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "chrome";
 

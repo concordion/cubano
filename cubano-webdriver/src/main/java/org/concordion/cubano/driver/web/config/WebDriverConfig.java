@@ -82,7 +82,9 @@ public class WebDriverConfig extends Config {
 
     /**
      * Useful if local browser is not available on path.
-     *
+     * 
+     * @param browserName Name of the browser as defined by the browser provider class
+     * 
      * @return Path to browser executable
      */
     public String getBrowserExe(String browserName) {

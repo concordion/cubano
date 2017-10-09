@@ -10,6 +10,14 @@ import org.openqa.selenium.remote.CapabilityType;
 
 import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
 
+/**
+ * Automatically download, configure and start the WebDriver Manager and browser for Microsoft Internet Explorer.
+ * <p>
+ * See https://github.com/bonigarcia/webdrivermanager for details.
+ * </p>
+ * 
+ * @author Andrew Sumner
+ */
 public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "ie";
 

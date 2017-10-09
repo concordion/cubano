@@ -1,8 +1,5 @@
 package org.concordion.cubano.driver.web.provider;
 
-import java.io.File;
-import java.io.FilenameFilter;
-
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
@@ -12,15 +9,17 @@ import org.openqa.selenium.remote.CapabilityType;
 import io.github.bonigarcia.wdm.BrowserManager;
 
 /**
- * Provides everything required to start up a local desktop browser
- * <p>
- * Browser drivers are automatically downloaded as required when requesting a browser: see https://github.com/bonigarcia/webdrivermanager for details
- * </p>
+ * Base class for local browser providers.
  *
  * @author Andrew Sumner
  */
 public abstract class LocalBrowserProvider implements BrowserProvider {
 
+    /**
+     * Configures a BrowserManager instance and starts it.
+     * 
+     * @param instance BrowserManager instance
+     */
     protected void setupBrowserManager(BrowserManager instance) {
         if (!WebDriverConfig.getInstance().getProxyAddress().isEmpty()) {
             instance.proxy(WebDriverConfig.getInstance().getProxyAddress());
@@ -89,29 +88,5 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         String height = WebDriverConfig.getInstance().getBrowserSize().substring(WebDriverConfig.getInstance().getBrowserSize().indexOf("x") + 1).trim();
 
         return Integer.parseInt(height);
-    }
-
-
-    /**
-     * Helper for finding Browser plug-ins stored in the libs folder..
-     */
-    protected static class Plugins {
-        public static File get(final String pluginName) {
-            File search = new File("libs");
-
-            String[] files = search.list(new FilenameFilter() {
-
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.contains(pluginName);
-                }
-            });
-
-            if (files != null && files.length > 0) {
-                return new File(search, files[0]);
-            }
-
-            return null;
-        }
     }
 }

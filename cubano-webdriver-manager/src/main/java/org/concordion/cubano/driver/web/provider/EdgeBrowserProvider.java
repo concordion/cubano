@@ -9,6 +9,14 @@ import org.openqa.selenium.edge.EdgeOptions;
 
 import io.github.bonigarcia.wdm.EdgeDriverManager;
 
+/**
+ * Automatically download, configure and start the WebDriver Manager and browser for Microsoft Edge.
+ * <p>
+ * See https://github.com/bonigarcia/webdrivermanager for details.
+ * </p>
+ * 
+ * @author Andrew Sumner
+ */
 public class EdgeBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "edge";
 

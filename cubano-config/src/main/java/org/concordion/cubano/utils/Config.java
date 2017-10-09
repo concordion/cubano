@@ -54,23 +54,36 @@ public abstract class Config {
     }
 
     /**
-     * Prevent this class from being constructed.
+     * Uses DefaultConfigLoader to import the config and user properties files.
      */
     protected Config() {
         this(new DefaultConfigLoader());
     }
 
     /**
-     * Prevent this class from being constructed.
+     * Uses the supplied ConfigLoader to import the config and user properties files.
+     * 
+     * @param loader Configuration loader
      */
     protected Config(ConfigLoader loader) {
         this(loader.getProperties(), loader.getUserProperties());
     }
 
+    /**
+     * Allow injection of properties for testing purposes.
+     * 
+     * @param properties Default properties
+     */
     protected Config(Properties properties) {
         this(properties, null);
     }
 
+    /**
+     * Allow injection of properties for testing purposes.
+     * 
+     * @param properties Default properties
+     * @param userProperties User specific overrides
+     */
     protected Config(Properties properties, Properties userProperties) {
         this.properties = properties;
         this.userProperties = userProperties;
@@ -79,8 +92,14 @@ public abstract class Config {
         loadProperties();
     }
 
+    /**
+     * Load properties from the configuration file.
+     */
     protected abstract void loadProperties();
 
+    /**
+     * Load properties required by more than one instances of this class.
+     */
     protected void loadSharedProperties() {
         // Try environment variable first
         environment = System.getProperty("environment", "");
@@ -296,6 +315,13 @@ public abstract class Config {
         return value;
     }
 
+    /**
+     * Get the property for the current environment as a boolean value, if that is not found it will look for "default.{@literal <key>}".
+     *
+     * @param key Id of the property to look up
+     * @param defaultValue value to use if property is not found
+     * @return Property value if found, defaultValue if not found
+     */
     public boolean getPropertyAsBoolean(String key, String defaultValue) {
         String value = retrieveProperty(key);
 
@@ -306,6 +332,13 @@ public abstract class Config {
         return Boolean.valueOf(value);
     }
 
+    /**
+     * Get the property for the current environment as a numeric value, if that is not found it will look for "default.{@literal <key>}".
+     *
+     * @param key Id of the property to look up
+     * @param defaultValue value to use if property is not found
+     * @return Property value if found, defaultValue if not found
+     */
     public int getPropertyAsInteger(String key, String defaultValue) {
         String value = retrieveProperty(key);
 

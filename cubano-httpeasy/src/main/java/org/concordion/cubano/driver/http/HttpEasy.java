@@ -693,6 +693,7 @@ public class HttpEasy {
             }
         }
 
+        // TODO Java formatter saves in this format (correctly), checkstyle expects case to be indented. How resolve the conflict?
         switch (dataContentType) {
         case RAW:
             dataWriter = new RawDataWriter(connection, rawData, rawDataMediaType, rawFileName);
