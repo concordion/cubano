@@ -20,7 +20,10 @@ All contributions are welcome, we do ask however that you follow our coding stan
 
 For eclipse:
 
+1. Install findbugs plugin
+
 1. Install checkstyle plugin
+
 1. Eclipse > Preferences > Checkstyle > New …
 
     Type: External configuration file

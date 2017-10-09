@@ -130,12 +130,13 @@ subprojects {
         exclude '**/demo/*.*'
 
         // Pass through all supplied system properties - excluding those containing '.' as some of these system properties introduce JNA incompatibility issues
-        System.properties.each { k, v ->
-            if (!k.contains(".")) {
-                println "Passing system property $k: $v"
-                systemProperty k, v
-            }
-        }
+        //This can be very useful but can also pick up properties you won't expect like proxy settings
+        //System.properties.each { k, v ->
+        //    if (!k.contains(".")) {
+        //        println "Passing system property $k: $v"
+        //        systemProperty k, v
+        //    }
+        //}
 
         // need utf-8 to get text with non-standard chars e.g. apostrophes comparing successfully 
         systemProperty 'file.encoding', 'UTF-8'
