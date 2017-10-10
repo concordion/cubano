@@ -5,14 +5,14 @@
 //}
 
 dependencies {
-	compile project(':cubano-config')
-	compile project(':cubano-http')
+    compile project(':cubano-config')
+    compile project(':cubano-http')
 
     // Selenium WebDriver    
     compile "org.seleniumhq.selenium:selenium-java:3.6.0"
-	
+    
     // Html Elements
-  	compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
+      compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
     

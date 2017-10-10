@@ -3,7 +3,6 @@ dependencies {
     compile project(':cubano-http')
     compile project(':cubano-httpeasy') // TODO - pass as configuration
     compile project(':cubano-webdriver')
-    testCompile project(':cubano-webdriver-manager')
 
     compile 'org.concordion:concordion:2.1.0'
     compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
