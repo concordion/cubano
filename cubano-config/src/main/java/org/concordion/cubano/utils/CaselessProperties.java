@@ -19,7 +19,7 @@ public class CaselessProperties extends Properties {
 
     @Override
     public Object put(Object key, Object value) {
-        lookup.put(((String) key).toLowerCase(), (String) key);
+        lookup.put(((String) key), (String) key);
 
         return super.put(key, value);
     }
