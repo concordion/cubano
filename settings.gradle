@@ -1,5 +1,6 @@
 include 'cubano-config',
-        'cubano-core',
+        'cubano-core', 
+        'cubano-framework',
         'cubano-http',
         'cubano-httpeasy',
         'cubano-webdriver',

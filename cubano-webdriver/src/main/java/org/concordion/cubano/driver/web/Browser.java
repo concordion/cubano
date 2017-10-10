@@ -34,10 +34,17 @@ public class Browser {
     }
 
     /**
+     * Constructor - does not start the browser.
+     */
+    public Browser(BrowserProvider browserProvider) {
+        this.browserConfig = browserProvider;
+    }
+
+    /**
      * Are we running on selenium grid?
      *
      * @return true if browser is running on selenium grid, false if running
-     * locally
+     *         locally
      */
     public boolean isRemoteDriver() {
         return this.browserConfig instanceof RemoteBrowserProvider;
