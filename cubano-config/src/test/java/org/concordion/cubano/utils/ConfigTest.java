@@ -14,17 +14,14 @@ import java.util.Properties;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Config.class})
 public class ConfigTest {
+
+    @Rule
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
 
     @Rule
     public final RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties();
@@ -38,12 +35,7 @@ public class ConfigTest {
     public void proxySettingsObtainedInOrder() {
         Properties properties = givenDefaultProperties();
 
-        PowerMockito.mockStatic(System.class);
-        PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY"))).thenReturn("http://proxyhost3:9993");
-
-        PowerMockito.when(System.getProperty(Mockito.any())).thenCallRealMethod();
-        PowerMockito.when(System.getProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
-        PowerMockito.when(System.setProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
+        environmentVariables.set("HTTP_PROXY", "http://proxyhost3:9993");
 
         // Look in HTTP_PROXY environment variable if not found elsewhere
         Config config = new ConfigMock(properties);
@@ -111,13 +103,7 @@ public class ConfigTest {
     public void proxyFromPropxyEnvironmentVariable() {
         Properties properties = givenDefaultProperties();
 
-        PowerMockito.mockStatic(System.class);
-        PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY"))).thenReturn("http://me1:secret1@proxyhost1:9991");
-        // PowerMockito.when(System.getenv(Mockito.eq("NO_PROXY"))).thenReturn("no1");
-
-        PowerMockito.when(System.getProperty(Mockito.any())).thenCallRealMethod();
-        PowerMockito.when(System.getProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
-        PowerMockito.when(System.setProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
+        environmentVariables.set("HTTP_PROXY", "http://me1:secret1@proxyhost1:9991");
 
         Config config = new ConfigMock(properties);
 
@@ -135,15 +121,10 @@ public class ConfigTest {
     public void proxyFromProxyAndUserEnvironmentAndVariable() {
         Properties properties = givenDefaultProperties();
 
-        PowerMockito.mockStatic(System.class);
-        PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY"))).thenReturn("http://proxyhost2:9992");
-        PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY_USER"))).thenReturn("me2");
-        PowerMockito.when(System.getenv(Mockito.eq("HTTP_PROXY_PASS"))).thenReturn("secret2");
-        PowerMockito.when(System.getenv(Mockito.eq("NO_PROXY"))).thenReturn("no2");
-
-        PowerMockito.when(System.getProperty(Mockito.any())).thenCallRealMethod();
-        PowerMockito.when(System.getProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
-        PowerMockito.when(System.setProperty(Mockito.any(), Mockito.any())).thenCallRealMethod();
+        environmentVariables.set("HTTP_PROXY", "http://proxyhost2:9992");
+        environmentVariables.set("HTTP_PROXY_USER", "me2");
+        environmentVariables.set("HTTP_PROXY_PASS", "secret2");
+        environmentVariables.set("NO_PROXY", "no2");
 
         Config config = new ConfigMock(properties);
 

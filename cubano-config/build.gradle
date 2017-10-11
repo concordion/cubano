@@ -1,5 +1,0 @@
-
-dependencies {
-    testCompile 'org.powermock:powermock-api-mockito2:2.0.0-beta.5'
-    testCompile 'org.powermock:powermock-module-junit4:2.0.0-beta.5'
-}

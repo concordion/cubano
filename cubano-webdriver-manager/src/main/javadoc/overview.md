@@ -38,6 +38,7 @@ The fully qualified name of the browser provider class, if using one of the buil
 
 *Local browser options:*
 * ChromeBrowserProvider
+* ChromeHeadlessBrowserProvider (TODO NOT YET DEVELOPED)
 * EdgeBrowserProvider
 * FirefoxBrowserProvider (default if setting not supplied)
 * InternetExplorerBrowserProvider
