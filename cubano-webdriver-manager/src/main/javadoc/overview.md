@@ -1,20 +1,35 @@
 # Cubano WebDriver Manager
 
-Provides a set of 'managed' browser providers that will automatically download and start the driver required for the browser your test is targeting. 
+Provides a set of 'managed' browser providers that will automatically download and start the driver required for the browser your test is targeting.
+
+The automatic Selenium WebDriver binaries management functionality is provided by the [https://github.com/bonigarcia/webdrivermanager](Bonigarcia WebDriver Manager) GitHub project.
+
 
 # Configuration
 
 All configuration is placed in the test project's config.properties or user.properties files (see cubano-config for more details) on these files.
 
-## Bonigarcia WebDriver Manager
+Cubano will pick default settings where it can, but if you're behind a proxy then you'll need to supply the proxy settings if you wish to have the browser drivers automatically downloaded.
 
-The automatic Selenium WebDriver binaries management functionality is provided by the [https://github.com/bonigarcia/webdrivermanager](Bonigarcia WebDriver Manager) GitHub project.
+
+## Bonigarcia WebDriver Manager Configuration
 
 If proxy settings have been configured for the project, WebDriver Manager will be configured to use the proxy settings.
 
-WebDriver manager supports a number of settings, such as the path to download drivers to.  Any settings in the configuration files starting with 'wdm.' will be passed to WebDriver Manager, documentation for these settings can be found at [https://github.com/bonigarcia/webdrivermanager]( - ).
+WebDriver manager supports a number of settings to customise its behaviour. Any settings in the configuration files starting with 'wdm.' will be passed to WebDriver Manager, documentation for these settings can be found at [https://github.com/bonigarcia/webdrivermanager]( - ).
+
+Some recommend settings for use in your project, particularly if you're on a corporate network where your user files end up on the network rather than your PC are:
+
+TODO what are we using?
+
+If you do not wish to have the drivers downloaded and/or updated automatically you will need to 
+
+TODO ????
+
 
 ## Selenium WebDriver Configuration
+
+These settings apply to all browsers.
 
 ##### webdriver.browserProvider
 
@@ -24,12 +39,12 @@ The fully qualified name of the browser provider class, if using one of the buil
 *Local browser options:*
 * ChromeBrowserProvider
 * EdgeBrowserProvider
-* FirefoxBrowserProvider (default)
+* FirefoxBrowserProvider (default if setting not supplied)
 * InternetExplorerBrowserProvider
 * OperaBrowserProvider
-* SafarfiBrowserProvider (NOT YET DEVELOPED)
+* SafariBrowserProvider
     
-These have been choosen as they are the most commonly used browsers and are supported by the Bonigarcia WebDriver Manager and will automatically download the driver executable required to drive the associated browser. 
+These have been chosen as they are the most commonly used browsers and are supported by the Bonigarcia WebDriver Manager and will automatically download the driver executable required to drive the associated browser. 
 
 If you wish to use an alternative browser you will need to download the browser driver and create a new class implementing the BrowserProvider interface.
     
@@ -70,7 +85,7 @@ See cubano-config for more proxy settings.
 
 ### Chrome
 
-Documentation for the various options is at [https://sites.google.com/a/chromium.org/chromedriver/capabilities]( - ).
+Documentation for the various [ChromeDriver](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver) options is at [https://sites.google.com/a/chromium.org/chromedriver/capabilities]( - ).
 
 ##### firefox.capability.&lt;any.valid.capability&gt;
 
@@ -119,7 +134,9 @@ Some preferences you may want to consider:
 
 ### FireFox
 
-##### firefox.useGeckoDriver
+Options for the various [FirefoxDriver](https://github.com/SeleniumHQ/selenium/wiki/FirefoxDriver) settings are at TODO ????
+
+##### firefox.useLegacyDriver
 
 Up to version 47, the driver used to automate Firefox was an extension included with each client. 
 
@@ -127,7 +144,7 @@ Marionette is the new driver that is shipped/included with Firefox. This driver 
 
 The Gecko driver (previously named wires) is an application server implementing the Selenium/WebDriver protocol. It translates the Selenium commands and forwards them to the Marionette driver.
 
-For older browsers set this property to false, for newer browsers set this to true (default).
+For older browsers (version 47 and below) set this property to true, for newer browsers set this to false (default).
 
 ##### firefox.exe
 
@@ -174,6 +191,8 @@ If the path contains "%PROJECT%" it will be replaced with root folder of project
 
 ### Internet Explorer
 
+Options for the various [InternetExplorerDriver](https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver) settings are at TODO ????
+
 ##### ie.capability.&lt;any.valid.capability&gt;
 
 Sets capabilities
@@ -187,3 +206,17 @@ Sets capabilities
 Specify the location of browser if your firefox installation path is not automatically discoverable, eg:
 * %USERPROFILE%/Documents/Mozilla FireFox Portable/FirefoxPortable.exe
 
+
+### Safari
+
+Unlike the other browsers, Safari 10 and above come with built-in [WebDriver support](https://webkit.org/blog/6900/webdriver-support-in-safari-10/). To use the Safari driver you need to configure Safari to allow automation. As a feature intended for developers, Safari’s WebDriver support is turned off by default. To turn on WebDriver support, do the following:
+
+1. Ensure that the Develop menu is available. It can be turned on by opening Safari preferences (Safari > Preferences in the menu bar), going to the Advanced tab, and ensuring that the Show Develop menu in menu bar checkbox is checked.
+
+1. Enable Remote Automation in the Develop menu. This is toggled via Develop > Allow Remote Automation in the menu bar.
+
+1. Authorize safaridriver to launch the WebDriver service which hosts the local web server. To permit this, run /usr/bin/safaridriver once manually and complete the authentication prompt if it is shown.
+
+#### Configuration
+
+Apart from the standard settings (proxy, size, etc) there appears to be very little that can be configured in Safari as per [Getting Started](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). What few options there are aren't currently supported by this class.

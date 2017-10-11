@@ -36,9 +36,9 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
     @Override
     public WebDriver createDriver() {
-        boolean useGeckoDriver = WebDriverConfig.getInstance().getPropertyAsBoolean(BROWSER_NAME + ".useGeckoDriver", "true");
+        boolean useLegacyDriver = WebDriverConfig.getInstance().getPropertyAsBoolean(BROWSER_NAME + ".useLegacyDriver", "false");
 
-        if (useGeckoDriver) {
+        if (!useLegacyDriver) {
             // TODO Can we set arguments to try disable the excess logging the marionette driver is making
             setupBrowserManager(FirefoxDriverManager.getInstance());
         }
@@ -46,7 +46,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         FirefoxOptions options = new FirefoxOptions();
 
         options.setLogLevel(FirefoxDriverLogLevel.INFO);
-        options.setLegacy(!useGeckoDriver);
+        options.setLegacy(useLegacyDriver);
 
         addProxyCapabilities(options);
 
