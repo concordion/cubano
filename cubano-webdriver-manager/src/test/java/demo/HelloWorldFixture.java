@@ -73,15 +73,8 @@ public class HelloWorldFixture {
         // .marker(new StoryboardMarker("Hello", "Data", StockCardImage.TEXT, CardResult.SUCCESS))
         // .debug();
 
-        return "Failed " + attempts;
-    }
-
-    public String getGreetingException() {
-        // browser.getDriver().navigate().to("http://google.com");
-
-        // Assert.fail("Frogs legs");
-
-        return "Failed";
+        // return "Failed " + attempts;
+        return "Hello World!";
     }
 
     @AfterSuite
