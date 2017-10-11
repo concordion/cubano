@@ -11,7 +11,6 @@ import org.openqa.selenium.support.ui.SystemClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
 /**
@@ -257,7 +256,7 @@ public class ActionWait {
                 return e;
             }
         }
-        throw Throwables.propagate(e);
+        throw new RuntimeException(e);
     }
 
     private boolean hasMoreTime(Clock clock, long end) {

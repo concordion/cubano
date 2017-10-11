@@ -91,7 +91,7 @@ public class HttpEasyReader {
      * Gets the status code from an HTTP response message, see {@link HttpURLConnection#getResponseCode()}.
      *
      * @return Response code
-     * @throws IOException
+     * @throws IOException  if an error occurred connecting to the server
      */
     public int getResponseCode() throws IOException {
         return connection.getResponseCode();
@@ -101,7 +101,7 @@ public class HttpEasyReader {
      * Gets the family of the status code from an HTTP response message, see {@link Family}.
      *
      * @return Response family
-     * @throws IOException
+     * @throws IOException  if an error occurred connecting to the server
      */
     public Family getResponseCodeFamily() throws IOException {
         return Family.familyOf(connection.getResponseCode());
@@ -158,7 +158,7 @@ public class HttpEasyReader {
      * @return An XmlReader to handle an xml response.
      * @throws SAXException
      * @throws ParserConfigurationException
-     * @throws IOException                  If unable to read the response
+     * @throws IOException If unable to read the response
      */
     public XmlReader getXmlReader() throws ParserConfigurationException, SAXException, IOException {
         return new XmlReader(asString());

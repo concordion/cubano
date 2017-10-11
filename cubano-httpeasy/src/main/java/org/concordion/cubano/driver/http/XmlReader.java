@@ -101,17 +101,15 @@ public class XmlReader implements ResponseReader {
     /**
      * Search a XML element's children for the requested element and returns the text content.
      * <p>
-     * <p>
      * Example:
-     * <p>
+     * </p>
      * <pre>
-     * {@literal <}serviceResponse returnLength="1">
-     *   {@literal <}output name="documentId">idd_CD1C398E-1F25-436D-B76A-9E293BB426F5{@literal <}/output>
-     * {@literal <}/serviceResponse>
+     * &lt;serviceResponse returnLength="1"&gt;
+     *   &lt;output name="documentId"&gt;idd_CD1C398E-1F25-436D-B76A-9E293BB426F5&lt;/output&gt;
+     * &lt;/serviceResponse&gt;
      *
      * String documentId = reader.getXmlReader().textContent("//{@literal *}/output[@name='documentId']");
      * </pre>
-     * </p>
      *
      * @param selector search path
      * @return Node

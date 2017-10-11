@@ -1,9 +1,9 @@
 package org.concordion.cubano.driver.web;
 
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.pagefactory.PageObjectAwareHtmlElementsLoader;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -34,10 +34,17 @@ public class Browser {
     }
 
     /**
+     * Constructor - does not start the browser.
+     */
+    public Browser(BrowserProvider browserProvider) {
+        this.browserConfig = browserProvider;
+    }
+
+    /**
      * Are we running on selenium grid?
      *
      * @return true if browser is running on selenium grid, false if running
-     * locally
+     *         locally
      */
     public boolean isRemoteDriver() {
         return this.browserConfig instanceof RemoteBrowserProvider;
@@ -159,7 +166,7 @@ public class Browser {
             this.eventFiringDriver.unregister(this.eventListener);
             this.eventFiringDriver.quit();
         } catch (Exception ex) {
-            LOGGER.warn("Exception attempting to quit the browser: " + ex.getMessage());
+            LOGGER.debug("Exception attempting to quit the browser: " + ex.getMessage());
         }
 
         this.eventFiringDriver = null;
@@ -185,7 +192,6 @@ public class Browser {
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new RuntimeException("Unable to create class " + WebDriverConfig.getInstance().getBrowserProvider(), e);
         }
-
     }
 
     /**

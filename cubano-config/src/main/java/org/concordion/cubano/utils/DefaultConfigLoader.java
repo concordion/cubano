@@ -1,16 +1,23 @@
 package org.concordion.cubano.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
+/**
+ * Loads configuration from config.properties and user.properties located in projects root folder.
+ * 
+ * It also ensures that any single slash character '\' does not require a double slash. This means that
+ * using \ to wrap long property values across multiple lines won't work.
+ */
 public class DefaultConfigLoader implements ConfigLoader {
-    private final String CONFIG_FILE = "config.properties";
-    private final String USER_CONFIG_FILE = "user.properties";
+    private static final String CONFIG_FILE = "config.properties";
+    private static final String USER_CONFIG_FILE = "user.properties";
 
     private final Properties properties;
-    private Properties userProperties;
+    private final Properties userProperties;
 
     /** Ensure properties have been loaded before any property is used. */
     public DefaultConfigLoader() {
@@ -19,6 +26,8 @@ public class DefaultConfigLoader implements ConfigLoader {
 
             if (new File(USER_CONFIG_FILE).exists()) {
                 userProperties = loadFile(USER_CONFIG_FILE);
+            } else {
+            	userProperties = null;
             }
         }
     }
@@ -32,8 +41,11 @@ public class DefaultConfigLoader implements ConfigLoader {
     private Properties loadFile(final String filename) {
         Properties prop = new CaselessProperties();
 
-        try (InputStream input = new FileInputStream(filename);) {
-            prop.load(input);
+        try {
+            String content = new String(Files.readAllBytes(Paths.get(filename)));
+
+            // By default property files treat \ as an escape character
+            prop.load(new StringReader(content.replace("\\", "\\\\")));
         } catch (Exception e) {
             throw new RuntimeException("Unable to read properties file.", e);
         }

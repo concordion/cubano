@@ -1,10 +1,10 @@
 subprojects {
-    apply plugin: 'maven-publish'
     apply plugin: 'java'
     apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
     apply plugin: 'eclipse'
     apply plugin: 'jacoco'
+    apply plugin: 'maven'
 
     // need utf-8 to get text with non-standard chars e.g. curly apostrophes used correctly 
     tasks.withType(JavaCompile) {
@@ -23,10 +23,9 @@ subprojects {
         }
     }
 
-
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-
+    
     repositories {
         //mavenLocal()
         maven {
@@ -51,7 +50,7 @@ subprojects {
         }
     }
     */
-
+    
     dependencies {
         javaDoclet 'ch.raffael.pegdown-doclet:pegdown-doclet:1.3'
 
@@ -69,15 +68,12 @@ subprojects {
         //Reporting - note includes jsoup
         //compile 'com.relevantcodes:extentreports:2.40'
 
- 
-
-
         //compile ('ru.yandex.qatools.ashot:ashot:1.5.2') {
         //    exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
         //}
 
         // Logging
-        compile 'org.slf4j:slf4j-api:1.7.18'
+        compile 'org.slf4j:slf4j-api:1.7.25'
         compile 'ch.qos.logback:logback-classic:1.2.3'
 
         // JUnit
@@ -91,29 +87,20 @@ subprojects {
     }
 
     checkstyle {
-        // toolVersion = '6.19'
         ignoreFailures = true
-//        configProperties = ["baseDir" : project(':').file('../config/checkstyle')]
-
-        // Using default location /config/checkstyle/checkstyle.xml
-        configFile = new File("${rootDir}/config/checkstyle/checkstyle.xml")
-
-        // Exclude other source sets
-        //sourceSets = [sourceSets.main, sourceSets.test]
+        configDir = new File("${rootDir}/config/checkstyle")
     }
 
     findbugs {
         toolVersion = "3.0.1"
         ignoreFailures = true
-        // Exclude other source sets
-        //sourceSets = [sourceSets.main, sourceSets.test]
     }
-
+    
     javadoc {
         outputs.upToDateWhen { false } // ensure the task runs each time, even if no changes to code
 
-        options.windowTitle = 'Test Automation Framework'
-        options.docTitle = 'Test Automation Framework'
+        options.windowTitle = 'Cubano'
+        options.docTitle = 'Cubano - Test Automation Framework'
         options.overview = 'src/main/javadoc/overview.md'
 
         // Allows us to use markdown in overview document (and all javadoc comments)
@@ -124,13 +111,12 @@ subprojects {
     }
 
     task wrapper(type: Wrapper) {
-        gradleVersion = '4.0'
+        gradleVersion = '4.2.1'
 
         // To download through proxy, need to update <project root>\gradle\wrapper\gradle-wrapper.properties and change 
         //     distributionUrl property from https... to http...
         // and uncomment follow line    
         // distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
-
     }
 
     test {
@@ -138,12 +124,13 @@ subprojects {
         exclude '**/demo/*.*'
 
         // Pass through all supplied system properties - excluding those containing '.' as some of these system properties introduce JNA incompatibility issues
-        System.properties.each { k, v ->
-            if (!k.contains(".")) {
-                println "Passing system property $k: $v"
-                systemProperty k, v
-            }
-        }
+        //This can be very useful but can also pick up properties you won't expect like proxy settings
+        //System.properties.each { k, v ->
+        //    if (!k.contains(".")) {
+        //        println "Passing system property $k: $v"
+        //        systemProperty k, v
+        //    }
+        //}
 
         // need utf-8 to get text with non-standard chars e.g. apostrophes comparing successfully 
         systemProperty 'file.encoding', 'UTF-8'
@@ -169,11 +156,16 @@ subprojects {
         from sourceSets.main.allSource
     }
     
+    artifacts {
+         archives sourcesJar
+    }
+    
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from javadoc.destinationDir
     }
     
+    /*
     publishing {
         publications {
             mavenJava(MavenPublication) {
@@ -221,4 +213,5 @@ subprojects {
             }
         }
     }
+    */
 }

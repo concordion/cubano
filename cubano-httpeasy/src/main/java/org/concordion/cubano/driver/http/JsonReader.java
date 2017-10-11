@@ -132,19 +132,16 @@ public class JsonReader implements ResponseReader {
 
     /**
      * Search the JSON response for the requested element.
-     * <p>
      * <pre>
      * JsonElement value = reader.jsonPath("anArray[0].aValue").
      * String details = (value == null ? "" : value.getAsString());
      * </pre>
      * <p>
-     * <p>
      * If an element name contains a dot then the dot can be escaped with a double backslash, eg:
-     * <p>
+     * </p>
      * <pre>
      * ele1.ele2part1\\.ele2part2
      * </pre>
-     * </p>
      *
      * @param path A dot separated Json search path
      * @return JsonElement or null if not found
@@ -156,13 +153,11 @@ public class JsonReader implements ResponseReader {
     /**
      * Search a JSON element's children for the requested element.
      * <p>
-     * <p>
      * If an element name contains a dot then the dot can be escaped with a double backslash, eg:
-     * <p>
+     * </p>
      * <pre>
      * ele1.ele2part1\\.ele2part2
      * </pre>
-     * </p>
      *
      * @param json Json element
      * @param path A dot separated Json search path
@@ -224,7 +219,6 @@ public class JsonReader implements ResponseReader {
 
     /**
      * Deserialize the Json into an object of the specified class.
-     * <p>
      * <p>
      * Note: use @SerializedName("custom-name") to convert from key name to variable name
      * </p>

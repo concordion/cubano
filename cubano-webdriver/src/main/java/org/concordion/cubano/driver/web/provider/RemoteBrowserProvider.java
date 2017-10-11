@@ -1,5 +1,17 @@
 package org.concordion.cubano.driver.web.provider;
 
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.StringTokenizer;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -16,18 +28,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.remote.http.HttpClient.Factory;
-
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.StringTokenizer;
 
 /**
  * Provides everything required to start up a remote browser (desktop or device) - apart from the where to connect.
@@ -69,12 +69,10 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
         this.capabilites = capabilites;
     }
 
-    @Override
     public String getBrowser() {
         return browser;
     }
 
-    @Override
     public String getViewPort() {
         return viewPort;
     }
@@ -84,7 +82,6 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public WebDriver createDriver() {
         URL url;
 
@@ -123,7 +120,7 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     private URL getProxyUrl() {
     	WebDriverConfig config = WebDriverConfig.getInstance();
     	
-        String proxyInput = isNullOrEmpty(config.getProxyHost()) ? System.getenv("HTTPS_PROXY") : config.getProxyHost();
+        String proxyInput = isNullOrEmpty(config.getProxyAddress()) ? System.getenv("HTTPS_PROXY") : config.getProxyAddress();
         if (isNullOrEmpty(proxyInput)) {
             return null;
         }
@@ -160,8 +157,8 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
 //         		-Dhttps.proxyPassword=yarrrrr
 
         try {
-        	String username = null;
-        	String password = null;
+            String username = null;
+            String password = null;
 
             // apply env value
             String userInfo = proxyURL.getUserInfo();
@@ -267,12 +264,10 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
         return Objects.hash(this.browser, this.capabilites, this.viewPort);
     }
 
-    @Override
     public boolean isViewPortDefined() {
         return getViewPort() != null && !getViewPort().isEmpty();
     }
 
-    @Override
     public int getViewPortWidth() {
         if (!isViewPortDefined()) {
             return -1;
@@ -283,7 +278,6 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
         return Integer.parseInt(width);
     }
 
-    @Override
     public int getViewPortHeight() {
         if (!isViewPortDefined()) {
             return -1;
