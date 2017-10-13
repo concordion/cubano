@@ -23,12 +23,15 @@ public class SafariBrowserProvider extends LocalBrowserProvider {
         // setupBrowserManager(EdgeDriverManager.getInstance());
 
         SafariOptions options = new SafariOptions();
-
+        
         addProxyCapabilities(options);
 
+        options.setUseTechnologyPreview(getPropertyAsBoolean(BROWSER_NAME, "option.useTechnologyPreview", "false"));
+        options.setUseCleanSession(getPropertyAsBoolean(BROWSER_NAME, "option.useCleanSession", "false"));
+        
         WebDriver driver = new SafariDriver(options);
 
-        setBrowserSize(driver);
+        setBrowserSizeAndLocation(driver);
 
         return driver;
     }

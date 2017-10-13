@@ -28,7 +28,7 @@ public class WebDriverConfigTest {
         
         WebDriverConfig config = new WebDriverConfig(properties);
        
-        assertThat(config.getBrowserSize(), is("1280x1024"));
+        assertThat(config.getBrowserDimension(), is("1280x1024"));
         assertThat(config.getBrowserExe("firefox"), is("/bin/firefox"));
         assertThat(config.getProperty("firefox.profile"), is("default"));
     }

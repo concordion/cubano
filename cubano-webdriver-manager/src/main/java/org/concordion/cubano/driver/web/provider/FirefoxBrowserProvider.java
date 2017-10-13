@@ -83,7 +83,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
         WebDriver driver = new FirefoxDriver(options);
 
-        setBrowserSize(driver);
+        setBrowserSizeAndLocation(driver);
 
         return driver;
     }

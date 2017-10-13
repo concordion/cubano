@@ -42,7 +42,7 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
 
         WebDriver driver = new InternetExplorerDriver(options);
 
-        setBrowserSize(driver);
+        setBrowserSizeAndLocation(driver);
 
         return driver;
     }

@@ -3,6 +3,7 @@ package org.concordion.cubano.driver.web.provider;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
 
@@ -14,6 +15,7 @@ import io.github.bonigarcia.wdm.BrowserManager;
  * @author Andrew Sumner
  */
 public abstract class LocalBrowserProvider implements BrowserProvider {
+    private WebDriverConfig config = WebDriverConfig.getInstance();
 
     /**
      * Configures a BrowserManager instance and starts it.
@@ -21,10 +23,10 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * @param instance BrowserManager instance
      */
     protected void setupBrowserManager(BrowserManager instance) {
-        if (!WebDriverConfig.getInstance().getProxyAddress().isEmpty()) {
-            instance.proxy(WebDriverConfig.getInstance().getProxyAddress());
-            instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
-            instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
+        if (!config.getProxyAddress().isEmpty()) {
+            instance.proxy(config.getProxyAddress());
+            instance.proxyUser(config.getProxyUser());
+            instance.proxyPass(config.getProxyPassword());
         }
 
         instance.setup();
@@ -36,8 +38,6 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * @param capabilities Options  
      */
     protected void addProxyCapabilities(MutableCapabilities capabilities) {
-        WebDriverConfig config = WebDriverConfig.getInstance();
-
         if (!config.isProxyRequired()) {
             return;
         }
@@ -58,35 +58,51 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
     }
 
-    protected void setBrowserSize(WebDriver driver) {
-        if (isBrowserSizeDefined()) {
-            driver.manage().window().setSize(new Dimension(getBrowserWidth(), getBrowserHeight()));
-        } else if (WebDriverConfig.getInstance().isBrowserMaximized()) {
+    protected void setBrowserSizeAndLocation(WebDriver driver) {
+        if (config.isBrowserMaximized()) {
             driver.manage().window().maximize();
+        } else {
+            if (isBrowserDimensionDefined()) {
+                driver.manage().window().setSize(getBrowserDimension());
+            }
+
+            if (isBrowserPositionDefined()) {
+                driver.manage().window().setPosition(getBrowserPosition());
+            }
         }
     }
 
-    private boolean isBrowserSizeDefined() {
-        return WebDriverConfig.getInstance().getBrowserSize() != null && !WebDriverConfig.getInstance().getBrowserSize().isEmpty();
+    private boolean isBrowserDimensionDefined() {
+        return config.getBrowserDimension() != null && !config.getBrowserDimension().isEmpty();
     }
 
-    private int getBrowserWidth() {
-        if (isBrowserSizeDefined()) {
-            return -1;
-        }
+    private Dimension getBrowserDimension() {
+        String width = config.getBrowserDimension().substring(0, config.getBrowserDimension().indexOf("x")).trim();
+        String height = config.getBrowserDimension().substring(config.getBrowserDimension().indexOf("x") + 1).trim();
 
-        String width = WebDriverConfig.getInstance().getBrowserSize().substring(0, WebDriverConfig.getInstance().getBrowserSize().indexOf("x")).trim();
-
-        return Integer.parseInt(width);
+        return new Dimension(Integer.parseInt(width), Integer.parseInt(height));
     }
 
-    private int getBrowserHeight() {
-        if (isBrowserSizeDefined()) {
-            return -1;
-        }
+    private boolean isBrowserPositionDefined() {
+        return config.getBrowserPosition() != null && !config.getBrowserPosition().isEmpty();
+    }
 
-        String height = WebDriverConfig.getInstance().getBrowserSize().substring(WebDriverConfig.getInstance().getBrowserSize().indexOf("x") + 1).trim();
+    private Point getBrowserPosition() {
+        String x = config.getBrowserPosition().substring(0, config.getBrowserPosition().indexOf("x")).trim();
+        String y = config.getBrowserPosition().substring(config.getBrowserPosition().indexOf("x") + 1).trim();
 
-        return Integer.parseInt(height);
+        return new Point(Integer.parseInt(x), Integer.parseInt(y));
+    }
+
+    protected String getProperty(String browser, String key, String defaultValue) {
+        return config.getProperty(browser + "." + key, defaultValue);
+    }
+
+    protected boolean getPropertyAsBoolean(String browser, String key, String defaultValue) {
+        return config.getPropertyAsBoolean(browser + "." + key, defaultValue);
+    }
+
+    protected int getPropertyAsInteger(String browser, String key, String defaultValue) {
+        return config.getPropertyAsInteger(browser + "." + key, defaultValue);
     }
 }

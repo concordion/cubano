@@ -34,7 +34,7 @@ public class EdgeBrowserProvider extends LocalBrowserProvider {
 
         WebDriver driver = new EdgeDriver(options);
 
-        setBrowserSize(driver);
+        setBrowserSizeAndLocation(driver);
 
         return driver;
     }

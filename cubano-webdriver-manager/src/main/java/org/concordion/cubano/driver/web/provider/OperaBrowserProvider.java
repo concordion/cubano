@@ -39,7 +39,7 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
 
         WebDriver driver = new OperaDriver(options);
 
-        setBrowserSize(driver);
+        setBrowserSizeAndLocation(driver);
 
         return driver;
     }

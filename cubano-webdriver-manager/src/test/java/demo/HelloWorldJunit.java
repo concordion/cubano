@@ -3,8 +3,7 @@ package demo;
 import java.util.List;
 
 import org.concordion.cubano.driver.web.Browser;
-import org.concordion.integration.junit4.ConcordionRunner;
-import org.junit.runner.RunWith;
+import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -14,28 +13,18 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RunWith(ConcordionRunner.class)
-public class HelloWorldFixture {
+public class HelloWorldJunit {
 
-    // @Extension
-    // StoryboardExtension storyboard = new StoryboardExtension();
+    Logger logger = LoggerFactory.getLogger(HelloWorldJunit.class);
 
-    // @Extension
-    // LoggingFormatterExtension logging = new LoggingFormatterExtension().registerListener(new StoryboardLogListener(storyboard));
-
-    // ReportLogger logger = ReportLoggerFactory.getReportLogger(HelloWorldFixture.class);
-    Logger logger = LoggerFactory.getLogger(HelloWorldFixture.class);
-
-    public String getGreetingFailure() throws InterruptedException {
-        int attempts = 0;
+    @Test
+    public void test() throws InterruptedException {
 
         Browser browser = new Browser();
-        // browser.getDriver().manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         WebDriverWait wait = new WebDriverWait(browser.getDriver(), 5);
 
         try {
-            for (int i = 0; i < 20; i++) {
-                attempts++;
+            for (int i = 0; i < 1; i++) {
 
                 browser.getDriver().navigate().to("http://google.co.nz");
                 logger.info("GOTO");
@@ -65,7 +54,6 @@ public class HelloWorldFixture {
                                 logger.info("NAVIGATE");
 
                                 break;
-                                // Thread.sleep(1000);
                             }
                         }
 
@@ -81,14 +69,5 @@ public class HelloWorldFixture {
         } finally {
             browser.close();
         }
-
-        // logger.with()
-        // .message("Hello World!")
-        // .attachment("This is some data", "data.txt", MediaType.PLAIN_TEXT)
-        // .marker(new StoryboardMarker("Hello", "Data", StockCardImage.TEXT, CardResult.SUCCESS))
-        // .debug();
-
-        // return "Failed " + attempts;
-        return "Hello World!";
     }
 }

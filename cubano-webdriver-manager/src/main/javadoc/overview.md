@@ -58,11 +58,16 @@ If you wish to use an alternative browser you will need to download the browser 
 * BrowserStackBrowserProvider (NEEDS WORK)
 * SauceLabsBrowserProvider (NEEDS WORK)
 
-##### webdriver.browserSize
+
+##### webdriver.browser.position
+
+Specify a custom window location for browser in the format &lt;X&gt;x&lt;Y&gt;, eg 1x1
+
+##### webdriver.browser.dimension
 
 Specify a custom window size for browser in the format &lt;width&gt;x&lt;height&gt;, eg 192x192
 
-##### webdriver.maximized
+##### webdriver.browser.maximized
 
 If set to true will maximize the browser when it is first opened 
 * Defaults to false, allowed values are true or false
@@ -220,4 +225,12 @@ Unlike the other browsers, Safari 10 and above come with built-in [WebDriver sup
 
 #### Configuration
 
-Apart from the standard settings (proxy, size, etc) there appears to be very little that can be configured in Safari as per [Getting Started](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). What few options there are aren't currently supported by this class.
+Apart from the standard settings (proxy, size, etc) there appears to be very little that can be configured in Safari as per [Getting Started](https://github.com/SeleniumHQ/selenium/wiki/SafariDriver). 
+
+Safari can have problems with the webdriver.browser.postion setting, so use this with care. 
+
+===== option.useTechnologyPreview
+Defaults to false
+
+===== option.useCleanSession 
+Defaults to false

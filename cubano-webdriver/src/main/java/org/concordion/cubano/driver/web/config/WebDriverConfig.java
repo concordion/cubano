@@ -21,7 +21,8 @@ public class WebDriverConfig extends Config {
 
     // Browser 
     private String browserProvider;
-    private String browserSize;
+    private String browserDimension;
+    private String browserPosition;
     private boolean browserMaximized;
 
     private String remoteUserName;
@@ -58,8 +59,9 @@ public class WebDriverConfig extends Config {
             browserProvider = "org.concordion.cubano.driver.web.provider." + browserProvider;
         }
 
-        browserSize = getProperty("webdriver.browserSize", null);
-        browserMaximized = getPropertyAsBoolean("webdriver.maximized", "false");
+        browserDimension = getProperty("webdriver.browser.dimension", null);
+        browserPosition = getProperty("webdriver.browser.position", null);
+        browserMaximized = getPropertyAsBoolean("webdriver.browser.maximized", "false");
 
         remoteUserName = getProperty("remotewebdriver.userName", null);
         remoteApiKey = getProperty("remotewebdriver.apiKey", null);
@@ -98,12 +100,21 @@ public class WebDriverConfig extends Config {
     }  
 
     /**
-     * Size to set browser window - will default to maximised.
+     * Position to locate browser window.
      *
      * @return Size in WxH format
      */
-    public String getBrowserSize() {
-        return browserSize;
+    public String getBrowserPosition() {
+        return browserPosition;
+    }
+
+    /**
+     * Size to set browser window.
+     *
+     * @return Size in WxH format
+     */
+    public String getBrowserDimension() {
+        return browserDimension;
     }
 
     public boolean isBrowserMaximized() {
