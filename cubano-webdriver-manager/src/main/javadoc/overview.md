@@ -76,7 +76,8 @@ If set to true will maximize the browser when it is first opened
 
 If you wish to use implicit rather than explicit waits then configure this value
 * Defaults to 0
-* Note: if your project is using Cubano's BasePageObject and the page object pattern Cubano uses [Yandex HtmlElements](https://github.com/yandex-qatools/htmlelements) to populate the fields so that custom page components can be used in place of WebElements.
+* Refer to the documentation on Cubano's BasePageObject for more information on this setting
+TODO Add documentation to BasePageObject on [Yandex HtmlElements](https://github.com/yandex-qatools/htmlelements) 
 * WARNING: Do not mix with Selenium WebDriver's implicit or explicit waits as the timeout behaviour becomes unpredictable.
 
 ##### proxy.required
@@ -93,7 +94,7 @@ See cubano-config for more proxy settings.
 
 Documentation for the various [ChromeDriver](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver) options is at [https://sites.google.com/a/chromium.org/chromedriver/capabilities]( - ).
 
-##### firefox.capability.&lt;any.valid.capability&gt;
+##### chrome.capability.&lt;any.valid.capability&gt;
 
 Set desired capabilities.
 
@@ -221,7 +222,9 @@ Unlike the other browsers, Safari 10 and above come with built-in [WebDriver sup
 
 1. Enable Remote Automation in the Develop menu. This is toggled via Develop > Allow Remote Automation in the menu bar.
 
-1. Authorize safaridriver to launch the WebDriver service which hosts the local web server. To permit this, run /usr/bin/safaridriver once manually and complete the authentication prompt if it is shown.
+1. The documentation states that you will also need to "authorize safaridriver to launch the WebDriver service which hosts the local web server. To permit this, run `/usr/bin/safaridriver --enable` once and complete the authentication prompt if it is shown.". However it appears to run just fine without this step.
+
+When using Selenium WebDriver, Safari opens a window that does not get closed when the tests complete.
 
 #### Configuration
 
