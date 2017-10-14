@@ -40,10 +40,10 @@ public class EdgeBrowserProvider extends LocalBrowserProvider {
     }
 
     private void addCapabilities(EdgeOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("edge.capability.", true);
+        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "capability.");
 
         for (String key : settings.keySet()) {
-            options.setCapability(key, settings.get(key));
+            options.setCapability(key, toObject(settings.get(key)));
         }
     }
 

@@ -48,7 +48,7 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
     }
 
     private void addCapabilities(InternetExplorerOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("ie.capability.", true);
+        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "capability.");
 
         for (String key : settings.keySet()) {
             options.setCapability(key, settings.get(key));

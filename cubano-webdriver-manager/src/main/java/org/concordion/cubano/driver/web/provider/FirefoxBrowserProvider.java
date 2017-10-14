@@ -36,7 +36,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
     @Override
     public WebDriver createDriver() {
-        boolean useLegacyDriver = WebDriverConfig.getInstance().getPropertyAsBoolean(BROWSER_NAME + ".useLegacyDriver", "false");
+        boolean useLegacyDriver = getPropertyAsBoolean(BROWSER_NAME, "useLegacyDriver", "false");
 
         if (!useLegacyDriver) {
             // TODO Can we set arguments to try disable the excess logging the marionette driver is making
@@ -55,7 +55,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         }
 
         // Profile
-        String profileName = WebDriverConfig.getInstance().getProperty(BROWSER_NAME + ".profile", "");
+        String profileName = getProperty(BROWSER_NAME, "profile", "");
         if (!profileName.equalsIgnoreCase("none")) {
             FirefoxProfile profile;
 
@@ -89,23 +89,24 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     }
 
     private void addProfileProperties(FirefoxProfile profile) {
-        Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.profile.", true);
+        Map<String, String> properties = getPropertiesStartingWith(BROWSER_NAME, "profile.");
 
         for (String key : properties.keySet()) {
+        	// TODO Do we need to support boolean and integer or happy to set all strings?
             profile.setPreference(key, properties.get(key));
         }
     }
 
     private void addCapabilities(FirefoxOptions options) {
-        Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.capability.", true);
+        Map<String, String> properties = getPropertiesStartingWith(BROWSER_NAME, "capability.");
 
         for (String key : properties.keySet()) {
-            options.setCapability(key, properties.get(key));
+            options.setCapability(key, toObject(properties.get(key)));
         }
     }
 
     private void addExtensions(FirefoxProfile profile) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.extension.", true);
+        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "extension.");
         String projectPath = new File("").getAbsolutePath();
 
         for (String key : settings.keySet()) {

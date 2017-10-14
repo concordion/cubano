@@ -1,5 +1,7 @@
 package org.concordion.cubano.driver.web.provider;
 
+import java.util.Map;
+
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
@@ -105,4 +107,31 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     protected int getPropertyAsInteger(String browser, String key, String defaultValue) {
         return config.getPropertyAsInteger(browser + "." + key, defaultValue);
     }
+    
+    protected Object toObject(String value) {
+    	if (value == null) {
+    		return null;
+    	}
+    	
+    	value = value.trim();
+    	
+    	if (value.isEmpty()) {
+    		return value;
+    	}
+    	
+    	if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+    		return Boolean.valueOf(value);
+    	}
+    	
+    	if (value.matches("^-?\\d+$")) {
+    		return Integer.valueOf(value);
+    	}
+    	    		
+        return value;
+    }
+    
+    protected  Map<String, String> getPropertiesStartingWith(String browser, String key) {
+        return config.getPropertiesStartingWith(browser + "." + key, true);
+    }
+    
 }

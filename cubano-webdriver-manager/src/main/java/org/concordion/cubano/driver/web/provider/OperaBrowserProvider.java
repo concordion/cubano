@@ -45,10 +45,10 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
     }
 
     private void addCapabilities(OperaOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("opera.capability.", true);
+        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "capability.");
 
         for (String key : settings.keySet()) {
-            options.setCapability(key, settings.get(key));
+            options.setCapability(key, toObject(settings.get(key)));
         }
     }
 }
