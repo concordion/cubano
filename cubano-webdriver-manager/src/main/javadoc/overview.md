@@ -20,11 +20,11 @@ WebDriver manager supports a number of settings to customise its behaviour. Any 
 
 Some recommend settings for use in your project, particularly if you're on a corporate network where your user files end up on the network rather than your PC are:
 
-TODO what are we using?
+    wdm.targetPath=/path/to/keep/WebDriverManager
 
-If you do not wish to have the drivers downloaded and/or updated automatically you will need to 
+If you do not wish to have the drivers downloaded and/or updated automatically you will need to set and place the required driver files in 'wdm.targetPath' yourself
 
-TODO ????
+    wdm.forceCache=true
 
 
 ## Selenium WebDriver Configuration
@@ -142,6 +142,25 @@ Some preferences you may want to consider:
 ### FireFox
 
 Options for the various [FirefoxDriver](https://github.com/SeleniumHQ/selenium/wiki/FirefoxDriver) settings are at TODO ????
+
+#### Firefox Portable
+
+[Firefox Portable](https://portableapps.com/apps/internet/firefox_portable) can also be used and is a great choice if you need a different version than your installed Firefox version for any reason. 
+
+As with Firefox, any versions prior to 48 will need the legacy flag set to true, see configuration section below for more details. Note: FirefoxPortable 47 has a bug an will not work with Selenium WebDriver. FirefoxPortable 47.0.1 works fine.
+  
+You will need to specify the location of the executable using the firefox.exe configuration property:
+
+* In some corporate environments you may have to rename the executable to get around polices that block FirefoxPortable.exe.
+* From version 48 onwards (ie when using the marionette/gecko driver) make sure you are pointing to "\path\to\FirefoxPortable\App\Firefox64\firefox.exe" and not just "\path\to\FirefoxPortable\FirefoxPortable.exe"
+
+You'll may also want to configure Firefox Portable to run any time, regardless of how many other instances of Firefox or FirefoxPortable that are running:
+  
+1. Copy FirefoxPortable.ini from FirefoxPortable\Other\Source to FirefoxPortable\
+1. Edit FirefoxPortable.ini and change AllowMultipleInstances=false to AllowMultipleInstances=true
+
+ 
+#### Configuration
 
 ##### firefox.useLegacyDriver
 
