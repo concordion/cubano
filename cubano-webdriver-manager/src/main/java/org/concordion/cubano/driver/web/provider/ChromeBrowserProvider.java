@@ -33,18 +33,6 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
 
         addProxyCapabilities(options);
 
-        if (WebDriverConfig.getInstance().isBrowserMaximized()) {
-            options.addArguments("start-maximized");
-        }
-
-        // Workaround for 'Loading of unpacked extensions is disabled by the administrator'
-        // https://stackoverflow.com/questions/43797119/failed-to-load-extension-from-popup-box-while-running-selenium-scripts
-        // options.setExperimentalOption("useAutomationExtension", false);
-
-        // // More workarounds https://stackoverflow.com/questions/42979877/chrome-browser-org-openqa-selenium-webdriverexception-unknown-error-cannot-get
-        // options.addArguments("disable-infobars");
-        // options.addArguments("--disable-popup-blocking");
-
         if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
             options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
         }
@@ -57,8 +45,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
 
         WebDriver driver = new ChromeDriver(options);
 
-        // TODO Why does this error?
-        // setBrowserSize(driver);
+        setBrowserSizeAndLocation(driver);
 
         return driver;
     }
@@ -73,8 +60,6 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
 
     private void addArguments(ChromeOptions options) {
         Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.argument.", true);
-
-        options.addArguments("test-type");
 
         for (String key : settings.keySet()) {
             options.addArguments(settings.get(key));

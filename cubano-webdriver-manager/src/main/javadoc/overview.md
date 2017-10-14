@@ -94,6 +94,16 @@ See cubano-config for more proxy settings.
 
 Documentation for the various [ChromeDriver](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver) options is at [https://sites.google.com/a/chromium.org/chromedriver/capabilities]( - ).
 
+##### chrome.argument.&lt;number&gt;
+
+"number" is meaningless but must be unique. The value must be a valid chrome argument.
+
+A full list can be found here: https://peter.sh/experiments/chromium-command-line-switches/
+
+For example, to prevent the popup "Chrome is being controlled by automated test software" from appearing when running automated tests use this: 
+
+    chrome.argument.1 = disable-infobars
+		
 ##### chrome.capability.&lt;any.valid.capability&gt;
 
 Set desired capabilities.
@@ -103,17 +113,6 @@ Set desired capabilities.
 "number" is meaningless but must be unique. The path must point to a valid file
 
 If the path contains "%PROJECT%" it will be replaced with root folder of project
-
-##### chrome.argument.&lt;number&gt;
-
-"number" is meaningless but must be unique. The value must be a valid chrome argument.
-
-Will always add argument test-type
-
-// More workarounds https://stackoverflow.com/questions/42979877/chrome-browser-org-openqa-selenium-webdriverexception-unknown-error-cannot-get
-		options.addArguments("disable-infobars");
-		options.addArguments("--disable-popup-blocking");
-		
 
 ##### chrome.option..&lt;any.valid.option&gt;
 
