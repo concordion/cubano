@@ -2,17 +2,13 @@ package org.concordion.cubano.driver.web.provider;
 
 import java.io.File;
 import java.util.Map;
-
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.firefox.GeckoDriverService;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
-
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
 
 /**
@@ -46,7 +42,6 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
         FirefoxOptions options = new FirefoxOptions();
 
-        options.setLogLevel(FirefoxDriverLogLevel.INFO);
         options.setLegacy(useLegacyDriver);
 
         addProxyCapabilities(options);
@@ -80,18 +75,19 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
             options.setProfile(profile);
         }
 
+                
         addCapabilities(options);
                 
         //TODO Are any of these useful?
-    	
+        //options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.)
+        //options.setAcceptInsecureCerts(acceptInsecureCerts)
         //options.addArguments(arguments)
-    	//options.addPreference(key, value)
     	//options.setHeadless(headless) ????
         
         stopLogging();
-        //GeckoDriverService may be able to pass in arguments to reduce logging...
-        
-        
+        // I have raised issue https://github.com/mozilla/geckodriver/issues/1016 as this is being ignored
+        // options.setLogLevel(FirefoxDriverLogLevel.INFO);
+                
         WebDriver driver = new FirefoxDriver(options);
 
         setBrowserSizeAndLocation(driver);
