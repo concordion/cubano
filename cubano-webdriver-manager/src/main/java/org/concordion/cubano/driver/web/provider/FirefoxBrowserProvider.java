@@ -80,6 +80,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         }
 
         addCapabilities(options);
+        stopLogging();
 
         WebDriver driver = new FirefoxDriver(options);
 
@@ -88,7 +89,16 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         return driver;
     }
 
-    private void addProfileProperties(FirefoxProfile profile) {
+    private void stopLogging() {
+    	//TODO Add config
+    	//TODO See if can pass arguments to driver fire FirefoxDriver
+    	// https://stackoverflow.com/questions/41387794/how-do-i-disable-firefox-logging-in-selenium-using-geckodriver
+        String osNullOutput = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0 ? "NUL" : "/dev/null"; 
+
+        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, osNullOutput);
+	}
+
+	private void addProfileProperties(FirefoxProfile profile) {
         Map<String, String> properties = getPropertiesStartingWith(BROWSER_NAME, "profile.");
 
         for (String key : properties.keySet()) {
