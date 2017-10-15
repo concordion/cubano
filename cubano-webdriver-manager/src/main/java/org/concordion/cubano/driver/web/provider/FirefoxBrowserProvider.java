@@ -10,6 +10,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.GeckoDriverService;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
 
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
@@ -80,8 +81,17 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         }
 
         addCapabilities(options);
+                
+        //TODO Are any of these useful?
+    	
+        //options.addArguments(arguments)
+    	//options.addPreference(key, value)
+    	//options.setHeadless(headless) ????
+        
         stopLogging();
-
+        //GeckoDriverService may be able to pass in arguments to reduce logging...
+        
+        
         WebDriver driver = new FirefoxDriver(options);
 
         setBrowserSizeAndLocation(driver);
@@ -106,7 +116,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
             profile.setPreference(key, properties.get(key));
         }
     }
-
+   
     private void addCapabilities(FirefoxOptions options) {
         Map<String, String> properties = getPropertiesStartingWith(BROWSER_NAME, "capability.");
 
