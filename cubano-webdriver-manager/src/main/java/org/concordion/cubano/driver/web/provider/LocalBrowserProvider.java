@@ -64,18 +64,14 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         if (config.isBrowserMaximized()) {
             driver.manage().window().maximize();
         } else {
-            if (isBrowserDimensionDefined()) {
+            if (!config.getBrowserDimension().isEmpty()) {
                 driver.manage().window().setSize(getBrowserDimension());
             }
 
-            if (isBrowserPositionDefined()) {
+            if (!config.getBrowserPosition().isEmpty()) {
                 driver.manage().window().setPosition(getBrowserPosition());
             }
         }
-    }
-
-    private boolean isBrowserDimensionDefined() {
-        return config.getBrowserDimension() != null && !config.getBrowserDimension().isEmpty();
     }
 
     private Dimension getBrowserDimension() {
@@ -83,10 +79,6 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         String height = config.getBrowserDimension().substring(config.getBrowserDimension().indexOf("x") + 1).trim();
 
         return new Dimension(Integer.parseInt(width), Integer.parseInt(height));
-    }
-
-    private boolean isBrowserPositionDefined() {
-        return config.getBrowserPosition() != null && !config.getBrowserPosition().isEmpty();
     }
 
     private Point getBrowserPosition() {

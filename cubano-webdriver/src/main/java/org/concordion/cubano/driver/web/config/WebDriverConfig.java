@@ -24,6 +24,7 @@ public class WebDriverConfig extends Config {
     private String browserDimension;
     private String browserPosition;
     private boolean browserMaximized;
+    private boolean eventLoggingEnabled;
 
     private String remoteUserName;
     private String remoteApiKey;
@@ -62,6 +63,7 @@ public class WebDriverConfig extends Config {
         browserDimension = getProperty("webdriver.browser.dimension", null);
         browserPosition = getProperty("webdriver.browser.position", null);
         browserMaximized = getPropertyAsBoolean("webdriver.browser.maximized", "false");
+        eventLoggingEnabled = getPropertyAsBoolean("webdriver.event.logging", "true");
 
         remoteUserName = getProperty("remotewebdriver.userName", null);
         remoteApiKey = getProperty("remotewebdriver.apiKey", null);
@@ -117,10 +119,20 @@ public class WebDriverConfig extends Config {
         return browserDimension;
     }
 
+    /**
+     * Browser should be maximized or not.
+     */
     public boolean isBrowserMaximized() {
         return browserMaximized;
     }
 
+    /**
+     * Selenium WebDriver logging should be enabled.
+     */
+    public boolean isEventLoggingEnabled() {
+        return eventLoggingEnabled;
+    }
+    
     /**
      * Username for remote selenium grid service.
      *

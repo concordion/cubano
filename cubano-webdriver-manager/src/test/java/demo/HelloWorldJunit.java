@@ -26,21 +26,21 @@ public class HelloWorldJunit {
         try {
             for (int i = 0; i < 1; i++) {
 
-                browser.getDriver().navigate().to("http://google.co.nz");
                 logger.info("GOTO");
+                browser.getDriver().navigate().to("http://google.co.nz");
 
+                logger.info("WAIT");
                 wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name=q]")));
 
-                browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys("concordion");
                 logger.info("TYPE");
+                browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys("concordion");
 
+                logger.info("ENTER");
                 browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys(Keys.ENTER);
-
                 // browser.getDriver().findElement(By.cssSelector("input[name=btnK]")).click();
-                logger.info("CLICK");
 
-                wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foot")));
                 logger.info("WAIT");
+                wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("foot")));
 
                 boolean exception = false;
 
@@ -50,8 +50,8 @@ public class HelloWorldJunit {
 
                         for (WebElement result : results) {
                             if (result.getAttribute("href").equals("http://concordion.org/")) {
-                                result.click();
                                 logger.info("NAVIGATE");
+                                result.click();
 
                                 break;
                             }

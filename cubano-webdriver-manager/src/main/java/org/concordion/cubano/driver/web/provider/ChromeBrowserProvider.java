@@ -37,17 +37,43 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
             options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
         }
 
+        setBrowserSizeAndLocation(options);
         addCapabilities(options);
         addArguments(options);
         addOptions(options);
         addPreferences(options);
         addExtensions(options);
-
+        
         WebDriver driver = new ChromeDriver(options);
 
-        setBrowserSizeAndLocation(driver);
-
         return driver;
+    }
+
+    /**
+     * While Chrome supports the standard driver.manage().window() WebDriver settings, it also supports arguments which work a little nicer.
+     */
+	private void setBrowserSizeAndLocation(ChromeOptions options) {
+		WebDriverConfig config = WebDriverConfig.getInstance();
+		
+        if (config.isBrowserMaximized()) {
+        	options.addArguments("start-maximized");
+        } else {
+            if (!config.getBrowserDimension().isEmpty()) {
+            	options.addArguments("window-size=" + config.getBrowserDimension().replace("x", ","));
+            }
+
+            if (!config.getBrowserPosition().isEmpty()) {
+            	options.addArguments("window-position=" + config.getBrowserPosition().replace("x", ",")); 
+            }
+        }
+    }
+
+    private void addArguments(ChromeOptions options) {
+        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "argument.");
+
+        for (String key : settings.keySet()) {
+            options.addArguments(settings.get(key));
+        }
     }
 
 	private void addCapabilities(ChromeOptions options) {
@@ -57,15 +83,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
             options.setCapability(key, toObject(settings.get(key)));
         }
     }
-
-    private void addArguments(ChromeOptions options) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "chrome.argument.");
-
-        for (String key : settings.keySet()) {
-            options.addArguments(settings.get(key));
-        }
-    }
-
+	
     private void addOptions(ChromeOptions options) {
         Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "option.");
 

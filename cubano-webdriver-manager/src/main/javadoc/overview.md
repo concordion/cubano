@@ -72,6 +72,11 @@ Specify a custom window size for browser in the format &lt;width&gt;x&lt;height&
 If set to true will maximize the browser when it is first opened 
 * Defaults to false, allowed values are true or false
 
+##### webdriver.event.logging
+
+If set to true will log all the actions the tests are making to Selenium WebDriver using  
+* Defaults to true, allowed values are true or false
+
 ##### webdriver.timeouts.implicitlywait
 
 If you wish to use implicit rather than explicit waits then configure this value
