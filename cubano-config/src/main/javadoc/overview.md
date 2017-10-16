@@ -111,4 +111,4 @@ Depending on where you specified the proxy host, the non proxy hosts list will b
 1. config.properties file proxy.nonProxyHosts setting 
 1. System property http.nonProxyHosts (Note: uses | rather than , to separate hosts and will be automatically converted) 
 1. Environment variable NO_PROXY
-1. Default to "localhost,127.0.0.1"
+

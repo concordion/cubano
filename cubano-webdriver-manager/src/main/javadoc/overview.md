@@ -148,6 +148,8 @@ Some preferences you may want to consider:
 Options for the various [FirefoxDriver](https://github.com/SeleniumHQ/selenium/wiki/FirefoxDriver) settings are at TODO ???? https://stackoverflow.com/questions/42529853/list-of-firefox-and-chrome-arguments-preferences
 https://github.com/mozilla/geckodriver
 
+Check https://github.com/mozilla/geckodriver/releases to ensure that driver you require is there
+
 #### Firefox Portable
 
 [Firefox Portable](https://portableapps.com/apps/internet/firefox_portable) can also be used and is a great choice if you need a different version than your installed Firefox version for any reason. 
@@ -177,6 +179,12 @@ The Gecko driver (previously named wires) is an application server implementing 
 
 For older browsers (version 47 and below) set this property to true, for newer browsers set this to false (default).
 
+##### firefox.disable.logs
+
+Firefox is now logging screeds of debug entries and currently have a bug that prevents reducing the log level - this blocks all logging by firefox and geckoDriver.
+
+Defaults to true.  If you're having problems starting Firefox set this to false to help track down the cause.
+
 ##### firefox.exe
 
 Specify the location of browser if your firefox installation path is not automatically discoverable, eg:
@@ -196,6 +204,13 @@ Values:
 * &lt;path&gt;: directory name of a custom profile: it must exist
 
 WARNING: At present if a profile is created or used when using the gecko / marionette driver then it suffers from a memory leak. See https://github.com/mozilla/geckodriver/issues/983 and https://stackoverflow.com/questions/46503366/firefox-memory-leak-using-selenium-3-and-firefoxprofile 
+
+
+These are automatically set to prevent firefox automatically upgrading when running tests
+
+    profile.setPreference("app.update.auto", false);
+    profile.setPreference("app.update.enabled", false);
+        
 
 ##### firefox.profile.&lt;any.valid.profile.setting&gt;
 

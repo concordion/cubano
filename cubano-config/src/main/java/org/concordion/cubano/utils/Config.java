@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+    
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
  * <p>
@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Sumner
  */
 public abstract class Config {
-    public static final String DEFAULT_NON_PROXY_HOSTS = "localhost,127.0.0.1";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
 
     // TODO Getting multiple instances of Config all with own copy of properties - how can we share this?
@@ -58,7 +56,7 @@ public abstract class Config {
      */
     protected Config() {
         this(new DefaultConfigLoader());
-    }
+        }
 
     /**
      * Uses the supplied ConfigLoader to import the config and user properties files.
@@ -67,7 +65,7 @@ public abstract class Config {
      */
     protected Config(ConfigLoader loader) {
         this(loader.getProperties(), loader.getUserProperties());
-    }
+        }
 
     /**
      * Allow injection of properties for testing purposes.
@@ -76,7 +74,7 @@ public abstract class Config {
      */
     protected Config(Properties properties) {
         this(properties, null);
-    }
+        }
 
     /**
      * Allow injection of properties for testing purposes.
@@ -90,7 +88,7 @@ public abstract class Config {
 
         loadSharedProperties();
         loadProperties();
-    }
+        }
 
     /**
      * Load properties from the configuration file.
@@ -117,9 +115,7 @@ public abstract class Config {
         if (proxyIsRequired && proxyHost.isEmpty()) {
             getProperty("proxy.host");
         }
-
-        nonProxyHosts = nonProxyHosts == null || nonProxyHosts.isEmpty() ? DEFAULT_NON_PROXY_HOSTS : nonProxyHosts;
-    }
+        }
 
     private void setProxyViaConfigFile() {
         proxyHost = getProperty("proxy.host", "");
@@ -134,7 +130,7 @@ public abstract class Config {
         proxyUsername = getProperty("proxy.username", "");
         proxyPassword = getProperty("proxy.password", "");
         nonProxyHosts = getProperty("proxy.nonProxyHosts", "");
-    }
+        }
 
     private void setProxyViaSystemProperties() {
         if (!proxyHost.isEmpty()) {
@@ -145,7 +141,7 @@ public abstract class Config {
 
         if (proxyHost.isEmpty()) {
             return;
-        }
+            }
 
         LOGGER.debug("Loading Proxy settings from http.proxy... system properties");
 
@@ -158,7 +154,7 @@ public abstract class Config {
     private void setProxyViaEnvironmentVariables() {
         if (!proxyHost.isEmpty()) {
             return;
-        }
+            }
 
         URL proxyUrl = getProxyUrl();
 
@@ -193,8 +189,8 @@ public abstract class Config {
             }
 
             nonProxyHosts = System.getenv("NO_PROXY");
+            }
         }
-    }
 
     private URL getProxyUrl() {
         String proxyInput = System.getenv("HTTP_PROXY");
@@ -205,10 +201,10 @@ public abstract class Config {
             }
         } catch (MalformedURLException e) {
             LOGGER.warn("Invalid proxy url {} in HTTP_PROXY environment variable", proxyInput, e);
-        }
+            }
 
         return null;
-    }
+        }
 
     /**
      * Whether a proxy should be configured for accessing the test application or not, regardless of means of accessing the test
@@ -218,14 +214,14 @@ public abstract class Config {
      */
     public boolean isProxyRequired() {
         return proxyIsRequired;
-    }
+        }
 
     /**
      * @return The hostname, or address, of the proxy server.
      */
     public String getProxyHost() {
-        return proxyHost;
-    }
+            return proxyHost;
+        }
 
     /**
      * @return The port number of the proxy server.
@@ -254,14 +250,14 @@ public abstract class Config {
      */
     public String getProxyUser() {
         return proxyUsername;
-    }
+        }
 
     /**
      * @return Password to authenticate connections through the proxy server.
      */
     public String getProxyPassword() {
         return proxyPassword;
-    }
+        }
 
     /**
      * Indicates the hosts that should be accessed without going through the proxy. Typically this defines internal hosts.
@@ -272,15 +268,12 @@ public abstract class Config {
      * For example: proxy.nonProxyHosts=*.foo.com,localhost will indicate that every hosts in the foo.com domain and the localhost should be accessed directly
      * even if a proxy server is specified.
      * </p>
-     * <p>
-     * Defaults to "localhost,127.0.0.1".
-     * </p>
      * 
      * @return The hosts that should be accessed without going through the proxy
      */
     public String getNonProxyHosts() {
         return nonProxyHosts;
-    }
+        }
 
     /**
      * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
@@ -296,7 +289,7 @@ public abstract class Config {
         }
 
         return value;
-    }
+        }
 
     /**
      * Get the property for the current environment, if that is not found it will look for "default.{@literal <key>}".
@@ -313,7 +306,7 @@ public abstract class Config {
         }
 
         return value;
-    }
+        }
 
     /**
      * Get the property for the current environment as a boolean value, if that is not found it will look for "default.{@literal <key>}".
@@ -327,10 +320,10 @@ public abstract class Config {
 
         if (value.isEmpty()) {
             value = defaultValue == null ? "false" : defaultValue;
-        }
+            }
 
         return Boolean.valueOf(value);
-    }
+        }
 
     /**
      * Get the property for the current environment as a numeric value, if that is not found it will look for "default.{@literal <key>}".
@@ -347,7 +340,7 @@ public abstract class Config {
         }
 
         return Integer.valueOf(value);
-    }
+        }
 
     /**
      * Returns a map of key value pairs of properties starting with a prefix.
@@ -357,7 +350,7 @@ public abstract class Config {
      */
     public Map<String, String> getPropertiesStartingWith(String keyPrefix) {
         return getPropertiesStartingWith(keyPrefix, false);
-    }
+        }
 
     /**
      * Returns a map of key value pairs of properties starting with a prefix.
@@ -373,7 +366,7 @@ public abstract class Config {
         searchPropertiesFrom(userProperties, keyPrefix, trimPrefix, result);
 
         return result;
-    }
+        }
 
     private void searchPropertiesFrom(Properties properties, String keyPrefix, boolean trimPrefix, Map<String, String> result) {
         if (properties == null) {
@@ -394,7 +387,7 @@ public abstract class Config {
                 result.put(propName, propValue);
             }
         }
-    }
+        }
 
     private String retrieveProperty(String key) {
         String value = null;
@@ -413,7 +406,7 @@ public abstract class Config {
         }
 
         return value;
-    }
+        }
 
     private String retrievePropertyFrom(Properties properties, String key) {
         String value = null;
@@ -433,6 +426,6 @@ public abstract class Config {
         }
 
         return value;
-    }
+        }
 
-}
+    }

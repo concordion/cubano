@@ -114,7 +114,7 @@ public class ConfigTest {
         assertThat(config.getProxyPassword(), is("secret1"));
 
         // Using default setting
-        assertThat(config.getNonProxyHosts(), is(Config.DEFAULT_NON_PROXY_HOSTS));
+        assertThat(config.getNonProxyHosts(), is(""));
     }
 
     @Test

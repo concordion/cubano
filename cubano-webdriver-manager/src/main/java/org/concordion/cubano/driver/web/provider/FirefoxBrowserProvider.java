@@ -4,11 +4,16 @@ import java.io.File;
 import java.util.Map;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.InvalidArgumentException;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
+import org.openqa.selenium.remote.CapabilityType;
+
+import com.google.gson.JsonObject;
+
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
 
 /**
@@ -96,17 +101,51 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     }
 
     private void stopLogging() {
-    	//TODO Add config
-    	//TODO See if can pass arguments to driver fire FirefoxDriver
-    	// https://stackoverflow.com/questions/41387794/how-do-i-disable-firefox-logging-in-selenium-using-geckodriver
-        String osNullOutput = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0 ? "NUL" : "/dev/null"; 
+    	if (getPropertyAsBoolean(BROWSER_NAME, "disable.logs", "true")) {
+        	//TODO Add config
+        	//TODO See if can pass arguments to driver fire FirefoxDriver
+        	// https://stackoverflow.com/questions/41387794/how-do-i-disable-firefox-logging-in-selenium-using-geckodriver
+            String osNullOutput = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0 ? "NUL" : "/dev/null"; 
 
-        System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, osNullOutput);
+            System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, osNullOutput);
+    	}
 	}
 
+    @Override
+    protected void addProxyCapabilities(MutableCapabilities capabilities) {
+    	if (getPropertyAsBoolean(BROWSER_NAME, "useLegacyDriver", "false")) {
+    		super.addProxyCapabilities(capabilities);
+    	} else {
+    		WebDriverConfig config = WebDriverConfig.getInstance();
+    		
+    		if (!config.isProxyRequired()) {
+                return;
+            }
+
+            String proxy = config.getProxyHost();
+            int port = config.getProxyPort();
+            String browserNonProxyHosts = config.getNonProxyHosts();
+
+            JsonObject json = new JsonObject();
+    		
+    		json.addProperty("proxyType", "MANUAL");
+    		json.addProperty("httpProxy", proxy);
+    		json.addProperty("httpProxyPort", port);
+    		json.addProperty("sslProxy", proxy);
+    		json.addProperty("sslProxyPort", port);
+
+    		capabilities.setCapability(CapabilityType.PROXY, proxy);
+//            capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+    	}
+    }
+    
 	private void addProfileProperties(FirefoxProfile profile) {
         Map<String, String> properties = getPropertiesStartingWith(BROWSER_NAME, "profile.");
 
+        // Prevent firefox automatically upgrading when running tests
+        profile.setPreference("app.update.auto", false);
+        profile.setPreference("app.update.enabled", false);
+        		 
         for (String key : properties.keySet()) {
         	// TODO Do we need to support boolean and integer or happy to set all strings?
             profile.setPreference(key, properties.get(key));
