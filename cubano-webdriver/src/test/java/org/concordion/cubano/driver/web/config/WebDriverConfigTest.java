@@ -32,7 +32,7 @@ public class WebDriverConfigTest {
        
         assertThat(config.getBrowserDimension(), is("1280x1024"));
         assertThat(config.getBrowserPosition(), is("10x10"));
-        assertThat(config.getProperty("firefox.exe"), is("/bin/firefox"));
+        assertThat(config.getProperty("firefox.exe"), is("%USERPROFILE%/bin/firefox"));
         assertThat(config.getProperty("firefox.profile"), is("default"));
     }
 
