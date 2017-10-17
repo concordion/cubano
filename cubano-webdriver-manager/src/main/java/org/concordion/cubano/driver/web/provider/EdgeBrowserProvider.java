@@ -25,7 +25,7 @@ public class EdgeBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(EdgeDriverManager.getInstance());
+        setupBrowserManager(BROWSER_NAME, EdgeDriverManager.getInstance());
 
         EdgeOptions options = new EdgeOptions();
 

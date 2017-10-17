@@ -9,6 +9,7 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
 
+import io.github.bonigarcia.wdm.Architecture;
 import io.github.bonigarcia.wdm.BrowserManager;
 
 /**
@@ -24,7 +25,28 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * 
      * @param instance BrowserManager instance
      */
-    protected void setupBrowserManager(BrowserManager instance) {
+    protected void setupBrowserManager(String browserName, BrowserManager instance) {
+        // Make all WebDriverManager properties in configuration file system properties
+    	Map<String, String> result = config.getPropertiesStartingWith("wdm.");    	
+    	Map<String, String> override = config.getPropertiesStartingWith(browserName + ".wdm.");
+    	
+        for (String key : override.keySet()) {
+        	result.put(key.substring(browserName.length() + 1), override.get(key));
+        }
+        
+        for (String key : result.keySet()) {
+        	String value = result.get(key);
+        	
+        	// TODO Should we avoid system properties for any other settings or just this one?
+        	switch (key.toLowerCase()) {
+        	case "wdm.architecture":
+        		instance.architecture(Architecture.valueOf(value));
+        		break;
+    		default:
+    			System.setProperty(key, value);
+        	}
+        }
+        
         if (!config.getProxyAddress().isEmpty()) {
             instance.proxy(config.getProxyAddress());
             instance.proxyUser(config.getProxyUser());

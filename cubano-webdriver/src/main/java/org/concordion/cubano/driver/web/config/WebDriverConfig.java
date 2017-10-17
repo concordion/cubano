@@ -71,13 +71,6 @@ public class WebDriverConfig extends Config {
         // Yandex HtmlElements automatically implement 5 second implicit wait, default to zero so as not to interfere with
         // explicit waits
         System.setProperty("webdriver.timeouts.implicitlywait", getProperty("webdriver.timeouts.implicitlywait", "0"));
-
-        // Make all WebDriverManager properties system properties
-        Map<String, String> result = getPropertiesStartingWith("wdm.");
-
-        for (String key : result.keySet()) {
-            System.setProperty(key, result.get(key));
-        }
     }
 
     public String getBrowserProvider() {

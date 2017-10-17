@@ -26,7 +26,7 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(InternetExplorerDriverManager.getInstance());
+        setupBrowserManager(BROWSER_NAME, InternetExplorerDriverManager.getInstance());
 
         InternetExplorerOptions options = new InternetExplorerOptions();
 
@@ -51,7 +51,7 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
         Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "capability.");
 
         for (String key : settings.keySet()) {
-            options.setCapability(key, settings.get(key));
+            options.setCapability(key, toObject(settings.get(key)));
         }
     }
 

@@ -25,7 +25,7 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(OperaDriverManager.getInstance());
+        setupBrowserManager(BROWSER_NAME, OperaDriverManager.getInstance());
 
         OperaOptions options = new OperaOptions();
 

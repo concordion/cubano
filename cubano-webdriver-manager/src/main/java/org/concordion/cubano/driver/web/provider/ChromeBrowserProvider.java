@@ -27,7 +27,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(ChromeDriverManager.getInstance());
+        setupBrowserManager(BROWSER_NAME, ChromeDriverManager.getInstance());
 
         ChromeOptions options = new ChromeOptions();
 

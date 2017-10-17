@@ -39,8 +39,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         boolean useLegacyDriver = getPropertyAsBoolean(BROWSER_NAME, "useLegacyDriver", "false");
 
         if (!useLegacyDriver) {
-            // TODO Can we set arguments to try disable the excess logging the marionette driver is making
-            setupBrowserManager(FirefoxDriverManager.getInstance());
+            setupBrowserManager(BROWSER_NAME, FirefoxDriverManager.getInstance());
         }
 
         FirefoxOptions options = new FirefoxOptions();
