@@ -166,6 +166,36 @@ You'll may also want to configure Firefox Portable to run any time, regardless o
 1. Copy FirefoxPortable.ini from FirefoxPortable\Other\Source to FirefoxPortable\
 1. Edit FirefoxPortable.ini and change AllowMultipleInstances=false to AllowMultipleInstances=true
 
+#### Proxy Configuration
+
+Proxy support in geckodriver is only arriving with Firefox 57.  There are however a couple of other ways to configure via the Firefox profile preferences.
+
+Note: If you have `firefox.profile = none` in your configuration file you will not be able to use either of these techniques.
+
+1. Place `firefox.profile = default` (or a named profile that you have created and configured) in your configuration file, FirefoxBrowserProvider will use that profile and automatically pick up whatever proxy settings you have configured in Firefox.
+ 
+2. Place some of the following settings in your configuration file.  Note:
+* Set proxy.required = false or else the FirefoxBrowserProvider will also try to configure the proxy settings
+* To use these settings they will need to be prefixed with "firefox.profile." for the FirefoxBrowserProvider to pick them up.  
+* Using firefox.profile.network.proxy.type = 4 should generally be enough
+
+network.proxy.type
+
+    0 - Direct connection (or) no proxy.
+    1 - Manual proxy configuration
+    2 - Proxy auto-configuration (PAC).
+    4 - Auto-detect proxy settings.
+    5 - Use system proxy settings.
+
+network.proxy.http
+network.proxy.http_port
+network.proxy.ftp
+network.proxy.ftp_port
+network.proxy.ssl
+network.proxy.ssl_port
+network.proxy.autoconfig_url
+network.proxy.no_proxies_on
+
  
 #### Configuration
 
@@ -206,10 +236,10 @@ Values:
 WARNING: At present if a profile is created or used when using the gecko / marionette driver then it suffers from a memory leak. See https://github.com/mozilla/geckodriver/issues/983 and https://stackoverflow.com/questions/46503366/firefox-memory-leak-using-selenium-3-and-firefoxprofile 
 
 
-These are automatically set to prevent firefox automatically upgrading when running tests
+These are automatically set to prevent firefox automatically upgrading when running tests (assuming profile is not set to none)
 
-    profile.setPreference("app.update.auto", false);
-    profile.setPreference("app.update.enabled", false);
+    firefox.profile.app.update.auto = false
+    firefox.profile.app.update.enabled = false
         
 
 ##### firefox.profile.&lt;any.valid.profile.setting&gt;

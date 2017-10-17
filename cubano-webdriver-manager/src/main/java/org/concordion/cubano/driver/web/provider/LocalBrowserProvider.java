@@ -105,27 +105,41 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     }
     
     protected Object toObject(String value) {
-    	if (value == null) {
-    		return null;
+        Class<?> valueClass = getClassOfValue(value);
+
+        if (valueClass == null) {
+            return null;
     	}
     	
-    	value = value.trim();
-    	
-    	if (value.isEmpty()) {
-    		return value;
-    	}
-    	
-    	if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+        if (valueClass == Boolean.class) {
     		return Boolean.valueOf(value);
     	}
     	
-    	if (value.matches("^-?\\d+$")) {
+        if (valueClass == int.class) {
     		return Integer.valueOf(value);
     	}
     	    		
         return value;
     }
     
+    protected Class<?> getClassOfValue(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        value = value.trim();
+
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+            return Boolean.class;
+        }
+
+        if (value.matches("^-?\\d+$")) {
+            return int.class;
+        }
+
+        return String.class;
+    }
+
     protected  Map<String, String> getPropertiesStartingWith(String browser, String key) {
         return config.getPropertiesStartingWith(browser + "." + key, true);
     }

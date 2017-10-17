@@ -2,6 +2,7 @@ package org.concordion.cubano.driver.web.provider;
 
 import java.io.File;
 import java.util.Map;
+
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.MutableCapabilities;
@@ -10,9 +11,6 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
-import org.openqa.selenium.remote.CapabilityType;
-
-import com.google.gson.JsonObject;
 
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
 
@@ -116,27 +114,30 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     	if (getPropertyAsBoolean(BROWSER_NAME, "useLegacyDriver", "false")) {
     		super.addProxyCapabilities(capabilities);
     	} else {
-    		WebDriverConfig config = WebDriverConfig.getInstance();
-    		
-    		if (!config.isProxyRequired()) {
-                return;
-            }
-
-            String proxy = config.getProxyHost();
-            int port = config.getProxyPort();
-            String browserNonProxyHosts = config.getNonProxyHosts();
-
-            JsonObject json = new JsonObject();
-    		
-    		json.addProperty("proxyType", "MANUAL");
-    		json.addProperty("httpProxy", proxy);
-    		json.addProperty("httpProxyPort", port);
-    		json.addProperty("sslProxy", proxy);
-    		json.addProperty("sslProxyPort", port);
-
-    		capabilities.setCapability(CapabilityType.PROXY, proxy);
-//            capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-    	}
+            // TODO Proxy support only comming with Firefox 57. Cannot test yet as geckodriver win32 0.19.0 not available
+            // WebDriverConfig config = WebDriverConfig.getInstance();
+            //
+            // if (!config.isProxyRequired()) {
+            // return;
+            // }
+            //
+            // String proxy = config.getProxyHost();
+            // int port = config.getProxyPort();
+            // String browserNonProxyHosts = config.getNonProxyHosts();
+            //
+            // JsonObject json = new JsonObject();
+            //
+            // json.addProperty("proxyType", "manual");
+            // json.addProperty("httpProxy", proxy);
+            // json.addProperty("httpProxyPort", port);
+            // json.addProperty("ftpProxy", proxy);
+            // json.addProperty("ftpProxyPort", port);
+            // json.addProperty("sslProxy", proxy);
+            // json.addProperty("sslProxyPort", port);
+            //
+            // capabilities.setCapability(CapabilityType.PROXY, proxy.toString());
+            // capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+        }
     }
     
 	private void addProfileProperties(FirefoxProfile profile) {
@@ -147,8 +148,17 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         profile.setPreference("app.update.enabled", false);
         		 
         for (String key : properties.keySet()) {
-        	// TODO Do we need to support boolean and integer or happy to set all strings?
-            profile.setPreference(key, properties.get(key));
+            String value = properties.get(key);
+
+            Class<?> valueClass = getClassOfValue(value);
+
+            if (valueClass == Boolean.class) {
+                profile.setPreference(key, Boolean.valueOf(value));
+            } else if (valueClass == int.class) {
+                profile.setPreference(key, Integer.valueOf(value));
+            } else {
+                profile.setPreference(key, properties.get(key));
+            }
         }
     }
    
