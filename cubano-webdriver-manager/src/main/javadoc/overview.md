@@ -304,17 +304,11 @@ Sets capabilities
 
 ### Opera
 
-Doesn't pick up path by default, use `opera.exe = ...` 
+Doesn't pick up path by default, use `C:\Program Files\Opera\<version>\opera.exe` 
+
 https://github.com/operasoftware/operachromiumdriver/issues/9
+https://github.com/operasoftware/operachromiumdriver/issues/19
 
-Doesn't seem to close browser when quit is called, only documented workaround:
-
-For windows:
-Runtime.getRuntime().exec("taskkill /f /im opera.exe");
-For Macos:
-Runtime.getRuntime().exec("pgrep 'Opera' | xargs kill");
-
-I would suggest it's not really suitable at the moment.
 
 ##### opera.capability.&lt;any.valid.capability&gt;
 
