@@ -1,6 +1,7 @@
 package org.concordion.cubano.utils;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -114,7 +115,7 @@ public class ConfigTest {
         assertThat(config.getProxyPassword(), is("secret1"));
 
         // Using default setting
-        assertThat(config.getNonProxyHosts(), is(""));
+        assertThat(config.getNonProxyHosts(), is(nullValue()));
     }
 
     @Test
