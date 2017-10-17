@@ -19,19 +19,24 @@ import io.github.bonigarcia.wdm.BrowserManager;
  */
 public abstract class LocalBrowserProvider implements BrowserProvider {
     private WebDriverConfig config = WebDriverConfig.getInstance();
+    
+    /**
+     * The name of the browser as used in the configuration file to retrieve browser specific settings.
+     */
+    protected abstract String getBrowserName();
 
     /**
      * Configures a BrowserManager instance and starts it.
      * 
      * @param instance BrowserManager instance
      */
-    protected void setupBrowserManager(String browserName, BrowserManager instance) {
+    protected void setupBrowserManager(BrowserManager instance) {
         // Make all WebDriverManager properties in configuration file system properties
     	Map<String, String> result = config.getPropertiesStartingWith("wdm.");    	
-    	Map<String, String> override = config.getPropertiesStartingWith(browserName + ".wdm.");
+    	Map<String, String> override = config.getPropertiesStartingWith(getBrowserName() + ".wdm.");
     	
         for (String key : override.keySet()) {
-        	result.put(key.substring(browserName.length() + 1), override.get(key));
+        	result.put(key.substring(getBrowserName().length() + 1), override.get(key));
         }
         
         for (String key : result.keySet()) {
@@ -55,6 +60,23 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
         instance.setup();
     }
+
+    /**
+     * Useful if local browser is not available on path.
+     * 
+     * @param browserName Name of the browser as defined by the browser provider class
+     * 
+     * @return Path to browser executable
+     */
+    public String getBrowserExe() {
+        String localBrowserExe = config.getProperty(getBrowserName() + ".exe", null);
+
+        if (!localBrowserExe.isEmpty()) {
+            return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));
+        }
+
+        return "";
+    }  
 
     /**
      * Add proxy settings to desired capabilities if specified in config file.
@@ -99,7 +121,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
             }
         }
     }
-
+    
     private Dimension getBrowserDimension() {
         String width = config.getBrowserDimension().substring(0, config.getBrowserDimension().indexOf("x")).trim();
         String height = config.getBrowserDimension().substring(config.getBrowserDimension().indexOf("x") + 1).trim();
@@ -114,16 +136,20 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         return new Point(Integer.parseInt(x), Integer.parseInt(y));
     }
 
-    protected String getProperty(String browser, String key, String defaultValue) {
-        return config.getProperty(browser + "." + key, defaultValue);
+    protected String getProperty(String key, String defaultValue) {
+        return config.getProperty(getBrowserName() + "." + key, defaultValue);
     }
 
-    protected boolean getPropertyAsBoolean(String browser, String key, String defaultValue) {
-        return config.getPropertyAsBoolean(browser + "." + key, defaultValue);
+    protected boolean getPropertyAsBoolean(String key, String defaultValue) {
+        return config.getPropertyAsBoolean(getBrowserName() + "." + key, defaultValue);
     }
 
-    protected int getPropertyAsInteger(String browser, String key, String defaultValue) {
-        return config.getPropertyAsInteger(browser + "." + key, defaultValue);
+    protected int getPropertyAsInteger(String key, String defaultValue) {
+        return config.getPropertyAsInteger(getBrowserName() + "." + key, defaultValue);
+    }
+
+    protected  Map<String, String> getPropertiesStartingWith(String key) {
+        return config.getPropertiesStartingWith(getBrowserName() + "." + key, true);
     }
     
     protected Object toObject(String value) {
@@ -161,9 +187,4 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
         return String.class;
     }
-
-    protected  Map<String, String> getPropertiesStartingWith(String browser, String key) {
-        return config.getPropertiesStartingWith(browser + "." + key, true);
-    }
-    
 }

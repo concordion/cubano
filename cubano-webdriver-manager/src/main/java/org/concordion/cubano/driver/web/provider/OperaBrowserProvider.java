@@ -20,21 +20,27 @@ import io.github.bonigarcia.wdm.OperaDriverManager;
 public class OperaBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "opera";
 
+    @Override
+	protected String getBrowserName() {
+		return BROWSER_NAME;
+	}
+    
     /**
      * @return Starts Opera driver manager and creates a new WebDriver instance.
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(BROWSER_NAME, OperaDriverManager.getInstance());
+        setupBrowserManager(OperaDriverManager.getInstance());
 
         OperaOptions options = new OperaOptions();
 
         addProxyCapabilities(options);
 
-        if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
-            options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
+        if (!getBrowserExe().isEmpty()) {
+            options.setBinary(getBrowserExe());
         }
 
+    	// TODO Does this use all same options as chrome, can we extend chrome provider ???  
         addCapabilities(options);
 
         WebDriver driver = new OperaDriver(options);
@@ -45,7 +51,7 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
     }
 
     private void addCapabilities(OperaOptions options) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "capability.");
+        Map<String, String> settings = getPropertiesStartingWith("capability.");
 
         for (String key : settings.keySet()) {
             options.setCapability(key, toObject(settings.get(key)));

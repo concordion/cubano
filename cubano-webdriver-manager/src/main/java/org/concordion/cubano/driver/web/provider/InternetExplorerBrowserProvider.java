@@ -2,7 +2,6 @@ package org.concordion.cubano.driver.web.provider;
 
 import java.util.Map;
 
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
@@ -21,12 +20,17 @@ import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
 public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "ie";
 
+    @Override
+	protected String getBrowserName() {
+		return BROWSER_NAME;
+	}
+    
     /**
      * @return Starts Internet Explorer driver manager and creates a new WebDriver instance.
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(BROWSER_NAME, InternetExplorerDriverManager.getInstance());
+        setupBrowserManager(InternetExplorerDriverManager.getInstance());
 
         InternetExplorerOptions options = new InternetExplorerOptions();
 
@@ -48,7 +52,7 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
     }
 
     private void addCapabilities(InternetExplorerOptions options) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "capability.");
+        Map<String, String> settings = getPropertiesStartingWith("capability.");
 
         for (String key : settings.keySet()) {
             options.setCapability(key, toObject(settings.get(key)));

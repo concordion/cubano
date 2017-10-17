@@ -78,23 +78,6 @@ public class WebDriverConfig extends Config {
     }
 
     /**
-     * Useful if local browser is not available on path.
-     * 
-     * @param browserName Name of the browser as defined by the browser provider class
-     * 
-     * @return Path to browser executable
-     */
-    public String getBrowserExe(String browserName) {
-        String localBrowserExe = getProperty(browserName + ".exe", null);
-
-        if (!localBrowserExe.isEmpty()) {
-            return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));
-        }
-
-        return "";
-    }  
-
-    /**
      * Position to locate browser window.
      *
      * @return Size in WxH format

@@ -15,6 +15,11 @@ import org.openqa.selenium.safari.SafariOptions;
 public class SafariBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "safari";
 
+    @Override
+	protected String getBrowserName() {
+		return BROWSER_NAME;
+	}
+    
     /**
      * @return Starts Safari driver manager and creates a new WebDriver instance.
      */
@@ -26,8 +31,8 @@ public class SafariBrowserProvider extends LocalBrowserProvider {
         
         addProxyCapabilities(options);
 
-        options.setUseTechnologyPreview(getPropertyAsBoolean(BROWSER_NAME, "option.useTechnologyPreview", "false"));
-        options.setUseCleanSession(getPropertyAsBoolean(BROWSER_NAME, "option.useCleanSession", "false"));
+        options.setUseTechnologyPreview(getPropertyAsBoolean("option.useTechnologyPreview", "false"));
+        options.setUseCleanSession(getPropertyAsBoolean("option.useCleanSession", "false"));
         
         WebDriver driver = new SafariDriver(options);
 

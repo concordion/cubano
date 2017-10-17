@@ -25,6 +25,11 @@ import io.github.bonigarcia.wdm.FirefoxDriverManager;
 public class FirefoxBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "firefox";
 
+    @Override
+	protected String getBrowserName() {
+		return BROWSER_NAME;
+	}
+    
     /**
      * For running portable firefox at same time as desktop version:
      * 1. Edit FirefoxPortable.ini (next to FirefoxPortable.exe)
@@ -36,10 +41,10 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
     @Override
     public WebDriver createDriver() {
-        boolean useLegacyDriver = getPropertyAsBoolean(BROWSER_NAME, "useLegacyDriver", "false");
+        boolean useLegacyDriver = getPropertyAsBoolean("useLegacyDriver", "false");
 
         if (!useLegacyDriver) {
-            setupBrowserManager(BROWSER_NAME, FirefoxDriverManager.getInstance());
+            setupBrowserManager(FirefoxDriverManager.getInstance());
         }
 
         FirefoxOptions options = new FirefoxOptions();
@@ -48,12 +53,12 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
         addProxyCapabilities(options);
 
-        if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
-            options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
+        if (!getBrowserExe().isEmpty()) {
+            options.setBinary(getBrowserExe());
         }
 
         // Profile
-        String profileName = getProperty(BROWSER_NAME, "profile", "");
+        String profileName = getProperty("profile", "");
         if (!profileName.equalsIgnoreCase("none")) {
             FirefoxProfile profile;
 
@@ -98,7 +103,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     }
 
     private void stopLogging() {
-    	if (getPropertyAsBoolean(BROWSER_NAME, "disable.logs", "true")) {
+    	if (getPropertyAsBoolean("disable.logs", "true")) {
         	//TODO Add config
         	//TODO See if can pass arguments to driver fire FirefoxDriver
         	// https://stackoverflow.com/questions/41387794/how-do-i-disable-firefox-logging-in-selenium-using-geckodriver
@@ -110,7 +115,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
     @Override
     protected void addProxyCapabilities(MutableCapabilities capabilities) {
-    	if (getPropertyAsBoolean(BROWSER_NAME, "useLegacyDriver", "false")) {
+    	if (getPropertyAsBoolean("useLegacyDriver", "false")) {
     		super.addProxyCapabilities(capabilities);
     	} else {
             // TODO Proxy support only comming with Firefox 57. Cannot test yet as geckodriver win32 0.19.0 not available
@@ -140,7 +145,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     }
     
 	private void addProfileProperties(FirefoxProfile profile) {
-        Map<String, String> properties = getPropertiesStartingWith(BROWSER_NAME, "profile.");
+        Map<String, String> properties = getPropertiesStartingWith("profile.");
 
         // Prevent firefox automatically upgrading when running tests
         profile.setPreference("app.update.auto", false);
@@ -162,7 +167,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     }
    
     private void addCapabilities(FirefoxOptions options) {
-        Map<String, String> properties = getPropertiesStartingWith(BROWSER_NAME, "capability.");
+        Map<String, String> properties = getPropertiesStartingWith("capability.");
 
         for (String key : properties.keySet()) {
             options.setCapability(key, toObject(properties.get(key)));
@@ -170,7 +175,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     }
 
     private void addExtensions(FirefoxProfile profile) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "extension.");
+        Map<String, String> settings = getPropertiesStartingWith("extension.");
         String projectPath = new File("").getAbsolutePath();
 
         for (String key : settings.keySet()) {

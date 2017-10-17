@@ -22,19 +22,24 @@ import io.github.bonigarcia.wdm.ChromeDriverManager;
 public class ChromeBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "chrome";
 
+	@Override
+	protected String getBrowserName() {
+		return BROWSER_NAME;
+	}
+	
     /**
      * @return Starts Chrome driver manager and creates a new WebDriver instance.
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(BROWSER_NAME, ChromeDriverManager.getInstance());
+        setupBrowserManager(ChromeDriverManager.getInstance());
 
         ChromeOptions options = new ChromeOptions();
 
         addProxyCapabilities(options);
 
-        if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
-            options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
+        if (!getBrowserExe().isEmpty()) {
+            options.setBinary(getBrowserExe());
         }
 
         setBrowserSizeAndLocation(options);
@@ -69,7 +74,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
     }
 
     private void addArguments(ChromeOptions options) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "argument.");
+        Map<String, String> settings = getPropertiesStartingWith("argument.");
 
         for (String key : settings.keySet()) {
             options.addArguments(settings.get(key));
@@ -77,7 +82,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
     }
 
 	private void addCapabilities(ChromeOptions options) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "capability.");
+        Map<String, String> settings = getPropertiesStartingWith("capability.");
 
         for (String key : settings.keySet()) {
             options.setCapability(key, toObject(settings.get(key)));
@@ -85,7 +90,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
     }
 	
     private void addOptions(ChromeOptions options) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "option.");
+        Map<String, String> settings = getPropertiesStartingWith("option.");
 
         for (String key : settings.keySet()) {
             options.setExperimentalOption(key, toObject(settings.get(key)));
@@ -93,7 +98,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
     }
     
 	private void addPreferences(ChromeOptions options) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "preference.");
+        Map<String, String> settings = getPropertiesStartingWith("preference.");
 
         Map<String, Object> prefs = new HashMap<>();
 
@@ -107,7 +112,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
     } 
 
     private void addExtensions(ChromeOptions options) {
-        Map<String, String> settings = getPropertiesStartingWith(BROWSER_NAME, "extension.");
+        Map<String, String> settings = getPropertiesStartingWith("extension.");
         String projectPath = new File("").getAbsolutePath();
 
         for (String key : settings.keySet()) {
