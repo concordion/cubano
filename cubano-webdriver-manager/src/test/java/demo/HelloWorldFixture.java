@@ -27,16 +27,12 @@ public class HelloWorldFixture {
     Logger logger = LoggerFactory.getLogger(HelloWorldFixture.class);
 
     public String getGreetingFailure() throws InterruptedException {
-        int attempts = 0;
-
         Browser browser = new Browser();
         // browser.getDriver().manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         WebDriverWait wait = new WebDriverWait(browser.getDriver(), 5);
 
         try {
             for (int i = 0; i < 20; i++) {
-                attempts++;
-
                 browser.getDriver().navigate().to("http://google.co.nz");
                 logger.info("GOTO");
 

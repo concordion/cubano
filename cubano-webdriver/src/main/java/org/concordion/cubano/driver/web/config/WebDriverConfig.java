@@ -1,6 +1,5 @@
 package org.concordion.cubano.driver.web.config;
 
-import java.util.Map;
 import java.util.Properties;
 
 import org.concordion.cubano.utils.Config;

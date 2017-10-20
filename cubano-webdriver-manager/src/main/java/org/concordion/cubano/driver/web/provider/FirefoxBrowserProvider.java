@@ -3,7 +3,6 @@ package org.concordion.cubano.driver.web.provider;
 import java.io.File;
 import java.util.Map;
 
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;

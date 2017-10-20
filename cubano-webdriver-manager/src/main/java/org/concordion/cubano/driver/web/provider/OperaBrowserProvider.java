@@ -2,7 +2,6 @@ package org.concordion.cubano.driver.web.provider;
 
 import java.util.Map;
 
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.opera.OperaOptions;
