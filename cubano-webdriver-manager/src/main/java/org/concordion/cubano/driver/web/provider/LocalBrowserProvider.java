@@ -19,7 +19,7 @@ import io.github.bonigarcia.wdm.BrowserManager;
  */
 public abstract class LocalBrowserProvider implements BrowserProvider {
     private WebDriverConfig config = WebDriverConfig.getInstance();
-    
+
     /**
      * The name of the browser as used in the configuration file to retrieve browser specific settings.
      */
@@ -32,26 +32,26 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      */
     protected void setupBrowserManager(BrowserManager instance) {
         // Make all WebDriverManager properties in configuration file system properties
-    	Map<String, String> result = config.getPropertiesStartingWith("wdm.");    	
-    	Map<String, String> override = config.getPropertiesStartingWith(getBrowserName() + ".wdm.");
-    	
+        Map<String, String> result = config.getPropertiesStartingWith("wdm.");
+        Map<String, String> override = config.getPropertiesStartingWith(getBrowserName() + ".wdm.");
+
         for (String key : override.keySet()) {
-        	result.put(key.substring(getBrowserName().length() + 1), override.get(key));
+            result.put(key.substring(getBrowserName().length() + 1), override.get(key));
         }
-        
+
         for (String key : result.keySet()) {
-        	String value = result.get(key);
-        	
-        	// TODO Should we avoid system properties for any other settings or just this one?
-        	switch (key.toLowerCase()) {
-        	case "wdm.architecture":
-        		instance.architecture(Architecture.valueOf(value));
-        		break;
-    		default:
-    			System.setProperty(key, value);
-        	}
+            String value = result.get(key);
+
+            // TODO Should we avoid system properties for any other settings or just this one?
+            switch (key.toLowerCase()) {
+            case "wdm.architecture":
+                instance.architecture(Architecture.valueOf(value));
+                break;
+            default:
+                System.setProperty(key, value);
+            }
         }
-        
+
         if (!config.getProxyAddress().isEmpty()) {
             instance.proxy(config.getProxyAddress());
             instance.proxyUser(config.getProxyUser());
@@ -92,18 +92,18 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         String browserNonProxyHosts = config.getNonProxyHosts();
 
         final org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
-        
+
         proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
         proxy.setHttpProxy(browserProxy);
         proxy.setFtpProxy(browserProxy);
         proxy.setSslProxy(browserProxy);
 
         if (!browserNonProxyHosts.isEmpty()) {
-        	proxy.setNoProxy(browserNonProxyHosts);
+            proxy.setNoProxy(browserNonProxyHosts);
         }
-        
+
         capabilities.setCapability(CapabilityType.PROXY, proxy);
-        
+
         // TODO This should probably be configurable
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
     }
@@ -121,7 +121,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
             }
         }
     }
-    
+
     private Dimension getBrowserDimension() {
         String width = config.getBrowserDimension().substring(0, config.getBrowserDimension().indexOf("x")).trim();
         String height = config.getBrowserDimension().substring(config.getBrowserDimension().indexOf("x") + 1).trim();
@@ -151,25 +151,25 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     protected  Map<String, String> getPropertiesStartingWith(String key) {
         return config.getPropertiesStartingWith(getBrowserName() + "." + key, true);
     }
-    
+
     protected Object toObject(String value) {
         Class<?> valueClass = getClassOfValue(value);
 
         if (valueClass == null) {
             return null;
-    	}
-    	
+        }
+
         if (valueClass == Boolean.class) {
-    		return Boolean.valueOf(value);
-    	}
-    	
+            return Boolean.valueOf(value);
+        }
+
         if (valueClass == int.class) {
-    		return Integer.valueOf(value);
-    	}
-    	    		
+            return Integer.valueOf(value);
+        }
+
         return value;
     }
-    
+
     protected Class<?> getClassOfValue(String value) {
         if (value == null) {
             return null;

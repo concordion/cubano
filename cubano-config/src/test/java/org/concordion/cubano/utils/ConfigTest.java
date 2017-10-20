@@ -196,7 +196,7 @@ public class ConfigTest {
         assertThat(config.getProxyUser(), is(""));
         assertThat(config.getProxyPassword(), is(""));
 
-        // TODO Fails on my laptop as getting value "local,*.local,169.254/16,*.169.254/16,127.0.0.1" from somewhere
+        // TODO Fails on my laptop as getting value "local,*.local,169.254/16,*.169.254/16,127.0.0.1" from somewhere - fixed add back in
         // assertThat(config.getNonProxyHosts(), is(""));
     }
 
