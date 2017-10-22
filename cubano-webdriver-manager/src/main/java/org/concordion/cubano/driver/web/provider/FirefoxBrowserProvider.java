@@ -3,11 +3,10 @@ package org.concordion.cubano.driver.web.provider;
 import java.io.File;
 import java.util.Map;
 
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.InvalidArgumentException;
+import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.internal.ProfilesIni;
@@ -25,6 +24,11 @@ import io.github.bonigarcia.wdm.FirefoxDriverManager;
 public class FirefoxBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "firefox";
 
+    @Override
+	protected String getBrowserName() {
+		return BROWSER_NAME;
+	}
+    
     /**
      * For running portable firefox at same time as desktop version:
      * 1. Edit FirefoxPortable.ini (next to FirefoxPortable.exe)
@@ -36,26 +40,24 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
 
     @Override
     public WebDriver createDriver() {
-        boolean useLegacyDriver = WebDriverConfig.getInstance().getPropertyAsBoolean(BROWSER_NAME + ".useLegacyDriver", "false");
+        boolean useLegacyDriver = getPropertyAsBoolean("useLegacyDriver", "false");
 
         if (!useLegacyDriver) {
-            // TODO Can we set arguments to try disable the excess logging the marionette driver is making
             setupBrowserManager(FirefoxDriverManager.getInstance());
         }
 
         FirefoxOptions options = new FirefoxOptions();
 
-        options.setLogLevel(FirefoxDriverLogLevel.INFO);
         options.setLegacy(useLegacyDriver);
 
         addProxyCapabilities(options);
 
-        if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
-            options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
+        if (!getBrowserExe().isEmpty()) {
+            options.setBinary(getBrowserExe());
         }
 
         // Profile
-        String profileName = WebDriverConfig.getInstance().getProperty(BROWSER_NAME + ".profile", "");
+        String profileName = getProperty("profile", "");
         if (!profileName.equalsIgnoreCase("none")) {
             FirefoxProfile profile;
 
@@ -79,33 +81,100 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
             options.setProfile(profile);
         }
 
+                
         addCapabilities(options);
-
+                
+        //TODO Are any of these useful?
+        //options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.)
+        //options.setAcceptInsecureCerts(acceptInsecureCerts)
+        //options.addArguments(arguments)
+    	//options.setHeadless(headless) ????
+        
+        stopLogging();
+        // I have raised issue https://github.com/mozilla/geckodriver/issues/1016 as this is being ignored
+        // options.setLogLevel(FirefoxDriverLogLevel.INFO);
+                
         WebDriver driver = new FirefoxDriver(options);
 
-        setBrowserSize(driver);
+        setBrowserSizeAndLocation(driver);
 
         return driver;
     }
 
-    private void addProfileProperties(FirefoxProfile profile) {
-        Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.profile.", true);
+    private void stopLogging() {
+    	if (getPropertyAsBoolean("disable.logs", "true")) {
+        	//TODO Add config
+        	//TODO See if can pass arguments to driver fire FirefoxDriver
+        	// https://stackoverflow.com/questions/41387794/how-do-i-disable-firefox-logging-in-selenium-using-geckodriver
+            String osNullOutput = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0 ? "NUL" : "/dev/null"; 
 
-        for (String key : properties.keySet()) {
-            profile.setPreference(key, properties.get(key));
+            System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, osNullOutput);
+    	}
+	}
+
+    @Override
+    protected void addProxyCapabilities(MutableCapabilities capabilities) {
+    	if (getPropertyAsBoolean("useLegacyDriver", "false")) {
+    		super.addProxyCapabilities(capabilities);
+    	} else {
+            // TODO Proxy support only comming with Firefox 57. Cannot test yet as geckodriver win32 0.19.0 not available
+            // WebDriverConfig config = WebDriverConfig.getInstance();
+            //
+            // if (!config.isProxyRequired()) {
+            // return;
+            // }
+            //
+            // String proxy = config.getProxyHost();
+            // int port = config.getProxyPort();
+            // String browserNonProxyHosts = config.getNonProxyHosts();
+            //
+            // JsonObject json = new JsonObject();
+            //
+            // json.addProperty("proxyType", "manual");
+            // json.addProperty("httpProxy", proxy);
+            // json.addProperty("httpProxyPort", port);
+            // json.addProperty("ftpProxy", proxy);
+            // json.addProperty("ftpProxyPort", port);
+            // json.addProperty("sslProxy", proxy);
+            // json.addProperty("sslProxyPort", port);
+            //
+            // capabilities.setCapability(CapabilityType.PROXY, proxy.toString());
+            // capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         }
     }
+    
+	private void addProfileProperties(FirefoxProfile profile) {
+        Map<String, String> properties = getPropertiesStartingWith("profile.");
 
+        // Prevent firefox automatically upgrading when running tests
+        profile.setPreference("app.update.auto", false);
+        profile.setPreference("app.update.enabled", false);
+        		 
+        for (String key : properties.keySet()) {
+            String value = properties.get(key);
+
+            Class<?> valueClass = getClassOfValue(value);
+
+            if (valueClass == Boolean.class) {
+                profile.setPreference(key, Boolean.valueOf(value));
+            } else if (valueClass == int.class) {
+                profile.setPreference(key, Integer.valueOf(value));
+            } else {
+                profile.setPreference(key, properties.get(key));
+            }
+        }
+    }
+   
     private void addCapabilities(FirefoxOptions options) {
-        Map<String, String> properties = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.capability.", true);
+        Map<String, String> properties = getPropertiesStartingWith("capability.");
 
         for (String key : properties.keySet()) {
-            options.setCapability(key, properties.get(key));
+            options.setCapability(key, toObject(properties.get(key)));
         }
     }
 
     private void addExtensions(FirefoxProfile profile) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("firefox.extension.", true);
+        Map<String, String> settings = getPropertiesStartingWith("extension.");
         String projectPath = new File("").getAbsolutePath();
 
         for (String key : settings.keySet()) {

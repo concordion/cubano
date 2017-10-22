@@ -1,6 +1,7 @@
 package org.concordion.cubano.utils;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -114,7 +115,7 @@ public class ConfigTest {
         assertThat(config.getProxyPassword(), is("secret1"));
 
         // Using default setting
-        assertThat(config.getNonProxyHosts(), is(Config.DEFAULT_NON_PROXY_HOSTS));
+        assertThat(config.getNonProxyHosts(), is(nullValue()));
     }
 
     @Test
@@ -195,7 +196,7 @@ public class ConfigTest {
         assertThat(config.getProxyUser(), is(""));
         assertThat(config.getProxyPassword(), is(""));
 
-        // TODO Fails on my laptop as getting value "local,*.local,169.254/16,*.169.254/16,127.0.0.1" from somewhere
+        // TODO Fails on my laptop as getting value "local,*.local,169.254/16,*.169.254/16,127.0.0.1" from somewhere - fixed add back in
         // assertThat(config.getNonProxyHosts(), is(""));
     }
 

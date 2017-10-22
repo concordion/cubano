@@ -1,6 +1,5 @@
 package org.concordion.cubano.driver.web.config;
 
-import java.util.Map;
 import java.util.Properties;
 
 import org.concordion.cubano.utils.Config;
@@ -21,8 +20,10 @@ public class WebDriverConfig extends Config {
 
     // Browser 
     private String browserProvider;
-    private String browserSize;
+    private String browserDimension;
+    private String browserPosition;
     private boolean browserMaximized;
+    private boolean eventLoggingEnabled;
 
     private String remoteUserName;
     private String remoteApiKey;
@@ -58,8 +59,10 @@ public class WebDriverConfig extends Config {
             browserProvider = "org.concordion.cubano.driver.web.provider." + browserProvider;
         }
 
-        browserSize = getProperty("webdriver.browserSize", null);
-        browserMaximized = getPropertyAsBoolean("webdriver.maximized", "false");
+        browserDimension = getProperty("webdriver.browser.dimension", null);
+        browserPosition = getProperty("webdriver.browser.position", null);
+        browserMaximized = getPropertyAsBoolean("webdriver.browser.maximized", "false");
+        eventLoggingEnabled = getPropertyAsBoolean("webdriver.event.logging", "true");
 
         remoteUserName = getProperty("remotewebdriver.userName", null);
         remoteApiKey = getProperty("remotewebdriver.apiKey", null);
@@ -67,13 +70,6 @@ public class WebDriverConfig extends Config {
         // Yandex HtmlElements automatically implement 5 second implicit wait, default to zero so as not to interfere with
         // explicit waits
         System.setProperty("webdriver.timeouts.implicitlywait", getProperty("webdriver.timeouts.implicitlywait", "0"));
-
-        // Make all WebDriverManager properties system properties
-        Map<String, String> result = getPropertiesStartingWith("wdm.");
-
-        for (String key : result.keySet()) {
-            System.setProperty(key, result.get(key));
-        }
     }
 
     public String getBrowserProvider() {
@@ -81,35 +77,37 @@ public class WebDriverConfig extends Config {
     }
 
     /**
-     * Useful if local browser is not available on path.
-     * 
-     * @param browserName Name of the browser as defined by the browser provider class
-     * 
-     * @return Path to browser executable
-     */
-    public String getBrowserExe(String browserName) {
-        String localBrowserExe = getProperty(browserName + ".exe", null);
-
-        if (!localBrowserExe.isEmpty()) {
-            return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));
-        }
-
-        return "";
-    }  
-
-    /**
-     * Size to set browser window - will default to maximised.
+     * Position to locate browser window.
      *
      * @return Size in WxH format
      */
-    public String getBrowserSize() {
-        return browserSize;
+    public String getBrowserPosition() {
+        return browserPosition;
     }
 
+    /**
+     * Size to set browser window.
+     *
+     * @return Size in WxH format
+     */
+    public String getBrowserDimension() {
+        return browserDimension;
+    }
+
+    /**
+     * Browser should be maximized or not.
+     */
     public boolean isBrowserMaximized() {
         return browserMaximized;
     }
 
+    /**
+     * Selenium WebDriver logging should be enabled.
+     */
+    public boolean isEventLoggingEnabled() {
+        return eventLoggingEnabled;
+    }
+    
     /**
      * Username for remote selenium grid service.
      *

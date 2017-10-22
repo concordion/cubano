@@ -170,7 +170,7 @@ public class HttpEasy {
     }
 
     static {
-        // TODO Ideally httpeasy wouldn't dependencies on other components to make it easier to use outside of cubano
+        // TODO Ideally httpeasy wouldn't have dependencies on other components to make it easier to use outside of cubano
         HttpEasyConfig config = HttpEasyConfig.getInstance();
 
         if (config.isProxyRequired()) {

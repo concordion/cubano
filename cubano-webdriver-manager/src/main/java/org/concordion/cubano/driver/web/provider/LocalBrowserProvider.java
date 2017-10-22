@@ -1,11 +1,15 @@
 package org.concordion.cubano.driver.web.provider;
 
+import java.util.Map;
+
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
 
+import io.github.bonigarcia.wdm.Architecture;
 import io.github.bonigarcia.wdm.BrowserManager;
 
 /**
@@ -14,6 +18,12 @@ import io.github.bonigarcia.wdm.BrowserManager;
  * @author Andrew Sumner
  */
 public abstract class LocalBrowserProvider implements BrowserProvider {
+    private WebDriverConfig config = WebDriverConfig.getInstance();
+
+    /**
+     * The name of the browser as used in the configuration file to retrieve browser specific settings.
+     */
+    protected abstract String getBrowserName();
 
     /**
      * Configures a BrowserManager instance and starts it.
@@ -21,14 +31,52 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * @param instance BrowserManager instance
      */
     protected void setupBrowserManager(BrowserManager instance) {
-        if (!WebDriverConfig.getInstance().getProxyAddress().isEmpty()) {
-            instance.proxy(WebDriverConfig.getInstance().getProxyAddress());
-            instance.proxyUser(WebDriverConfig.getInstance().getProxyUser());
-            instance.proxyPass(WebDriverConfig.getInstance().getProxyPassword());
+        // Make all WebDriverManager properties in configuration file system properties
+        Map<String, String> result = config.getPropertiesStartingWith("wdm.");
+        Map<String, String> override = config.getPropertiesStartingWith(getBrowserName() + ".wdm.");
+
+        for (String key : override.keySet()) {
+            result.put(key.substring(getBrowserName().length() + 1), override.get(key));
+        }
+
+        for (String key : result.keySet()) {
+            String value = result.get(key);
+
+            // TODO Should we avoid system properties for any other settings or just this one?
+            switch (key.toLowerCase()) {
+            case "wdm.architecture":
+                instance.architecture(Architecture.valueOf(value));
+                break;
+            default:
+                System.setProperty(key, value);
+            }
+        }
+
+        if (!config.getProxyAddress().isEmpty()) {
+            instance.proxy(config.getProxyAddress());
+            instance.proxyUser(config.getProxyUser());
+            instance.proxyPass(config.getProxyPassword());
         }
 
         instance.setup();
     }
+
+    /**
+     * Useful if local browser is not available on path.
+     * 
+     * @param browserName Name of the browser as defined by the browser provider class
+     * 
+     * @return Path to browser executable
+     */
+    public String getBrowserExe() {
+        String localBrowserExe = config.getProperty(getBrowserName() + ".exe", null);
+
+        if (!localBrowserExe.isEmpty()) {
+            return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));
+        }
+
+        return "";
+    }  
 
     /**
      * Add proxy settings to desired capabilities if specified in config file.
@@ -36,8 +84,6 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * @param capabilities Options  
      */
     protected void addProxyCapabilities(MutableCapabilities capabilities) {
-        WebDriverConfig config = WebDriverConfig.getInstance();
-
         if (!config.isProxyRequired()) {
             return;
         }
@@ -46,47 +92,99 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         String browserNonProxyHosts = config.getNonProxyHosts();
 
         final org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
+
         proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
         proxy.setHttpProxy(browserProxy);
         proxy.setFtpProxy(browserProxy);
         proxy.setSslProxy(browserProxy);
 
-        //TODO This was breaking firefox! 
-        //proxy.setNoProxy(browserNonProxyHosts);
+        if (!browserNonProxyHosts.isEmpty()) {
+            proxy.setNoProxy(browserNonProxyHosts);
+        }
 
         capabilities.setCapability(CapabilityType.PROXY, proxy);
+
+        // TODO This should probably be configurable
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
     }
 
-    protected void setBrowserSize(WebDriver driver) {
-        if (isBrowserSizeDefined()) {
-            driver.manage().window().setSize(new Dimension(getBrowserWidth(), getBrowserHeight()));
-        } else if (WebDriverConfig.getInstance().isBrowserMaximized()) {
+    protected void setBrowserSizeAndLocation(WebDriver driver) {
+        if (config.isBrowserMaximized()) {
             driver.manage().window().maximize();
+        } else {
+            if (!config.getBrowserDimension().isEmpty()) {
+                driver.manage().window().setSize(getBrowserDimension());
+            }
+
+            if (!config.getBrowserPosition().isEmpty()) {
+                driver.manage().window().setPosition(getBrowserPosition());
+            }
         }
     }
 
-    private boolean isBrowserSizeDefined() {
-        return WebDriverConfig.getInstance().getBrowserSize() != null && !WebDriverConfig.getInstance().getBrowserSize().isEmpty();
+    private Dimension getBrowserDimension() {
+        String width = config.getBrowserDimension().substring(0, config.getBrowserDimension().indexOf("x")).trim();
+        String height = config.getBrowserDimension().substring(config.getBrowserDimension().indexOf("x") + 1).trim();
+
+        return new Dimension(Integer.parseInt(width), Integer.parseInt(height));
     }
 
-    private int getBrowserWidth() {
-        if (isBrowserSizeDefined()) {
-            return -1;
-        }
+    private Point getBrowserPosition() {
+        String x = config.getBrowserPosition().substring(0, config.getBrowserPosition().indexOf("x")).trim();
+        String y = config.getBrowserPosition().substring(config.getBrowserPosition().indexOf("x") + 1).trim();
 
-        String width = WebDriverConfig.getInstance().getBrowserSize().substring(0, WebDriverConfig.getInstance().getBrowserSize().indexOf("x")).trim();
-
-        return Integer.parseInt(width);
+        return new Point(Integer.parseInt(x), Integer.parseInt(y));
     }
 
-    private int getBrowserHeight() {
-        if (isBrowserSizeDefined()) {
-            return -1;
+    protected String getProperty(String key, String defaultValue) {
+        return config.getProperty(getBrowserName() + "." + key, defaultValue);
+    }
+
+    protected boolean getPropertyAsBoolean(String key, String defaultValue) {
+        return config.getPropertyAsBoolean(getBrowserName() + "." + key, defaultValue);
+    }
+
+    protected int getPropertyAsInteger(String key, String defaultValue) {
+        return config.getPropertyAsInteger(getBrowserName() + "." + key, defaultValue);
+    }
+
+    protected  Map<String, String> getPropertiesStartingWith(String key) {
+        return config.getPropertiesStartingWith(getBrowserName() + "." + key, true);
+    }
+
+    protected Object toObject(String value) {
+        Class<?> valueClass = getClassOfValue(value);
+
+        if (valueClass == null) {
+            return null;
         }
 
-        String height = WebDriverConfig.getInstance().getBrowserSize().substring(WebDriverConfig.getInstance().getBrowserSize().indexOf("x") + 1).trim();
+        if (valueClass == Boolean.class) {
+            return Boolean.valueOf(value);
+        }
 
-        return Integer.parseInt(height);
+        if (valueClass == int.class) {
+            return Integer.valueOf(value);
+        }
+
+        return value;
+    }
+
+    protected Class<?> getClassOfValue(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        value = value.trim();
+
+        if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+            return Boolean.class;
+        }
+
+        if (value.matches("^-?\\d+$")) {
+            return int.class;
+        }
+
+        return String.class;
     }
 }

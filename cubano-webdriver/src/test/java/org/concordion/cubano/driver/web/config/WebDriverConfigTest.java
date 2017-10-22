@@ -22,14 +22,17 @@ public class WebDriverConfigTest {
     @Test
     public void localBrowserSettings() {
         Properties properties = givenDefaultProperties();
+        given(properties.getProperty("webdriver.browser.dimension")).willReturn("1280x1024");
+        given(properties.getProperty("webdriver.browser.position")).willReturn("10x10");
         given(properties.getProperty("webdriver.browserSize")).willReturn("1280x1024");
         given(properties.getProperty("firefox.exe")).willReturn("%USERPROFILE%/bin/firefox");
         given(properties.getProperty("firefox.profile")).willReturn("default");
         
         WebDriverConfig config = new WebDriverConfig(properties);
        
-        assertThat(config.getBrowserSize(), is("1280x1024"));
-        assertThat(config.getBrowserExe("firefox"), is("/bin/firefox"));
+        assertThat(config.getBrowserDimension(), is("1280x1024"));
+        assertThat(config.getBrowserPosition(), is("10x10"));
+        assertThat(config.getProperty("firefox.exe"), is("%USERPROFILE%/bin/firefox"));
         assertThat(config.getProperty("firefox.profile"), is("default"));
     }
 

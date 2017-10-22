@@ -23,9 +23,9 @@ public class Browser {
     private static final Logger LOGGER = LoggerFactory.getLogger(Browser.class);
     private WebDriver wrappedDriver = null;
     private EventFiringWebDriver eventFiringDriver = null;
-    private SeleniumEventLogger eventListener;
+    private SeleniumEventLogger eventListener = null;
     private SessionId sessionId = null;
-    private BrowserProvider browserConfig;
+    private BrowserProvider browserProvider;
 
     /**
      * Constructor - does not start the browser.
@@ -37,7 +37,7 @@ public class Browser {
      * Constructor - does not start the browser.
      */
     public Browser(BrowserProvider browserProvider) {
-        this.browserConfig = browserProvider;
+        this.browserProvider = browserProvider;
     }
 
     /**
@@ -47,7 +47,7 @@ public class Browser {
      *         locally
      */
     public boolean isRemoteDriver() {
-        return this.browserConfig instanceof RemoteBrowserProvider;
+        return this.browserProvider instanceof RemoteBrowserProvider;
     }
 
     /**
@@ -56,7 +56,7 @@ public class Browser {
      * @return true or false
      */
     public boolean isOpen() {
-        return this.wrappedDriver != null;
+        return getActiveDriver() != null;
     }
 
     /**
@@ -82,7 +82,7 @@ public class Browser {
 
         registerScreenshotTaker();
 
-        return this.eventFiringDriver;
+        return getActiveDriver();
     }
 
     /**
@@ -93,9 +93,14 @@ public class Browser {
      * @param driver New driver
      */
     public void setDriver(WebDriver driver) {
-        this.eventFiringDriver.unregister(this.eventListener);
-        this.eventFiringDriver = new EventFiringWebDriver(driver);
-        this.eventFiringDriver.register(this.eventListener);
+    	if (WebDriverConfig.getInstance().isEventLoggingEnabled()) {
+    		this.eventFiringDriver.unregister(this.eventListener);
+	    	this.eventFiringDriver = new EventFiringWebDriver(driver);
+	        this.eventFiringDriver.register(this.eventListener);
+	    } else {
+	    	// TODO Once we re-implement AppliToolsEyes support we need to test that this is the correct approach as we've now lost the original driver if we need to unwrap it 
+	    	this.wrappedDriver = driver;
+	    }
     }
 
 
@@ -106,7 +111,7 @@ public class Browser {
      * @return HtmlElementsLoader
      */
     public PageObjectAwareHtmlElementsLoader getHtmlElementsLoader(BasePageObject<?> pageObject) {
-        return new PageObjectAwareHtmlElementsLoader(eventFiringDriver, pageObject);
+        return new PageObjectAwareHtmlElementsLoader(getActiveDriver(), pageObject);
     }
 
     /**
@@ -115,13 +120,17 @@ public class Browser {
      * @return WebDriver
      */
     public WebDriver open() {
-        if (this.browserConfig == null) {
-            this.browserConfig = Browser.getConfiguredBrowser();
+        if (this.browserProvider == null) {
+            this.browserProvider = Browser.getConfiguredBrowserProvider();
         }
 
-        return open(this.browserConfig);
+        return open(this.browserProvider);
     }
 
+    private WebDriver getActiveDriver() {
+    	return this.eventFiringDriver == null ? this.wrappedDriver : this.eventFiringDriver;
+    }
+    
     /**
      * Opens a browser using supplied configuration.
      *
@@ -129,26 +138,28 @@ public class Browser {
      * @return WebDriver
      */
     public WebDriver open(BrowserProvider config) {
-        if (this.eventFiringDriver != null) {
+        if (getActiveDriver() != null ) {
             throw new RuntimeException("Browser is already open");
         }
 
         LOGGER.debug("Starting browser");
 
-        this.browserConfig = config;
-
+        this.browserProvider = config;
         this.wrappedDriver = config.createDriver();
-        this.eventFiringDriver = new EventFiringWebDriver(this.wrappedDriver);
-        this.eventListener = new SeleniumEventLogger();
-        this.eventFiringDriver.register(this.eventListener);
-
+        
+        if (WebDriverConfig.getInstance().isEventLoggingEnabled()) {
+    	    this.eventFiringDriver = new EventFiringWebDriver(this.wrappedDriver);        
+            this.eventListener = new SeleniumEventLogger();
+	        this.eventFiringDriver.register(this.eventListener);
+        }
+        
         if (isRemoteDriver()) {
             this.sessionId = ((RemoteWebDriver) getWrappedDriver()).getSessionId();
         } else {
             this.sessionId = null;
         }
 
-        return this.eventFiringDriver;
+        return getActiveDriver();
     }
 
     /**
@@ -163,8 +174,10 @@ public class Browser {
         removeScreenshotTaker();
 
         try {
-            this.eventFiringDriver.unregister(this.eventListener);
-            this.eventFiringDriver.quit();
+        	if (this.eventListener != null) {
+        		this.eventFiringDriver.unregister(this.eventListener);
+        	}
+            getActiveDriver().quit();
         } catch (Exception ex) {
             LOGGER.debug("Exception attempting to quit the browser: " + ex.getMessage());
         }
@@ -174,10 +187,10 @@ public class Browser {
     }
 
     /**
-     * @return The current browser configuration
+     * @return The current browser provider
      */
-    public BrowserProvider getConfiguration() {
-        return this.browserConfig;
+    public BrowserProvider getBrowserProvider() {
+        return this.browserProvider;
     }
 
     /**
@@ -186,7 +199,7 @@ public class Browser {
      *
      * @return Browser configuration
      */
-    public static BrowserProvider getConfiguredBrowser() {
+    public static BrowserProvider getConfiguredBrowserProvider() {
         try {
             return (BrowserProvider) Class.forName(WebDriverConfig.getInstance().getBrowserProvider()).newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {

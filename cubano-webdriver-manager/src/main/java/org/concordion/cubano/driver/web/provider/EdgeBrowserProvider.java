@@ -2,7 +2,6 @@ package org.concordion.cubano.driver.web.provider;
 
 import java.util.Map;
 
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
@@ -20,6 +19,11 @@ import io.github.bonigarcia.wdm.EdgeDriverManager;
 public class EdgeBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "edge";
 
+    @Override
+	protected String getBrowserName() {
+		return BROWSER_NAME;
+	}
+    
     /**
      * @return Starts Edge driver manager and creates a new WebDriver instance.
      */
@@ -34,16 +38,16 @@ public class EdgeBrowserProvider extends LocalBrowserProvider {
 
         WebDriver driver = new EdgeDriver(options);
 
-        setBrowserSize(driver);
+        setBrowserSizeAndLocation(driver);
 
         return driver;
     }
 
     private void addCapabilities(EdgeOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("edge.capability.", true);
+        Map<String, String> settings = getPropertiesStartingWith("capability.");
 
         for (String key : settings.keySet()) {
-            options.setCapability(key, settings.get(key));
+            options.setCapability(key, toObject(settings.get(key)));
         }
     }
 

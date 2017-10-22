@@ -24,13 +24,13 @@ For eclipse:
 
 1. Install checkstyle plugin
 
-1. Eclipse > Preferences > Checkstyle > New …
+1. Eclipse > Preferences > Checkstyle > New...
 
     Type: External configuration file
     Name: Cubano
     Location: <workspace>/cubano/config/checkstyle/checkstyle.xml
 
-1. Eclipse > Preferences > Java > Code Style > Formatter > Import …
+1. Eclipse > Preferences > Java > Code Style > Formatter > Import...
 
 	File: <workspace>/cubano/config/formatter/formatter.xml
 

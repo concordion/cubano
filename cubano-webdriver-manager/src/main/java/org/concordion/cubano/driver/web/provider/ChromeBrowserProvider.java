@@ -22,6 +22,11 @@ import io.github.bonigarcia.wdm.ChromeDriverManager;
 public class ChromeBrowserProvider extends LocalBrowserProvider {
     public static final String BROWSER_NAME = "chrome";
 
+	@Override
+	protected String getBrowserName() {
+		return BROWSER_NAME;
+	}
+	
     /**
      * @return Starts Chrome driver manager and creates a new WebDriver instance.
      */
@@ -33,69 +38,72 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
 
         addProxyCapabilities(options);
 
-        if (WebDriverConfig.getInstance().isBrowserMaximized()) {
-            options.addArguments("start-maximized");
+        if (!getBrowserExe().isEmpty()) {
+            options.setBinary(getBrowserExe());
         }
 
-        // Workaround for 'Loading of unpacked extensions is disabled by the administrator'
-        // https://stackoverflow.com/questions/43797119/failed-to-load-extension-from-popup-box-while-running-selenium-scripts
-        // options.setExperimentalOption("useAutomationExtension", false);
-
-        // // More workarounds https://stackoverflow.com/questions/42979877/chrome-browser-org-openqa-selenium-webdriverexception-unknown-error-cannot-get
-        // options.addArguments("disable-infobars");
-        // options.addArguments("--disable-popup-blocking");
-
-        if (!WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME).isEmpty()) {
-            options.setBinary(WebDriverConfig.getInstance().getBrowserExe(BROWSER_NAME));
-        }
-
+        setBrowserSizeAndLocation(options);
         addCapabilities(options);
         addArguments(options);
         addOptions(options);
         addPreferences(options);
         addExtensions(options);
-
+        
         WebDriver driver = new ChromeDriver(options);
-
-        // TODO Why does this error?
-        // setBrowserSize(driver);
 
         return driver;
     }
 
-    private void addCapabilities(ChromeOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.capability.", true);
+    /**
+     * While Chrome supports the standard driver.manage().window() WebDriver settings, it also supports arguments which work a little nicer.
+     */
+	private void setBrowserSizeAndLocation(ChromeOptions options) {
+		WebDriverConfig config = WebDriverConfig.getInstance();
+		
+        if (config.isBrowserMaximized()) {
+        	options.addArguments("start-maximized");
+        } else {
+            if (!config.getBrowserDimension().isEmpty()) {
+            	options.addArguments("window-size=" + config.getBrowserDimension().replace("x", ","));
+            }
 
-        for (String key : settings.keySet()) {
-            options.setCapability(key, settings.get(key));
+            if (!config.getBrowserPosition().isEmpty()) {
+            	options.addArguments("window-position=" + config.getBrowserPosition().replace("x", ",")); 
+            }
         }
     }
 
     private void addArguments(ChromeOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.argument.", true);
-
-        options.addArguments("test-type");
+        Map<String, String> settings = getPropertiesStartingWith("argument.");
 
         for (String key : settings.keySet()) {
             options.addArguments(settings.get(key));
         }
     }
 
-    private void addOptions(ChromeOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.option.", true);
+	private void addCapabilities(ChromeOptions options) {
+        Map<String, String> settings = getPropertiesStartingWith("capability.");
 
         for (String key : settings.keySet()) {
-            options.setExperimentalOption(key, settings.get(key));
+            options.setCapability(key, toObject(settings.get(key)));
         }
     }
+	
+    private void addOptions(ChromeOptions options) {
+        Map<String, String> settings = getPropertiesStartingWith("option.");
 
-    private void addPreferences(ChromeOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.preference.", true);
+        for (String key : settings.keySet()) {
+            options.setExperimentalOption(key, toObject(settings.get(key)));
+        }
+    }
+    
+	private void addPreferences(ChromeOptions options) {
+        Map<String, String> settings = getPropertiesStartingWith("preference.");
 
         Map<String, Object> prefs = new HashMap<>();
 
         for (String key : settings.keySet()) {
-            prefs.put(key, settings.get(key));
+            prefs.put(key, toObject(settings.get(key)));
         }
 
         if (!prefs.isEmpty()) {
@@ -104,7 +112,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
     } 
 
     private void addExtensions(ChromeOptions options) {
-        Map<String, String> settings = WebDriverConfig.getInstance().getPropertiesStartingWith("chrome.extension.", true);
+        Map<String, String> settings = getPropertiesStartingWith("extension.");
         String projectPath = new File("").getAbsolutePath();
 
         for (String key : settings.keySet()) {
