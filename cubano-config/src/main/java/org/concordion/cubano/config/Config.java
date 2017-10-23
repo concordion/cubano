@@ -10,7 +10,7 @@ import java.util.Properties;
  *
  * @author Andrew Sumner
  */
-public final class Config {
+public class Config {
 
     private final DefaultPropertyLoader propertyLoader;
     private final ProxyConfig proxyConfig = new ProxyConfig();
@@ -56,19 +56,33 @@ public final class Config {
 	 * @param userProperties User specific overrides
 	 */
 	protected Config(Properties properties, Properties userProperties) {
-        propertyLoader = new DefaultPropertyLoader(properties, userProperties);
+        environment = loadEnvironmentProperty(properties, userProperties);
+        propertyLoader = new DefaultPropertyLoader(properties, userProperties, environment);
 
-        // Try environment variable first
-        environment = System.getProperty("environment", "");
-
-        if (environment.isEmpty()) {
-            environment = propertyLoader.getProperty("environment");
+        proxyConfig.loadProxyProperties(propertyLoader);
         }
 
-        propertyLoader.setEnvironment(environment);
+    public static String loadEnvironmentProperty(Properties properties, Properties userProperties) {
+        // Try environment variable first
+        String environment = System.getProperty("environment", "");
 
-        proxyConfig.loadProxyProperties(this, propertyLoader);
-	}
+        if (environment.isEmpty()) {
+            if (userProperties != null) {
+                environment = userProperties.getProperty("environment");
+            }
+            if (environment == null || environment.isEmpty()) {
+                environment = properties.getProperty("environment");
+            }
+        }
+
+        if (environment != null) {
+		environment = environment.trim();
+                }
+                if (environment == null || environment.isEmpty()) {
+                        throw new IllegalArgumentException("Unable to find property 'environment'");
+                }
+        return environment;
+    }
 
     /**
 	 * @return Configured environment.

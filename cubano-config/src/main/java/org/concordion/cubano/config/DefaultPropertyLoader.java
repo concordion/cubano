@@ -24,6 +24,14 @@ public class DefaultPropertyLoader implements PropertyLoader {
     }
 
 	/**
+         * Configure the optional userProperties and mandatory properties to be loaded.
+         */
+        public DefaultPropertyLoader(Properties properties, Properties userProperties, String environment) {
+                this(properties, userProperties);
+                setEnvironment(environment);
+        }
+
+        /**
 	 * Sets the environment that this property loader will use as a prefix for properties.
 	 * @param environment the environment to use as a prefix when looking for a property
 	 */

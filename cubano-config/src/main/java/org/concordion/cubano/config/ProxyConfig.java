@@ -181,7 +181,7 @@ public class ProxyConfig {
         return null;
     }
 
-	void loadProxyProperties(Config config, PropertyLoader propertyLoader) {
+        void loadProxyProperties(PropertyLoader propertyLoader) {
         proxyIsRequired = propertyLoader.getPropertyAsBoolean("proxy.required", null);
 
         setProxyFromConfigFile(propertyLoader);
