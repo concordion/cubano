@@ -1,7 +1,5 @@
 package org.concordion.cubano.config;
 
-import java.util.Properties;
-
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
  * <p>
@@ -13,7 +11,7 @@ import java.util.Properties;
 public final class Config {
 
     private final DefaultPropertyLoader propertyLoader;
-    private final ProxyConfig proxyConfig = new ProxyConfig();
+    private final ProxyConfig proxyConfig;
 
     private static class ConfigHolder {
         static final Config INSTANCE = new Config();
@@ -36,18 +34,9 @@ public final class Config {
      * @param propertiesLoader Configuration loader
      */
     protected Config(PropertiesLoader propertiesLoader) {
-        this(propertiesLoader.getProperties());
-    }
+        propertyLoader = new DefaultPropertyLoader(propertiesLoader.getProperties());
 
-    /**
-     * Allow injection of properties for testing purposes.
-     *
-     * @param properties Default properties
-     */
-    protected Config(Properties properties) {
-        propertyLoader = new DefaultPropertyLoader(properties);
-
-        proxyConfig.loadProxyProperties(propertyLoader);
+        proxyConfig = new ProxyConfig(propertyLoader);
     }
 
     /**

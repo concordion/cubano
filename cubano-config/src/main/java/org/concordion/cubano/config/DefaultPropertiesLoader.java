@@ -1,6 +1,7 @@
 package org.concordion.cubano.config;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -26,6 +27,18 @@ public class DefaultPropertiesLoader implements PropertiesLoader {
         return DPHolder.INSTANCE;
     }
 
+    /**
+     * Allow injection of properties for testing purposes.
+     *
+     * @param properties Default properties
+     */
+    protected DefaultPropertiesLoader(String properties, String userProperties) {
+        this.properties = new CaselessProperties();
+
+        loadFromString(properties);
+        loadFromString(userProperties);
+    }
+
     /** Ensure properties have been loaded before any property is used. */
     private DefaultPropertiesLoader() {
         synchronized (DefaultPropertiesLoader.class) {
@@ -48,12 +61,18 @@ public class DefaultPropertiesLoader implements PropertiesLoader {
      */
     private void loadFile(final String filename) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filename)));
+            loadFromString(new String(Files.readAllBytes(Paths.get(filename))));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read properties file " + filename, e);
+        }
+    }
 
+    private void loadFromString(final String content) {
+        try {
             // By default property files treat \ as an escape character so this breaks standard behaviour
             properties.load(new StringReader(content.replace("\\", "\\\\")));
         } catch (Exception e) {
-            throw new RuntimeException("Unable to read properties file.", e);
+            throw new RuntimeException("Unable to load properties.", e);
         }
     }
 

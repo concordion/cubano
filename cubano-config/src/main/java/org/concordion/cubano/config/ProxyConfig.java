@@ -21,7 +21,19 @@ public class ProxyConfig {
     private int proxyPort = 0;
     private String proxyUsername = "";
     private String proxyPassword = "";
-    private String nonProxyHosts;
+    private String nonProxyHosts = "";
+
+    ProxyConfig(PropertyLoader propertyLoader) {
+        proxyIsRequired = propertyLoader.getPropertyAsBoolean("proxy.required", null);
+
+        setProxyFromConfigFile(propertyLoader);
+        setProxyFromSystemProperties();
+        setProxyFromEnvironmentVariables();
+
+        if (proxyIsRequired && proxyHost.isEmpty()) {
+            propertyLoader.getProperty("proxy.host");
+        }
+    }
 
     /**
      * Whether a proxy should be configured for accessing the test application or not, regardless of means of accessing the test
@@ -179,17 +191,5 @@ public class ProxyConfig {
         }
 
         return null;
-    }
-
-    void loadProxyProperties(PropertyLoader propertyLoader) {
-        proxyIsRequired = propertyLoader.getPropertyAsBoolean("proxy.required", null);
-
-        setProxyFromConfigFile(propertyLoader);
-        setProxyFromSystemProperties();
-        setProxyFromEnvironmentVariables();
-
-        if (proxyIsRequired && proxyHost.isEmpty()) {
-            propertyLoader.getProperty("proxy.host");
-        }
     }
 }
