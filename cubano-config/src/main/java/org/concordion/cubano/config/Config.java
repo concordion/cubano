@@ -37,26 +37,16 @@ public final class Config {
 	 * @param propertiesLoader Configuration loader
 	 */
 	protected Config(PropertiesLoader propertiesLoader) {
-		this(propertiesLoader.getProperties(), propertiesLoader.getUserProperties());
-	}
+        this(propertiesLoader.getProperties());
+    }
 
-	/**
-	 * Allow injection of properties for testing purposes.
-	 *
-	 * @param properties Default properties
-	 */
-	protected Config(Properties properties) {
-		this(properties, null);
-	}
-
-	/**
-	 * Load the properties for this configuration.
-	 *
-	 * @param properties Default properties
-	 * @param userProperties User specific overrides
-	 */
-	protected Config(Properties properties, Properties userProperties) {
-        propertyLoader = new DefaultPropertyLoader(properties, userProperties);
+    /**
+     * Allow injection of properties for testing purposes.
+     *
+     * @param properties Default properties
+     */
+    protected Config(Properties properties) {
+        propertyLoader = new DefaultPropertyLoader(properties);
 
         // Try environment variable first
         environment = System.getProperty("environment", "");
@@ -67,7 +57,7 @@ public final class Config {
 
         propertyLoader.setEnvironment(environment);
 
-        proxyConfig.loadProxyProperties(this, propertyLoader);
+        proxyConfig.loadProxyProperties(propertyLoader);
 	}
 
     /**

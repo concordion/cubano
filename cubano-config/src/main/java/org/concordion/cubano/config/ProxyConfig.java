@@ -1,14 +1,14 @@
 package org.concordion.cubano.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringTokenizer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configuration for proxies - used by multiple packages within Cubano.
@@ -181,7 +181,7 @@ public class ProxyConfig {
         return null;
     }
 
-	void loadProxyProperties(Config config, PropertyLoader propertyLoader) {
+    void loadProxyProperties(PropertyLoader propertyLoader) {
         proxyIsRequired = propertyLoader.getPropertyAsBoolean("proxy.required", null);
 
         setProxyFromConfigFile(propertyLoader);
