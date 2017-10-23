@@ -2,10 +2,7 @@ package org.concordion.cubano.driver.web.config;
 
 import java.util.Properties;
 
-import org.concordion.cubano.config.Config;
-import org.concordion.cubano.config.DefaultPropertiesLoader;
-import org.concordion.cubano.config.DefaultPropertyLoader;
-import org.concordion.cubano.config.PropertiesLoader;
+import org.concordion.cubano.config.*;
 
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
@@ -17,7 +14,7 @@ import org.concordion.cubano.config.PropertiesLoader;
  */
 public final class WebDriverConfig {
 
-    private final DefaultPropertyLoader propertyLoader;
+    private final PropertyLoader propertyLoader;
 
     // Browser
     private String browserProvider;
@@ -41,10 +38,11 @@ public final class WebDriverConfig {
     }
 
     /**
-     * Uses DefaultPropertiesLoader to import the config and user properties files.
+     * Uses the default Config class's property loader to import the config and user properties files.
      */
     protected WebDriverConfig() {
-        this(DefaultPropertiesLoader.getInstance());
+        propertyLoader = Config.getInstance().getPropertyLoader();
+        loadProperties();
     }
 
     /**
@@ -66,21 +64,21 @@ public final class WebDriverConfig {
     }
 
     /**
-     * Allow injection of properties for testing purposes.
+     * Load the properties for this configuration.
      *
      * @param properties Default properties
      * @param userProperties User specific overrides
      */
     protected WebDriverConfig(Properties properties, Properties userProperties) {
-        propertyLoader = new DefaultPropertyLoader(properties, userProperties);
-
+        String environment = Config.loadEnvironmentProperty(properties, userProperties);
+        propertyLoader = new DefaultPropertyLoader(properties, userProperties, environment);
         loadProperties();
     }
 
     /**
      * @return a loader for loading properties across config.properties and user.properties, taking environment into account.
      */
-    public DefaultPropertyLoader getPropertyLoader() {
+    public PropertyLoader getPropertyLoader() {
         return propertyLoader;
     }
 

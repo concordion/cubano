@@ -35,7 +35,7 @@ public class DefaultPropertiesLoader implements PropertiesLoader {
             if (new File(USER_CONFIG_FILE).exists()) {
                 userProperties = loadFile(USER_CONFIG_FILE);
             } else {
-            	userProperties = null;
+                userProperties = null;
             }
         }
     }
