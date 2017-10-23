@@ -13,33 +13,18 @@ import java.util.Properties;
 public class DefaultPropertyLoader implements PropertyLoader {
     private final Properties properties;
     private final Properties userProperties;
-    private String environment;
+    private final String environment;
 
 	/**
 	 * Configure the optional userProperties and mandatory properties to be loaded.
-	 */
-	public DefaultPropertyLoader(Properties properties, Properties userProperties) {
-        this.properties = properties;
-        this.userProperties = userProperties;
-    }
-
-	/**
-         * Configure the optional userProperties and mandatory properties to be loaded.
-         */
-        public DefaultPropertyLoader(Properties properties, Properties userProperties, String environment) {
-                this(properties, userProperties);
-                setEnvironment(environment);
-        }
-
-        /**
-	 * Sets the environment that this property loader will use as a prefix for properties.
-	 * @param environment the environment to use as a prefix when looking for a property
-	 */
-	public void setEnvironment(String environment) {
+     */
+	public DefaultPropertyLoader(Properties properties, Properties userProperties, String environment) {
+		this.properties = properties;
+		this.userProperties = userProperties;
 		this.environment = environment;
 	}
 
-    /**
+	/**
 	 * Get the property for the current environment, if that is not found it will look for "{@literal <key>}".
 	 *
 	 * @param key Id of the property to look up

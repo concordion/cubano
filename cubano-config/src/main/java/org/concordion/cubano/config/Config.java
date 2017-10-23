@@ -10,7 +10,7 @@ import java.util.Properties;
  *
  * @author Andrew Sumner
  */
-public class Config {
+public final class Config {
 
     private final DefaultPropertyLoader propertyLoader;
     private final ProxyConfig proxyConfig = new ProxyConfig();
@@ -60,7 +60,7 @@ public class Config {
         propertyLoader = new DefaultPropertyLoader(properties, userProperties, environment);
 
         proxyConfig.loadProxyProperties(propertyLoader);
-        }
+    }
 
     public static String loadEnvironmentProperty(Properties properties, Properties userProperties) {
         // Try environment variable first
