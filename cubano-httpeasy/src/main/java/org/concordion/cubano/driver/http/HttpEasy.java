@@ -27,6 +27,8 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.concordion.cubano.config.Config;
+import org.concordion.cubano.config.ProxyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,13 +172,12 @@ public class HttpEasy {
     }
 
     static {
-        // TODO Ideally httpeasy wouldn't have dependencies on other components to make it easier to use outside of cubano
-        HttpEasyConfig config = HttpEasyConfig.getInstance();
+        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
 
-        if (config.isProxyRequired()) {
+        if (proxyConfig.isProxyRequired()) {
             HttpEasy.withDefaults()
-                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(config.getProxyHost(), config.getProxyPort())))
-                    .proxyAuth(config.getProxyUser(), config.getProxyPassword())
+                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
+                    .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
                     .bypassProxyForLocalAddresses(true);
         }
 

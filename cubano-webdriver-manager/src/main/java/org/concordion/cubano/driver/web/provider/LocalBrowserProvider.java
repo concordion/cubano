@@ -2,7 +2,10 @@ package org.concordion.cubano.driver.web.provider;
 
 import java.util.Map;
 
+import org.concordion.cubano.config.Config;
+import org.concordion.cubano.config.PropertyLoader;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
+import org.concordion.cubano.config.ProxyConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Point;
@@ -18,6 +21,8 @@ import io.github.bonigarcia.wdm.BrowserManager;
  * @author Andrew Sumner
  */
 public abstract class LocalBrowserProvider implements BrowserProvider {
+    private PropertyLoader propertyLoader = Config.getInstance().getPropertyLoader();
+    private ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
     private WebDriverConfig config = WebDriverConfig.getInstance();
 
     /**
@@ -32,8 +37,8 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      */
     protected void setupBrowserManager(BrowserManager instance) {
         // Make all WebDriverManager properties in configuration file system properties
-        Map<String, String> result = config.getPropertiesStartingWith("wdm.");
-        Map<String, String> override = config.getPropertiesStartingWith(getBrowserName() + ".wdm.");
+        Map<String, String> result = propertyLoader.getPropertiesStartingWith("wdm.");
+        Map<String, String> override = propertyLoader.getPropertiesStartingWith(getBrowserName() + ".wdm.");
 
         for (String key : override.keySet()) {
             result.put(key.substring(getBrowserName().length() + 1), override.get(key));
@@ -52,10 +57,10 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
             }
         }
 
-        if (!config.getProxyAddress().isEmpty()) {
-            instance.proxy(config.getProxyAddress());
-            instance.proxyUser(config.getProxyUser());
-            instance.proxyPass(config.getProxyPassword());
+        if (!proxyConfig.getProxyAddress().isEmpty()) {
+            instance.proxy(proxyConfig.getProxyAddress());
+            instance.proxyUser(proxyConfig.getProxyUsername());
+            instance.proxyPass(proxyConfig.getProxyPassword());
         }
 
         instance.setup();
@@ -64,12 +69,10 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     /**
      * Useful if local browser is not available on path.
      * 
-     * @param browserName Name of the browser as defined by the browser provider class
-     * 
      * @return Path to browser executable
      */
     public String getBrowserExe() {
-        String localBrowserExe = config.getProperty(getBrowserName() + ".exe", null);
+        String localBrowserExe = propertyLoader.getProperty(getBrowserName() + ".exe", null);
 
         if (!localBrowserExe.isEmpty()) {
             return localBrowserExe.replace("%USERPROFILE%", System.getProperty("USERPROFILE", ""));
@@ -84,12 +87,12 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * @param capabilities Options  
      */
     protected void addProxyCapabilities(MutableCapabilities capabilities) {
-        if (!config.isProxyRequired()) {
+        if (!proxyConfig.isProxyRequired()) {
             return;
         }
 
-        String browserProxy = config.getProxyAddress();
-        String browserNonProxyHosts = config.getNonProxyHosts();
+        String browserProxy = proxyConfig.getProxyAddress();
+        String browserNonProxyHosts = proxyConfig.getNonProxyHosts();
 
         final org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 
@@ -137,19 +140,19 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     }
 
     protected String getProperty(String key, String defaultValue) {
-        return config.getProperty(getBrowserName() + "." + key, defaultValue);
+        return propertyLoader.getProperty(getBrowserName() + "." + key, defaultValue);
     }
 
     protected boolean getPropertyAsBoolean(String key, String defaultValue) {
-        return config.getPropertyAsBoolean(getBrowserName() + "." + key, defaultValue);
+        return propertyLoader.getPropertyAsBoolean(getBrowserName() + "." + key, defaultValue);
     }
 
     protected int getPropertyAsInteger(String key, String defaultValue) {
-        return config.getPropertyAsInteger(getBrowserName() + "." + key, defaultValue);
+        return propertyLoader.getPropertyAsInteger(getBrowserName() + "." + key, defaultValue);
     }
 
     protected  Map<String, String> getPropertiesStartingWith(String key) {
-        return config.getPropertiesStartingWith(getBrowserName() + "." + key, true);
+        return propertyLoader.getPropertiesStartingWith(getBrowserName() + "." + key, true);
     }
 
     protected Object toObject(String value) {

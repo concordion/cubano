@@ -1,4 +1,4 @@
-package org.concordion.cubano.utils;
+package org.concordion.cubano.config;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;

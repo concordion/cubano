@@ -1,5 +1,6 @@
 package org.concordion.cubano.driver.web.config;
 
+import org.concordion.cubano.config.PropertyLoader;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.RestoreSystemProperties;
@@ -29,11 +30,12 @@ public class WebDriverConfigTest {
         given(properties.getProperty("firefox.profile")).willReturn("default");
         
         WebDriverConfig config = new WebDriverConfig(properties);
+        PropertyLoader propertyLoader = config.getPropertyLoader();
        
         assertThat(config.getBrowserDimension(), is("1280x1024"));
         assertThat(config.getBrowserPosition(), is("10x10"));
-        assertThat(config.getProperty("firefox.exe"), is("%USERPROFILE%/bin/firefox"));
-        assertThat(config.getProperty("firefox.profile"), is("default"));
+        assertThat(propertyLoader.getProperty("firefox.exe"), is("%USERPROFILE%/bin/firefox"));
+        assertThat(propertyLoader.getProperty("firefox.profile"), is("default"));
     }
 
     @Test
