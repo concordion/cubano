@@ -238,10 +238,10 @@ this configuration file for a value.                                |
 * handle corporate proxies 
 
 ## ActionWait
-{@link org.concordion.cubano.utils.ActionWait}: Similar to Selenium's {@link org.openqa.selenium.support.ui.FluentWait} implementation but designed for long running tasks such as querying a database until some data appears and unlike FluentWait it handles exceptions other than RuntimeExceptions.
+{@link org.concordion.cubano.config.ActionWait}: Similar to Selenium's {@link org.openqa.selenium.support.ui.FluentWait} implementation but designed for long running tasks such as querying a database until some data appears and unlike FluentWait it handles exceptions other than RuntimeExceptions.
 
 ## ActionTimer
-{@link org.concordion.cubano.utils.ActionTimer}: a simple utility for logging duration of a task
+{@link org.concordion.cubano.config.ActionTimer}: a simple utility for logging duration of a task
 
 ## Exception Handling
 As a general rule of thumb - don't!
@@ -373,4 +373,4 @@ _DO_ use @timeout field annotation:
 ## Wait for anything else
 _NEVER_ use thread.sleep().  Ever!
 
-Use the frameworks built in {@link org.concordion.cubano.utils.ActionWait} utility.
+Use the frameworks built in {@link org.concordion.cubano.config.ActionWait} utility.

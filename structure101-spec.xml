@@ -20,7 +20,7 @@
                                   </row>
                                   <row>
                                     <cell name="driver" pattern="cubano-core_main.org.concordion.cubano.driver.*" vexpanded="false" illegal="false" visibility="public" drill="true" />
-                                    <cell name="utils" pattern="cubano-core_main.org.concordion.cubano.utils.*" vexpanded="false" illegal="false" visibility="public" drill="true" />
+                                    <cell name="utils" pattern="cubano-core_main.org.concordion.cubano.config.*" vexpanded="false" illegal="false" visibility="public" drill="true" />
                                   </row>
                                 </grid>
                               </cell>
@@ -154,7 +154,7 @@
                               <cell name="cubano" pattern="cubano-config_main.org.concordion.cubano.*" vexpanded="true" illegal="false" visibility="public" drill="true">
                                 <grid>
                                   <row>
-                                    <cell name="utils" pattern="cubano-config_main.org.concordion.cubano.utils.?" vexpanded="true" illegal="false" visibility="public" drill="true">
+                                    <cell name="utils" pattern="cubano-config_main.org.concordion.cubano.config.?" vexpanded="true" illegal="false" visibility="public" drill="true">
                                       <grid>
                                         <row>
                                           <cell name="DefaultConfigLoader" pattern="cubano-config_main.DefaultConfigLoader" vexpanded="false" illegal="false" visibility="public" drill="false" />

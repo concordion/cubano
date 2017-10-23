@@ -1,4 +1,4 @@
-package org.concordion.cubano.utils;
+package org.concordion.cubano.config;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -39,23 +39,23 @@ public class ConfigTest {
         environmentVariables.set("HTTP_PROXY", "http://proxyhost3:9993");
 
         // Look in HTTP_PROXY environment variable if not found elsewhere
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        assertThat(config.getProxyHost(), is("proxyhost3"));
+        assertThat(config.getProxyConfig().getProxyHost(), is("proxyhost3"));
 
         // Look in System properties second
         System.setProperty("http.proxyHost", "proxyhost2");
 
-        config = new ConfigMock(properties);
+        config = new Config(properties);
 
-        assertThat(config.getProxyHost(), is("proxyhost2"));
+        assertThat(config.getProxyConfig().getProxyHost(), is("proxyhost2"));
 
         // Look in config file first
         given(properties.getProperty("proxy.host")).willReturn("proxyhost1");
 
-        config = new ConfigMock(properties);
+        config = new Config(properties);
 
-        assertThat(config.getProxyHost(), is("proxyhost1"));
+        assertThat(config.getProxyConfig().getProxyHost(), is("proxyhost1"));
     }
 
     @Test
@@ -68,14 +68,14 @@ public class ConfigTest {
         given(properties.getProperty("proxy.password")).willReturn("secret4");
         given(properties.getProperty("proxy.nonProxyHosts")).willReturn("no4");
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        assertThat(config.getProxyHost(), is("proxyhost4"));
-        assertThat(config.getProxyPort(), is(80));
-        assertThat(config.getProxyAddress(), is("proxyhost4"));
-        assertThat(config.getProxyUser(), is("me4"));
-        assertThat(config.getProxyPassword(), is("secret4"));
-        assertThat(config.getNonProxyHosts(), is("no4"));
+        assertThat(config.getProxyConfig().getProxyHost(), is("proxyhost4"));
+        assertThat(config.getProxyConfig().getProxyPort(), is(80));
+        assertThat(config.getProxyConfig().getProxyAddress(), is("proxyhost4"));
+        assertThat(config.getProxyConfig().getProxyUsername(), is("me4"));
+        assertThat(config.getProxyConfig().getProxyPassword(), is("secret4"));
+        assertThat(config.getProxyConfig().getNonProxyHosts(), is("no4"));
     }
 
     @Test
@@ -89,15 +89,15 @@ public class ConfigTest {
         System.setProperty("http.proxyPassword", "secret3");
         System.setProperty("http.nonProxyHosts", "no3");
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        assertThat(config.getProxyHost(), is("proxyhost3"));
+        assertThat(config.getProxyConfig().getProxyHost(), is("proxyhost3"));
         // This is the default value
-        assertThat(config.getProxyPort(), is(80));
-        assertThat(config.getProxyAddress(), is("proxyhost3"));
-        assertThat(config.getProxyUser(), is("domain\\me3"));
-        assertThat(config.getProxyPassword(), is("secret3"));
-        assertThat(config.getNonProxyHosts(), is("no3"));
+        assertThat(config.getProxyConfig().getProxyPort(), is(80));
+        assertThat(config.getProxyConfig().getProxyAddress(), is("proxyhost3"));
+        assertThat(config.getProxyConfig().getProxyUsername(), is("domain\\me3"));
+        assertThat(config.getProxyConfig().getProxyPassword(), is("secret3"));
+        assertThat(config.getProxyConfig().getNonProxyHosts(), is("no3"));
     }
 
     @Test
@@ -106,16 +106,16 @@ public class ConfigTest {
 
         environmentVariables.set("HTTP_PROXY", "http://me1:secret1@proxyhost1:9991");
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        assertThat(config.getProxyHost(), is("proxyhost1"));
-        assertThat(config.getProxyPort(), is(9991));
-        assertThat(config.getProxyAddress(), is("proxyhost1:9991"));
-        assertThat(config.getProxyUser(), is("me1"));
-        assertThat(config.getProxyPassword(), is("secret1"));
+        assertThat(config.getProxyConfig().getProxyHost(), is("proxyhost1"));
+        assertThat(config.getProxyConfig().getProxyPort(), is(9991));
+        assertThat(config.getProxyConfig().getProxyAddress(), is("proxyhost1:9991"));
+        assertThat(config.getProxyConfig().getProxyUsername(), is("me1"));
+        assertThat(config.getProxyConfig().getProxyPassword(), is("secret1"));
 
         // Using default setting
-        assertThat(config.getNonProxyHosts(), is(nullValue()));
+        assertThat(config.getProxyConfig().getNonProxyHosts(), is(nullValue()));
     }
 
     @Test
@@ -127,14 +127,14 @@ public class ConfigTest {
         environmentVariables.set("HTTP_PROXY_PASS", "secret2");
         environmentVariables.set("NO_PROXY", "no2");
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        assertThat(config.getProxyHost(), is("proxyhost2"));
-        assertThat(config.getProxyPort(), is(9992));
-        assertThat(config.getProxyAddress(), is("proxyhost2:9992"));
-        assertThat(config.getProxyUser(), is("me2"));
-        assertThat(config.getProxyPassword(), is("secret2"));
-        assertThat(config.getNonProxyHosts(), is("no2"));
+        assertThat(config.getProxyConfig().getProxyHost(), is("proxyhost2"));
+        assertThat(config.getProxyConfig().getProxyPort(), is(9992));
+        assertThat(config.getProxyConfig().getProxyAddress(), is("proxyhost2:9992"));
+        assertThat(config.getProxyConfig().getProxyUsername(), is("me2"));
+        assertThat(config.getProxyConfig().getProxyPassword(), is("secret2"));
+        assertThat(config.getProxyConfig().getNonProxyHosts(), is("no2"));
     }
 
     @Test
@@ -145,7 +145,7 @@ public class ConfigTest {
 
         exception.expect(IllegalArgumentException.class);
         @SuppressWarnings("unused")
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
     }
 
 
@@ -156,10 +156,10 @@ public class ConfigTest {
         given(properties.getProperty("proxy.required")).willReturn("false");
         given(properties.getProperty("proxy.host")).willReturn("myproxyhost1");
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        assertThat(config.isProxyRequired(), is(false));
-        assertThat(config.getProxyHost(), is("myproxyhost1"));
+        assertThat(config.getProxyConfig().isProxyRequired(), is(false));
+        assertThat(config.getProxyConfig().getProxyHost(), is("myproxyhost1"));
     }
 
     @Test
@@ -168,7 +168,7 @@ public class ConfigTest {
 
         exception.expect(IllegalArgumentException.class);
         @SuppressWarnings("unused")
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
     }
 
     @Test
@@ -177,7 +177,7 @@ public class ConfigTest {
 
         System.setProperty("environment", "SIT");
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
         assertThat(config.getEnvironment(), is("SIT"));
     }
@@ -186,15 +186,15 @@ public class ConfigTest {
     public void mustSetDefaultProperties() throws Exception {
         Properties properties = givenDefaultProperties();
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
         assertThat(config.getEnvironment(), is("UAT"));
-        assertThat(config.isProxyRequired(), is(false));
-        assertThat(config.getProxyHost(), is(""));
-        assertThat(config.getProxyPort(), is(0));
-        assertThat(config.getProxyAddress(), is(""));
-        assertThat(config.getProxyUser(), is(""));
-        assertThat(config.getProxyPassword(), is(""));
+        assertThat(config.getProxyConfig().isProxyRequired(), is(false));
+        assertThat(config.getProxyConfig().getProxyHost(), is(""));
+        assertThat(config.getProxyConfig().getProxyPort(), is(0));
+        assertThat(config.getProxyConfig().getProxyAddress(), is(""));
+        assertThat(config.getProxyConfig().getProxyUsername(), is(""));
+        assertThat(config.getProxyConfig().getProxyPassword(), is(""));
 
         // TODO Fails on my laptop as getting value "local,*.local,169.254/16,*.169.254/16,127.0.0.1" from somewhere - fixed add back in
         // assertThat(config.getNonProxyHosts(), is(""));
@@ -210,11 +210,11 @@ public class ConfigTest {
         given(userProperties.getProperty("a.setting")).willReturn("true");
         given((Enumeration<String>)userProperties.propertyNames()).willReturn(empty);
 
-        Config config = new ConfigMock(properties);
-        assertThat(config.getProperty("a.setting"), is("false"));
+        Config config = new Config(properties);
+        assertThat(config.getPropertyLoader().getProperty("a.setting"), is("false"));
 
-        config = new ConfigMock(properties, userProperties);
-        assertThat(config.getProperty("a.setting"), is("true"));
+        config = new Config(properties, userProperties);
+        assertThat(config.getPropertyLoader().getProperty("a.setting"), is("true"));
     }
 
     @Test
@@ -223,21 +223,21 @@ public class ConfigTest {
         given(properties.getProperty("a.setting")).willReturn("false");
         given(properties.getProperty("SIT.a.setting")).willReturn("true");
 
-        Config config = new ConfigMock(properties);
-        assertThat(config.getProperty("a.setting"), is("false"));
+        Config config = new Config(properties);
+        assertThat(config.getPropertyLoader().getProperty("a.setting"), is("false"));
 
         given(properties.getProperty("environment")).willReturn("SIT");        
-        config = new ConfigMock(properties);
-        assertThat(config.getProperty("a.setting"), is("true"));
+        config = new Config(properties);
+        assertThat(config.getPropertyLoader().getProperty("a.setting"), is("true"));
     }
 
     @Test
     public void canSearchForPopertiesWithPrefixMatchingCase() throws IOException {
         Properties properties = givenDefaultSearchProperties();
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        Map<String, String> found = config.getPropertiesStartingWith("a.setting.");
+        Map<String, String> found = config.getPropertyLoader().getPropertiesStartingWith("a.setting.");
 
         assertThat(found.values().size(), is(1));
         assertThat(found.keySet().iterator().next(), is("a.setting.2"));
@@ -247,9 +247,9 @@ public class ConfigTest {
     public void canSearchForPopertiesAngGetOriginalPropertyCase() throws IOException {
         Properties properties = givenDefaultSearchProperties();
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        Map<String, String> found = config.getPropertiesStartingWith("a.");
+        Map<String, String> found = config.getPropertyLoader().getPropertiesStartingWith("a.");
 
         assertThat(found.values().size(), is(2));
         assertThat(found.keySet().iterator().next(), is("a.SETTING.1"));
@@ -259,9 +259,9 @@ public class ConfigTest {
     public void canSearchForPopertiesAngGetKeysWithoutPrefix() throws IOException {
         Properties properties = givenDefaultSearchProperties();
 
-        Config config = new ConfigMock(properties);
+        Config config = new Config(properties);
 
-        Map<String, String> found = config.getPropertiesStartingWith("a.setting.", true);
+        Map<String, String> found = config.getPropertyLoader().getPropertiesStartingWith("a.setting.", true);
 
         assertThat(found.values().size(), is(1));
         assertThat(found.keySet().iterator().next(), is("2"));

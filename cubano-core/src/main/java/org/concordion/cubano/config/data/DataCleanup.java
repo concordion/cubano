@@ -1,4 +1,4 @@
-package org.concordion.cubano.utils.data;
+package org.concordion.cubano.config.data;
 
 /**
  * Interface for those classes wish to automatically cleanup data, for example data added to database for a test run.

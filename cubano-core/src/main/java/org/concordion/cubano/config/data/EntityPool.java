@@ -1,10 +1,10 @@
-package org.concordion.cubano.utils.data;
+package org.concordion.cubano.config.data;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import org.concordion.cubano.utils.ActionWait;
+import org.concordion.cubano.config.ActionWait;
 
 /**
  * Maintains a global pool of of available entities and those that are in use.

@@ -20,8 +20,10 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.concordion.cubano.config.Config;
 import org.concordion.cubano.driver.web.RemoteHttpClientFactory;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
+import org.concordion.cubano.config.ProxyConfig;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CommandInfo;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -91,9 +93,9 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
             throw new RuntimeException(e.getMessage(), e);
         }
 
-        WebDriverConfig config = WebDriverConfig.getInstance();
+        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
 
-        if (config.isProxyRequired()) {
+        if (proxyConfig.isProxyRequired()) {
             HttpClientBuilder builder = HttpClientBuilder.create();
             
             URL proxyURL = getProxyUrl();
@@ -118,9 +120,9 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     }
     
     private URL getProxyUrl() {
-    	WebDriverConfig config = WebDriverConfig.getInstance();
-    	
-        String proxyInput = isNullOrEmpty(config.getProxyAddress()) ? System.getenv("HTTPS_PROXY") : config.getProxyAddress();
+        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
+
+        String proxyInput = isNullOrEmpty(proxyConfig.getProxyAddress()) ? System.getenv("HTTPS_PROXY") : proxyConfig.getProxyAddress();
         if (isNullOrEmpty(proxyInput)) {
             return null;
         }
@@ -137,8 +139,8 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     	if (proxyURL == null) {
             return null;
         }
-        
-        WebDriverConfig config = WebDriverConfig.getInstance();
+
+        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
 
 // TODO Some research into standards would be advised here.  Seems to be a bit of a free for all around standards.
 // A quick search came up with these usages:
@@ -174,8 +176,8 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
             password = (envProxyPass != null) ? envProxyPass : password;
 
             // apply option value
-            username = (config.getProxyUser() != null) ? config.getProxyUser() : username;
-            password = (config.getProxyPassword() != null) ? config.getProxyPassword() : password;
+            username = (proxyConfig.getProxyUsername() != null) ? proxyConfig.getProxyUsername() : username;
+            password = (proxyConfig.getProxyPassword() != null) ? proxyConfig.getProxyPassword() : password;
 
             if (username == null) {
                 return null;
