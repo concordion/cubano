@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  * Configuration for proxies - used by multiple packages within Cubano.
  */
 public class ProxyConfig {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfig.class);
 
     private boolean proxyIsRequired;
     private String proxyHost;
@@ -34,47 +34,47 @@ public class ProxyConfig {
     }
 
     /**
-	 * @return The hostname, or address, of the proxy server.
+     * @return The hostname, or address, of the proxy server.
      */
-	public String getProxyHost() {
-		return proxyHost;
-	}
+    public String getProxyHost() {
+        return proxyHost;
+    }
 
     /**
-	 * @return The port number of the proxy server.
+     * @return The port number of the proxy server.
      */
-	public int getProxyPort() {
-		return proxyPort;
-	}
+    public int getProxyPort() {
+        return proxyPort;
+    }
 
     /**
-	 * @return The hostname and port of the proxy server in the format host:port.
+     * @return The hostname and port of the proxy server in the format host:port.
      */
-	public String getProxyAddress() {
-		if (proxyHost.isEmpty()) {
-			return "";
-		}
+    public String getProxyAddress() {
+        if (proxyHost.isEmpty()) {
+            return "";
+        }
 
-		if (proxyPort == 0 || proxyPort == 80) {
-			return proxyHost;
-		}
+        if (proxyPort == 0 || proxyPort == 80) {
+            return proxyHost;
+        }
 
-		return proxyHost + ":" + String.valueOf(proxyPort);
-	}
+        return proxyHost + ":" + String.valueOf(proxyPort);
+    }
 
     /**
-	 * @return Username to authenticate connections through the proxy server.
+     * @return Username to authenticate connections through the proxy server.
      */
-	public String getProxyUsername() {
-		return proxyUsername;
-	}
+    public String getProxyUsername() {
+        return proxyUsername;
+    }
 
     /**
-	 * @return Password to authenticate connections through the proxy server.
+     * @return Password to authenticate connections through the proxy server.
      */
-	public String getProxyPassword() {
-		return proxyPassword;
-	}
+    public String getProxyPassword() {
+        return proxyPassword;
+    }
 
     /**
      * Indicates the hosts that should be accessed without going through the proxy. Typically this defines internal hosts.
@@ -92,22 +92,22 @@ public class ProxyConfig {
         return nonProxyHosts;
     }
 
-	private void setProxyFromConfigFile(PropertyLoader propertyLoader) {
-		proxyHost = propertyLoader.getProperty("proxy.host", "");
+    private void setProxyFromConfigFile(PropertyLoader propertyLoader) {
+        proxyHost = propertyLoader.getProperty("proxy.host", "");
 
-		if (proxyHost.isEmpty()) {
-			return;
-		}
+        if (proxyHost.isEmpty()) {
+            return;
+        }
 
-		LOGGER.debug("Loading Proxy settings from configuration file(s)");
+        LOGGER.debug("Loading Proxy settings from configuration file(s)");
 
-		proxyPort = propertyLoader.getPropertyAsInteger("proxy.port", "80");
-		proxyUsername = propertyLoader.getProperty("proxy.username", "");
-		proxyPassword = propertyLoader.getProperty("proxy.password", "");
-		nonProxyHosts = propertyLoader.getProperty("proxy.nonProxyHosts", "");
-	}
+        proxyPort = propertyLoader.getPropertyAsInteger("proxy.port", "80");
+        proxyUsername = propertyLoader.getProperty("proxy.username", "");
+        proxyPassword = propertyLoader.getProperty("proxy.password", "");
+        nonProxyHosts = propertyLoader.getProperty("proxy.nonProxyHosts", "");
+    }
 
-	private void setProxyFromSystemProperties() {
+    private void setProxyFromSystemProperties() {
         if (!proxyHost.isEmpty()) {
             return;
         }
@@ -126,7 +126,7 @@ public class ProxyConfig {
         nonProxyHosts = System.getProperty("http.nonProxyHosts", "").replaceAll("\\|", ",");
     }
 
-	private void setProxyFromEnvironmentVariables() {
+    private void setProxyFromEnvironmentVariables() {
         if (!proxyHost.isEmpty()) {
             return;
         }
@@ -167,7 +167,7 @@ public class ProxyConfig {
         }
     }
 
-	private URL getProxyUrl() {
+    private URL getProxyUrl() {
         String proxyInput = System.getenv("HTTP_PROXY");
 
         try {
