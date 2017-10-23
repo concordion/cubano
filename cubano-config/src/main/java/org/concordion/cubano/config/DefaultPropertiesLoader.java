@@ -40,7 +40,8 @@ public class DefaultPropertiesLoader implements PropertiesLoader {
     }
 
     /**
-     * Read properties from file, will override and previously applied settings.
+     * Read properties from file, will ignoring the case of properties.
+     * Will override any previously applied settings.
      *
      * @param filename Name of file to read, expected that it will be located in the projects root folder
      * @return {@link CaselessProperties}
@@ -49,7 +50,7 @@ public class DefaultPropertiesLoader implements PropertiesLoader {
         try {
             String content = new String(Files.readAllBytes(Paths.get(filename)));
 
-            // By default property files treat \ as an escape character so this breaks that behaviour
+            // By default property files treat \ as an escape character so this breaks standard behaviour
             properties.load(new StringReader(content.replace("\\", "\\\\")));
         } catch (Exception e) {
             throw new RuntimeException("Unable to read properties file.", e);

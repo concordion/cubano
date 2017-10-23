@@ -18,26 +18,60 @@
     <classpathentry kind="lib" path="SEPARATOR" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
-    <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
+    <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
+    <classpathentry kind="lib" path="cubano-httpeasy/build/classes/java/main" base="cubano-httpeasy_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-httpeasy/build/classes/java/main" base="cubano-httpeasy_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-webdriver/build/classes/java/main" base="cubano-webdriver_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-webdriver/build/classes/java/main" base="cubano-webdriver_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-webdriver-manager/build/classes/java/main" base="cubano-webdriver-manager_main" />
+    <classpathentry kind="lib" path="cubano-webdriver/build/classes/java/main" base="cubano-webdriver_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-webdriver-manager/build/classes/java/main" base="cubano-webdriver-manager_main" />
+    <classpathentry kind="lib" path="cubano-webdriver/build/classes/java/main" base="cubano-webdriver_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-webdriver-manager/build/classes/java/main" base="cubano-webdriver-manager_main" />
+    <classpathentry kind="lib" path="cubano-webdriver/build/classes/java/main" base="cubano-webdriver_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
+    <classpathentry kind="lib" path="cubano-framework/build/classes/java/main" base="cubano-framework_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-framework/build/classes/java/main" base="cubano-framework_main" />
+    <classpathentry kind="lib" path="cubano-webdriver-manager/build/classes/java/main" base="cubano-webdriver-manager_main" />
+    <classpathentry kind="lib" path="cubano-webdriver/build/classes/java/main" base="cubano-webdriver_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-webdriver/build/classes/java/main" base="cubano-webdriver_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
+    <classpathentry kind="lib" path="cubano-core/build/classes/java/main" base="cubano-core_main" />
+    <classpathentry kind="lib" path="cubano-httpeasy/build/classes/java/main" base="cubano-httpeasy_main" />
+    <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
+    <classpathentry kind="lib" path="SEPARATOR" />
+    <classpathentry kind="lib" path="cubano-core/build/classes/java/main" base="cubano-core_main" />
+    <classpathentry kind="lib" path="cubano-webdriver/build/classes/java/main" base="cubano-webdriver_main" />
+    <classpathentry kind="lib" path="cubano-http/build/classes/java/main" base="cubano-http_main" />
+    <classpathentry kind="lib" path="cubano-httpeasy/build/classes/java/main" base="cubano-httpeasy_main" />
     <classpathentry kind="lib" path="cubano-config/build/classes/java/main" base="cubano-config_main" />
     <classpathentry kind="lib" path="SEPARATOR" />
   </classpath>

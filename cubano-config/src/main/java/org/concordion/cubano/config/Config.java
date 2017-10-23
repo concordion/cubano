@@ -14,7 +14,6 @@ public final class Config {
 
     private final DefaultPropertyLoader propertyLoader;
     private final ProxyConfig proxyConfig = new ProxyConfig();
-    private String environment;
 
     private static class ConfigHolder {
         static final Config INSTANCE = new Config();
@@ -24,19 +23,19 @@ public final class Config {
         return ConfigHolder.INSTANCE;
     }
 
-	/**
-	 * Uses DefaultPropertiesLoader to import the config and user properties files.
-	 */
-	protected Config() {
-		this(DefaultPropertiesLoader.getInstance());
-	}
+    /**
+     * Uses DefaultPropertiesLoader to import the config and user properties files.
+     */
+    protected Config() {
+         this(DefaultPropertiesLoader.getInstance());
+    }
 
-	/**
-	 * Uses the supplied PropertiesLoader to import the config and user properties files.
-	 *
-	 * @param propertiesLoader Configuration loader
-	 */
-	protected Config(PropertiesLoader propertiesLoader) {
+    /**
+     * Uses the supplied PropertiesLoader to import the config and user properties files.
+     *
+     * @param propertiesLoader Configuration loader
+     */
+    protected Config(PropertiesLoader propertiesLoader) {
         this(propertiesLoader.getProperties());
     }
 
@@ -48,30 +47,21 @@ public final class Config {
     protected Config(Properties properties) {
         propertyLoader = new DefaultPropertyLoader(properties);
 
-        // Try environment variable first
-        environment = System.getProperty("environment", "");
-
-        if (environment.isEmpty()) {
-            environment = propertyLoader.getProperty("environment");
-        }
-
-        propertyLoader.setEnvironment(environment);
-
         proxyConfig.loadProxyProperties(propertyLoader);
-	}
+    }
 
     /**
-	 * @return Configured environment.
-	 */
-	public String getEnvironment() {
-		return environment;
-	}
+     * @return Configured environment.
+     */
+    public String getEnvironment() {
+        return propertyLoader.getEnvironment();
+    }
 
     /**
      * @return Configuration for proxy.
      */
     public ProxyConfig getProxyConfig() {
-	    return proxyConfig;
+        return proxyConfig;
     }
 
     /**

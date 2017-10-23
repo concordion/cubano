@@ -163,7 +163,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void mustSetEnvrionment() throws Exception {
+    public void mustSetEnvironment() throws Exception {
         Properties properties = mock(Properties.class);
 
         exception.expect(IllegalArgumentException.class);
@@ -172,7 +172,7 @@ public class ConfigTest {
     }
 
     @Test
-    public void systemPropertyWillOverrideEnvrionment() throws Exception {
+    public void systemPropertyWillOverrideEnvironment() throws Exception {
         Properties properties = givenDefaultProperties();
 
         System.setProperty("environment", "SIT");
