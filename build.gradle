@@ -1,3 +1,40 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'net.researchgate:gradle-release:2.6.0'
+        classpath 'org.ajoberstar:gradle-git-publish:0.3.2'
+    }
+}
+
+ext {
+    githubUrl = "https://github.com/concordion/${project.name}"
+    issuesUrl = "${githubUrl}/issues"
+    vcsUrl = "${githubUrl}.git"
+    gitRepoUri = "git@github.com:concordion/${project.name}.git"
+    vcsConnection = "scm:git:git://github.com/concordion/${project.name}.git"
+
+    if (!project.hasProperty("bintrayUsername")) {
+        bintrayUsername = ''
+    }
+    if (!project.hasProperty("bintrayApiKey")) {
+        bintrayApiKey = ''
+    }
+    if (!project.hasProperty("bintrayPassphrase")) {
+        bintrayPassphrase = ''
+    }
+    if (!project.hasProperty("sonatypeUsername")) {
+        sonatypeUsername = ''
+    }
+    if (!project.hasProperty("sonatypePassword")) {
+        sonatypePassword = ''
+    }
+}
+
+group = 'org.concordion'
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'findbugs'
@@ -5,6 +42,10 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'jacoco'
     apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: net.researchgate.release.ReleasePlugin
+    apply plugin: com.jfrog.bintray.gradle.BintrayPlugin
+    apply plugin: org.ajoberstar.gradle.git.publish.GitPublishPlugin
 
     // need utf-8 to get text with non-standard chars e.g. curly apostrophes used correctly 
     tasks.withType(JavaCompile) {
@@ -130,5 +171,151 @@ subprojects {
     task javadocJar(type: Jar, dependsOn: javadoc) {
         classifier = 'javadoc'
         from javadoc.destinationDir
+    }
+
+
+    // 'gradle release' will also upload release to Bintray
+    createReleaseTag.dependsOn bintrayUpload
+
+    gitPublishCopy.dependsOn test
+    gitPublishCopy.dependsOn javadoc
+
+    task publishDocs(dependsOn: ['gitPublishPush'])
+
+    task publishSnapshot(dependsOn: ['test', 'publishMainPublicationToMavenRepository'])
+
+    task publishRelease(dependsOn: ['clean', 'test', 'javadoc', 'sourcesJar', 'javadocJar', 'publishDocs', 'release'])
+
+    gitPublish {
+        repoUri = 'git@github.com:concordion/cubano.git'
+        branch = 'gh-pages'
+
+        contents {
+            from(javadoc) {
+                into 'api'
+            }
+        }
+
+        // message used when committing changes
+        commitMessage = 'Automatically publishing new Github pages'
+    }
+
+    publishing {
+        repositories {
+            maven {
+                if (project.version.endsWith('-SNAPSHOT')) {
+                    url "http://oss.jfrog.org/artifactory/simple/oss-snapshot-local/"
+                    credentials {
+                        username bintrayUsername
+                        password bintrayApiKey
+                    }
+                }
+            }
+        }
+    }
+
+    publishing {
+        publications {
+            main(MavenPublication) {
+                artifact sourcesJar {
+                    classifier "sources"
+                }
+
+                artifact javadocJar {
+                    classifier "javadoc"
+                }
+
+                from components.java
+
+                pom.withXml {
+                    asNode().children().last() + {
+                        resolveStrategy = Closure.DELEGATE_FIRST
+
+                        name project.name
+                        description project.description
+                        url 'http://www.concordion.org/cubano'
+                        packaging 'jar'
+                        inceptionYear '2017'
+
+                        scm {
+                            url vcsUrl
+                            connection vcsConnection
+                            developerConnection vcsConnection
+                        }
+
+                        licenses {
+                            license {
+                                name 'The Apache Software License, Version 2.0'
+                                url 'http://www.apache.org/licenses/LICENSE-2.0.html'
+                                distribution 'repo'
+                            }
+                        }
+
+                        issueManagement {
+                            system 'GitHub Issues'
+                            url issuesUrl
+                        }
+
+                        developers {
+                            developer {
+                                id 'andrew-sumner'
+                                name 'Andrew Sumner'
+                                roles { role 'Project Creator' }
+                            }
+                            developer {
+                                id 'nigelcharman'
+                                name 'Nigel Charman'
+                                roles { role 'Developer' }
+                            }
+                            developer {
+                                id 'jimmykemp'
+                                name 'Jimmy Kemp'
+                                roles { role 'Developer' }
+                            }
+                        }
+                    }
+                    asNode().dependencies.'*'.findAll() {
+                        it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                            dep.name == it.artifactId.text()
+                        }
+                    }.each() {
+                        it.scope*.value = 'compile'
+                    }
+                }
+            }
+        }
+    }
+
+    bintray {
+        user = bintrayUsername   // set this in your ~/.gradle/gradle.properties file
+        key = bintrayApiKey         // set this in your ~/.gradle/gradle.properties file
+        publications = ['main'] // see publications closure
+        dryRun = true
+        //    publish = true
+        pkg {
+            repo = 'maven'
+            userOrg = 'concordion'
+            name = project.name
+            desc = project.description
+            licenses = ['Apache-2.0']
+            issueTrackerUrl = issuesUrl
+            vcsUrl = vcsUrl
+            websiteUrl = 'http://concordion.org/cubano'
+            version {
+                name = project.version
+                released = new Date()
+                vcsTag = project.version
+                gpg {
+                    sign = true
+                    passphrase = bintrayPassphrase // set this in your ~/.gradle/gradle.properties file
+                }
+                //            mavenCentralSync {
+                //                sync = true
+                //                user = sonatypeUsername              // set this in your ~/.gradle/gradle.properties file
+                //                password = sonatypePassword          // OSS user password// set this in your ~/.gradle/gradle.properties file
+                //                close = '1'
+                //            }
+            }
+        }
     }
 }
