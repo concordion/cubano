@@ -31,6 +31,7 @@ public class ProxyConfig {
         setProxyFromEnvironmentVariables();
 
         if (proxyIsRequired && proxyHost.isEmpty()) {
+            // Raise error if proxy not set
             propertyLoader.getProperty("proxy.host");
         }
     }
