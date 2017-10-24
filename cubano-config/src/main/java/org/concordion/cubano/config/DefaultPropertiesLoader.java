@@ -1,6 +1,7 @@
 package org.concordion.cubano.config;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,7 +18,6 @@ public class DefaultPropertiesLoader implements PropertiesLoader {
     private static final String USER_CONFIG_FILE = "user.properties";
 
     private final Properties properties;
-    private final Properties userProperties;
 
     private static class DPHolder {
         static final DefaultPropertiesLoader INSTANCE = new DefaultPropertiesLoader();
@@ -27,47 +27,57 @@ public class DefaultPropertiesLoader implements PropertiesLoader {
         return DPHolder.INSTANCE;
     }
 
+    /**
+     * Allow injection of properties for testing purposes.
+     *
+     * @param properties Default properties
+     */
+    protected DefaultPropertiesLoader(String properties, String userProperties) {
+        this.properties = new CaselessProperties();
+
+        loadFromString(properties);
+        loadFromString(userProperties);
+    }
+
     /** Ensure properties have been loaded before any property is used. */
     private DefaultPropertiesLoader() {
         synchronized (DefaultPropertiesLoader.class) {
-            properties = loadFile(CONFIG_FILE);
+            properties = new CaselessProperties();
+
+            loadFile(CONFIG_FILE);
 
             if (new File(USER_CONFIG_FILE).exists()) {
-                userProperties = loadFile(USER_CONFIG_FILE);
-            } else {
-                userProperties = null;
+                loadFile(USER_CONFIG_FILE);
             }
         }
     }
 
     /**
      * Read properties from file, will ignoring the case of properties.
+     * Will override any previously applied settings.
      *
      * @param filename Name of file to read, expected that it will be located in the projects root folder
      * @return {@link CaselessProperties}
      */
-    private Properties loadFile(final String filename) {
-        Properties prop = new CaselessProperties();
-
+    private void loadFile(final String filename) {
         try {
-            String content = new String(Files.readAllBytes(Paths.get(filename)));
-
-            // By default property files treat \ as an escape character
-            prop.load(new StringReader(content.replace("\\", "\\\\")));
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to read properties file.", e);
+            loadFromString(new String(Files.readAllBytes(Paths.get(filename))));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to read properties file " + filename, e);
         }
+    }
 
-        return prop;
+    private void loadFromString(final String content) {
+        try {
+            // By default property files treat \ as an escape character so this breaks standard behaviour
+            properties.load(new StringReader(content.replace("\\", "\\\\")));
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to load properties.", e);
+        }
     }
 
     @Override
     public Properties getProperties() {
         return properties;
-    }
-
-    @Override
-    public Properties getUserProperties() {
-        return userProperties;
     }
 }
