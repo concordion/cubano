@@ -1,14 +1,14 @@
 package org.concordion.cubano.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringTokenizer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Configuration for proxies - used by multiple packages within Cubano.
@@ -21,7 +21,20 @@ public class ProxyConfig {
     private int proxyPort = 0;
     private String proxyUsername = "";
     private String proxyPassword = "";
-    private String nonProxyHosts;
+    private String nonProxyHosts = "";
+
+    ProxyConfig(PropertyLoader propertyLoader) {
+        proxyIsRequired = propertyLoader.getPropertyAsBoolean("proxy.required", null);
+
+        setProxyFromConfigFile(propertyLoader);
+        setProxyFromSystemProperties();
+        setProxyFromEnvironmentVariables();
+
+        if (proxyIsRequired && proxyHost.isEmpty()) {
+            // Raise error if proxy not set
+            propertyLoader.getProperty("proxy.host");
+        }
+    }
 
     /**
      * Whether a proxy should be configured for accessing the test application or not, regardless of means of accessing the test
@@ -179,17 +192,5 @@ public class ProxyConfig {
         }
 
         return null;
-    }
-
-    void loadProxyProperties(PropertyLoader propertyLoader) {
-        proxyIsRequired = propertyLoader.getPropertyAsBoolean("proxy.required", null);
-
-        setProxyFromConfigFile(propertyLoader);
-        setProxyFromSystemProperties();
-        setProxyFromEnvironmentVariables();
-
-        if (proxyIsRequired && proxyHost.isEmpty()) {
-            propertyLoader.getProperty("proxy.host");
-        }
     }
 }

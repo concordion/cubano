@@ -13,11 +13,4 @@ public interface PropertiesLoader {
      * @return Properties
      */
     Properties getProperties();
-
-    /**
-     * User specific overrides for the default properties.
-     * 
-     * @return Properties
-     */
-    Properties getUserProperties();
 }

@@ -12,16 +12,29 @@ import java.util.Properties;
  */
 public class DefaultPropertyLoader implements PropertyLoader {
     private final Properties properties;
-    private final Properties userProperties;
     private final String environment;
 
     /**
      * Configure the optional userProperties and mandatory properties to be loaded.
      */
-    public DefaultPropertyLoader(Properties properties, Properties userProperties, String environment) {
+    public DefaultPropertyLoader(Properties properties) {
         this.properties = properties;
-        this.userProperties = userProperties;
-        this.environment = environment;
+        this.environment = loadEnvironmentProperty();
+    }
+
+    private String loadEnvironmentProperty() {
+        // Try environment variable first
+        String environment = System.getProperty("environment", "");
+
+        if (environment.isEmpty()) {
+            environment = properties.getProperty("environment", "");
+        }
+
+        return environment;
+    }
+
+    public String getEnvironment() {
+        return environment;
     }
 
     /**
@@ -117,17 +130,6 @@ public class DefaultPropertyLoader implements PropertyLoader {
     public Map<String, String> getPropertiesStartingWith(String keyPrefix, boolean trimPrefix) {
         Map<String, String> result = new HashMap<>();
 
-        searchPropertiesFrom(properties, keyPrefix, trimPrefix, result);
-        searchPropertiesFrom(userProperties, keyPrefix, trimPrefix, result);
-
-        return result;
-    }
-
-    private void searchPropertiesFrom(Properties properties, String keyPrefix, boolean trimPrefix, Map<String, String> result) {
-        if (properties == null) {
-            return;
-        }
-
         @SuppressWarnings("unchecked")
         Enumeration<String> en = (Enumeration<String>) properties.propertyNames();
         while (en.hasMoreElements()) {
@@ -142,28 +144,11 @@ public class DefaultPropertyLoader implements PropertyLoader {
                 result.put(propName, propValue);
             }
         }
+        
+        return result;
     }
 
     private String retrieveProperty(String key) {
-        String value = null;
-
-        // prefix = System.getProperty("user.name").toLowerCase();
-        if (userProperties != null) {
-            value = retrievePropertyFrom(userProperties, key);
-        }
-
-        if (value == null) {
-            value = retrievePropertyFrom(properties, key);
-        }
-
-        if (value == null) {
-            value = "";
-        }
-
-        return value;
-    }
-
-    private String retrievePropertyFrom(Properties properties, String key) {
         String value = null;
 
         // Attempt to get setting for environment
@@ -176,7 +161,9 @@ public class DefaultPropertyLoader implements PropertyLoader {
             value = properties.getProperty(key);
         }
 
-        if (value != null) {
+        if (value == null) {
+            value = "";
+        } else {
             value = value.trim();
         }
 

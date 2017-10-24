@@ -1,7 +1,5 @@
 package org.concordion.cubano.config;
 
-import java.util.Properties;
-
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
  * <p>
@@ -13,8 +11,7 @@ import java.util.Properties;
 public final class Config {
 
     private final DefaultPropertyLoader propertyLoader;
-    private final ProxyConfig proxyConfig = new ProxyConfig();
-    private String environment;
+    private final ProxyConfig proxyConfig;
 
     private static class ConfigHolder {
         static final Config INSTANCE = new Config();
@@ -37,58 +34,16 @@ public final class Config {
      * @param propertiesLoader Configuration loader
      */
     protected Config(PropertiesLoader propertiesLoader) {
-        this(propertiesLoader.getProperties(), propertiesLoader.getUserProperties());
-    }
+        propertyLoader = new DefaultPropertyLoader(propertiesLoader.getProperties());
 
-    /**
-     * Allow injection of properties for testing purposes.
-     *
-     * @param properties Default properties
-     */
-    protected Config(Properties properties) {
-        this(properties, null);
-    }
-
-    /**
-     * Load the properties for this configuration.
-     *
-     * @param properties Default properties
-     * @param userProperties User specific overrides
-     */
-    protected Config(Properties properties, Properties userProperties) {
-        environment = loadEnvironmentProperty(properties, userProperties);
-        propertyLoader = new DefaultPropertyLoader(properties, userProperties, environment);
-
-        proxyConfig.loadProxyProperties(propertyLoader);
-    }
-
-    public static String loadEnvironmentProperty(Properties properties, Properties userProperties) {
-        // Try environment variable first
-        String environment = System.getProperty("environment", "");
-
-        if (environment.isEmpty()) {
-            if (userProperties != null) {
-                environment = userProperties.getProperty("environment");
-            }
-            if (environment == null || environment.isEmpty()) {
-                environment = properties.getProperty("environment");
-            }
-        }
-
-        if (environment != null) {
-            environment = environment.trim();
-        }
-        if (environment == null || environment.isEmpty()) {
-            throw new IllegalArgumentException("Unable to find property 'environment'");
-        }
-        return environment;
+        proxyConfig = new ProxyConfig(propertyLoader);
     }
 
     /**
      * @return Configured environment.
      */
     public String getEnvironment() {
-        return environment;
+        return propertyLoader.getEnvironment();
     }
 
     /**

@@ -2,7 +2,11 @@ package org.concordion.cubano.driver.web.config;
 
 import java.util.Properties;
 
-import org.concordion.cubano.config.*;
+import org.concordion.cubano.config.Config;
+import org.concordion.cubano.config.DefaultPropertyLoader;
+import org.concordion.cubano.config.PropertiesLoader;
+import org.concordion.cubano.config.PropertyLoader;
+
 
 /**
  * Reads and supplies properties from the <code>config.properties</code> file that are required by the framework.
@@ -51,7 +55,7 @@ public final class WebDriverConfig {
      * @param propertiesLoader Configuration loader
      */
     protected WebDriverConfig(PropertiesLoader propertiesLoader) {
-        this(propertiesLoader.getProperties(), propertiesLoader.getUserProperties());
+        this(propertiesLoader.getProperties());
     }
 
     /**
@@ -60,18 +64,7 @@ public final class WebDriverConfig {
      * @param properties Default properties
      */
     protected WebDriverConfig(Properties properties) {
-        this(properties, null);
-    }
-
-    /**
-     * Load the properties for this configuration.
-     *
-     * @param properties Default properties
-     * @param userProperties User specific overrides
-     */
-    protected WebDriverConfig(Properties properties, Properties userProperties) {
-        String environment = Config.loadEnvironmentProperty(properties, userProperties);
-        propertyLoader = new DefaultPropertyLoader(properties, userProperties, environment);
+        propertyLoader = new DefaultPropertyLoader(properties);
         loadProperties();
     }
 
