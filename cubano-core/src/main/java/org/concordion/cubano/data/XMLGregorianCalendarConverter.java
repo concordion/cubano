@@ -4,7 +4,7 @@ import java.lang.reflect.Type;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.concordion.cubano.utils.ISODateTimeFormat;
+import org.concordion.cubano.date.ISODateTimeFormat;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

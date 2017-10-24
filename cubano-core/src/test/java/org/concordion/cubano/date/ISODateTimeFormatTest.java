@@ -1,6 +1,6 @@
-package org.concordion.cubano.config;
+package org.concordion.cubano.date;
 
-import org.concordion.cubano.utils.ISODateTimeFormat;
+import org.concordion.cubano.date.ISODateTimeFormat;
 import org.junit.Test;
 
 import javax.xml.datatype.XMLGregorianCalendar;
