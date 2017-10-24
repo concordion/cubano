@@ -1,4 +1,4 @@
-package org.concordion.cubano.config.data;
+package org.concordion.cubano.utils.data;
 
 import java.util.ArrayList;
 import java.util.List;

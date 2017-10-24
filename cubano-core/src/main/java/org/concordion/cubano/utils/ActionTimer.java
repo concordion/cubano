@@ -1,4 +1,4 @@
-package org.concordion.cubano.config;
+package org.concordion.cubano.utils;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;

@@ -1,4 +1,4 @@
 /**
  * Common utilties that most automation projects require.
  */
-package org.concordion.cubano.config;
+package org.concordion.cubano.utils;

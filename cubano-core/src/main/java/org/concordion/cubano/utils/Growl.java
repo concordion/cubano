@@ -1,4 +1,4 @@
-package org.concordion.cubano.config;
+package org.concordion.cubano.utils;
 
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
