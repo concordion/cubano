@@ -1,4 +1,4 @@
-package org.concordion.cubano.config;
+package org.concordion.cubano.driver.action;
 
 /**
  * Timeout Exception.
