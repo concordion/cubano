@@ -4,6 +4,7 @@ dependencies {
     compile project(':cubano-httpeasy') // TODO - pass as configuration
     compile project(':cubano-webdriver')
 
+/*
     compile 'org.concordion:concordion:2.1.1'
     compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
     compile 'org.concordion:concordion-timestamp-formatter-extension:1.1.2'
@@ -13,4 +14,5 @@ dependencies {
     compile 'org.concordion:concordion-executeonlyif-extension:0.2.1'
     compile 'org.concordion:concordion-logback-extension:2.0.0'
     compile 'org.concordion:concordion-storyboard-extension:2.0.0'
+ */
 }
