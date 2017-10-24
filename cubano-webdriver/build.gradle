@@ -22,5 +22,5 @@ dependencies {
     // TODO remove dependencies
     //compile 'org.concordion:concordion:2.1.1'
     compile 'org.concordion:concordion-logback-extension:2.0.0'
-    //compile 'org.concordion:concordion-storyboard-extension:2.0.0'
+    compile 'org.concordion:concordion-storyboard-extension:2.0.0'
 }
