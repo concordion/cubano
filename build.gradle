@@ -242,7 +242,7 @@ subprojects {
                         inceptionYear '2017'
 
                         scm {
-                            url vcsUrl
+                            url gitVcsUrl
                             connection vcsConnection
                             developerConnection vcsConnection
                         }
