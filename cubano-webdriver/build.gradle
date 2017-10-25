@@ -12,7 +12,7 @@ dependencies {
     //}
     
     // This uses Jitpack to build and import multiple modules from Github
-    // TODO Can revert to above once 1.19 is released - and remove jitpack from root build.gradle
+    // TODO Can revert to above once 1.19 is released - and remove jitpack from root build.gradle and also release block below
     compile('com.github.yandex-qatools.htmlelements:htmlelements-java:master-SNAPSHOT') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
@@ -22,4 +22,9 @@ dependencies {
     // TODO remove dependencies
     compile 'org.concordion:concordion-logback-extension:2.0.0'
     compile 'org.concordion:concordion-storyboard-extension:2.0.0'
+}
+
+// TODO Remove this once a release version of yandex is in use
+release {
+    failOnSnapshotDependencies = false
 }
