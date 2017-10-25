@@ -12,7 +12,7 @@ buildscript {
 ext {
     githubUrl = "https://github.com/concordion/${project.name}"
     issuesUrl = "${githubUrl}/issues"
-    vcsUrl = "${githubUrl}.git"
+    gitVcsUrl = "${githubUrl}.git"
     gitRepoUri = "git@github.com:concordion/${project.name}.git"
     vcsConnection = "scm:git:git://github.com/concordion/${project.name}.git"
 
@@ -303,7 +303,7 @@ subprojects {
             desc = project.description
             licenses = ['Apache-2.0']
             issueTrackerUrl = issuesUrl
-            vcsUrl = vcsUrl
+            vcsUrl = gitVcsUrl
             websiteUrl = 'http://concordion.org/cubano'
             version {
                 name = project.version
