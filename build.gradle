@@ -33,7 +33,10 @@ ext {
     }
 }
 
-group = 'org.concordion'
+allprojects {
+    group=org.concordion
+    version=0.1.0
+}
 
 subprojects {
     apply plugin: 'java'
