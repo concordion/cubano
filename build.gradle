@@ -35,10 +35,6 @@ ext {
 
 group = 'org.concordion'
 
-release {
-    tagTemplate = '$name-$version'
-}
-
 subprojects {
     apply plugin: 'java'
     apply plugin: 'findbugs'
@@ -189,6 +185,10 @@ subprojects {
     task publishSnapshot(dependsOn: ['test', 'publishMainPublicationToMavenRepository'])
 
     task publishRelease(dependsOn: ['clean', 'test', 'javadoc', 'sourcesJar', 'javadocJar', 'publishDocs', 'release'])
+
+    release {
+        tagTemplate = '$name-$version'
+    }
 
     gitPublish {
         repoUri = 'git@github.com:concordion/cubano.git'
