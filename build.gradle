@@ -294,8 +294,8 @@ subprojects {
         user = bintrayUsername   // set this in your ~/.gradle/gradle.properties file
         key = bintrayApiKey         // set this in your ~/.gradle/gradle.properties file
         publications = ['main'] // see publications closure
-        dryRun = true
-        //    publish = true
+//        dryRun = true
+//        publish = true
         pkg {
             repo = 'maven'
             userOrg = 'concordion'
