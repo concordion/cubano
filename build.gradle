@@ -35,6 +35,10 @@ ext {
 
 group = 'org.concordion'
 
+release {
+    tagTemplate = '$name-$version'
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'findbugs'
