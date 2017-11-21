@@ -354,14 +354,16 @@ public class PageHelper {
      * @param driver WebDriver
      */
     public static void switchToMainDocument(WebDriver driver) {
-        // driver.switchTo().window(driver.getWindowHandle());
+        driver.switchTo().window(driver.getWindowHandle());
 
-        driver.switchTo().parentFrame();
-        driver.switchTo().parentFrame();
-        driver.switchTo().parentFrame();
-        driver.switchTo().parentFrame();
-        driver.switchTo().parentFrame();
-        driver.switchTo().parentFrame();
+        // Firefox gecko driver seems to switch to active frame rather than main document like all other browsers, including earlier versions of firefox.
+        // So to support firefox we move up through the parent frames until we reach the main document.
+        String currentFrame = getCurrentFrameNameOrId(driver);
+
+        while (!currentFrame.isEmpty()) {
+            driver.switchTo().parentFrame();
+            currentFrame = getCurrentFrameNameOrId(driver);
+        }
     }
 
     private String getClickMessage(WebElement element) {
