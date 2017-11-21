@@ -354,7 +354,14 @@ public class PageHelper {
      * @param driver WebDriver
      */
     public static void switchToMainDocument(WebDriver driver) {
-        driver.switchTo().window(driver.getWindowHandle());
+        // driver.switchTo().window(driver.getWindowHandle());
+
+        driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
+        driver.switchTo().parentFrame();
     }
 
     private String getClickMessage(WebElement element) {
