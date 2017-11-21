@@ -3,7 +3,9 @@ package demo;
 import java.util.List;
 
 import org.concordion.cubano.driver.web.Browser;
+import org.concordion.cubano.driver.web.SeleniumScreenshotTaker;
 import org.concordion.cubano.framework.ConcordionBase;
+import org.concordion.ext.StoryboardMarkerFactory;
 import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.slf4j.ext.ReportLogger;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
@@ -27,14 +29,29 @@ public class HelloWorldFixture extends ConcordionBase {
         WebDriverWait wait = new WebDriverWait(browser.getDriver(), 5);
 
         browser.getDriver().navigate().to("http://google.co.nz");
+
+        logger.with()
+                .message("Open")
+                .screenshot(new SeleniumScreenshotTaker(browser.getDriver(), null))
+                .marker(StoryboardMarkerFactory.addCard("Google"))
+                .debug();
+
         logger.info("GOTO");
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name=q]")));
 
+
         browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys("concordion");
         logger.info("TYPE");
 
+        logger.with()
+                .message("Search")
+                .screenshot(new SeleniumScreenshotTaker(browser.getDriver(), browser.getDriver().findElement(By.cssSelector("input[name=q]"))))
+                .marker(StoryboardMarkerFactory.addCard("Google"))
+                .debug();
+
         browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys(Keys.ENTER);
+
 
         // browser.getDriver().findElement(By.cssSelector("input[name=btnK]")).click();
         logger.info("CLICK");
@@ -50,6 +67,13 @@ public class HelloWorldFixture extends ConcordionBase {
 
                 for (WebElement result : results) {
                     if (result.getAttribute("href").equals("http://concordion.org/")) {
+
+                        logger.with()
+                                .message("Click")
+                                .screenshot(new SeleniumScreenshotTaker(browser.getDriver(), result))
+                                .marker(StoryboardMarkerFactory.addCard("Google"))
+                                .debug();
+
                         result.click();
                         logger.info("NAVIGATE");
 
