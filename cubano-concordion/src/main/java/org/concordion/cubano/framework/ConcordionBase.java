@@ -14,6 +14,7 @@ import org.concordion.api.option.ConcordionOptions;
 import org.concordion.api.option.MarkdownExtensions;
 import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.cubano.driver.web.Browser;
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.ext.StoryboardExtension;
 import org.concordion.integration.junit4.ConcordionRunner;
@@ -27,25 +28,20 @@ import org.junit.runner.RunWith;
  * to ensure the are executed from whichever class initiates the test run.
  */
 @RunWith(ConcordionRunner.class)
-// @ConcordionResources("/customConcordion.css")
-// @Extensions({ TimestampFormatterExtension.class, RunTotalsExtension.class, ExpectedToFailInfoExtension.class })
 @ConcordionOptions(markdownExtensions = { MarkdownExtensions.HARDWRAPS, MarkdownExtensions.AUTOLINKS })
 public abstract class ConcordionBase implements BrowserBasedTest {
     private static final String DEFAULT = "default";
 
     private static List<Browser> allBrowsers = new ArrayList<Browser>();
     private static ThreadLocal<Map<String, Browser>> threadBrowsers = ThreadLocal.withInitial(HashMap::new);
+    private static ThreadLocal<Integer> testCount = ThreadLocal.withInitial(() -> 0);
+
+    private boolean browserTestRunCounted = false;
+    private static int browserCloseAfterXTests = WebDriverConfig.getInstance().getRestartBrowserAfterXTests();
+
 
     @Extension
     private final StoryboardExtension storyboard = new StoryboardExtension();
-
-    // @Extension
-    // private final EnvironmentExtension footer = new EnvironmentExtension()
-    // .withRerunTest("MyMSD-RunSelectedTest")
-    // .withRerunParameter("token", "ALLOW")
-    // .withRerunParameter("TEST_CLASSNAME", this.getClass().getName().replace(ConcordionBase.class.getPackage().getName() + ".", ""))
-    // .withEnvironment(AppConfig.getEnvironment().toUpperCase())
-    // .withURL(AppConfig.getUrl());
 
     static {
         LogbackAdaptor.logInternalStatus();
@@ -61,6 +57,8 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
             browser.removeScreenshotTaker();
         }
+
+        browserTestRunCounted = false;
     }
 
     @AfterSuite
@@ -78,6 +76,8 @@ public abstract class ConcordionBase implements BrowserBasedTest {
     }
 
     public Browser getBrowser(String key) {
+        incrementBrowserTestCount();
+
         Map<String, Browser> browsers = threadBrowsers.get();
 
         if (browsers.get(key) == null) {
@@ -91,6 +91,8 @@ public abstract class ConcordionBase implements BrowserBasedTest {
     }
 
     public Browser getBrowser(String key, BrowserProvider browserProvider) {
+        incrementBrowserTestCount();
+
         Map<String, Browser> browsers = threadBrowsers.get();
 
         if (browsers.get(key) == null) {
@@ -101,6 +103,30 @@ public abstract class ConcordionBase implements BrowserBasedTest {
         }
 
         return browsers.get(key);
+    }
+
+    private void incrementBrowserTestCount() {
+        if (browserCloseAfterXTests <= 0 || browserTestRunCounted) {
+            return;
+        }
+
+        browserTestRunCounted = true;
+        Integer count = testCount.get();
+
+        if (count >= browserCloseAfterXTests) {
+            Map<String, Browser> browsers = threadBrowsers.get();
+
+            for (Iterator<String> iterator = browsers.keySet().iterator(); iterator.hasNext();) {
+                Browser browser = browsers.get(iterator.next());
+
+                browser.close();
+            }
+
+            testCount.set(0);
+        } else {
+            testCount.set(count + 1);
+        }
+
     }
 
     /**
