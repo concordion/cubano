@@ -303,19 +303,7 @@ public class PageHelper {
      * for selected iframe.
      */
     public String getCurrentFrameNameOrId() {
-        String script = "var frame = window.frameElement;" +
-                "if (!frame) {" +
-                "    return '';" +
-                "}" +
-                "if (frame.name) {" +
-                "    return frame.name;" +
-                "}" +
-                "if (frame.id) {" +
-                "    return frame.id;" +
-                "}" +
-                "return 'UNKNOWN FRAME';";
-
-        return (String) ((JavascriptExecutor) pageObject.getBrowser().getDriver()).executeScript(script);
+        return getCurrentFrameNameOrId(pageObject.getBrowser().getDriver());
     }
 
     /**
@@ -358,11 +346,24 @@ public class PageHelper {
 
         // Firefox gecko driver seems to switch to active frame rather than main document like all other browsers, including earlier versions of firefox.
         // So to support firefox we move up through the parent frames until we reach the main document.
-        String currentFrame = getCurrentFrameNameOrId(driver);
+        // Gecko driver also randomly fails with "can't access dead object" error on getCurrentFrameNameOrId();
+        int errorCount = 0;
 
-        while (!currentFrame.isEmpty()) {
-            driver.switchTo().parentFrame();
-            currentFrame = getCurrentFrameNameOrId(driver);
+        while (true) {
+            try {
+                String currentFrame = getCurrentFrameNameOrId(driver);
+                
+                if (currentFrame.isEmpty()) {
+                    break;
+                }
+                
+                driver.switchTo().parentFrame();
+            } catch (Throwable e) {
+                errorCount++;
+                if (errorCount > 3) {
+                    break;
+                }
+            }
         }
     }
 
