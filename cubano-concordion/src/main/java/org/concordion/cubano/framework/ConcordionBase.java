@@ -16,9 +16,7 @@ import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
-import org.concordion.ext.LoggingFormatterExtension;
 import org.concordion.ext.StoryboardExtension;
-import org.concordion.ext.StoryboardLogListener;
 import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.logback.LogbackAdaptor;
 import org.junit.runner.RunWith;
@@ -46,9 +44,9 @@ public abstract class ConcordionBase implements BrowserBasedTest {
     private final StoryboardExtension storyboard = new StoryboardExtension();
 
     // TODO Is the position of this causing the logging of the final screenshot to come to late in HelloWorldFixture?
-    @Extension
-    private final LoggingFormatterExtension loggerExtension = new LoggingFormatterExtension()
-            .registerListener(new StoryboardLogListener(getStoryboard()));
+    // @Extension
+    // private final LoggingFormatterExtension loggerExtension = new LoggingFormatterExtension()
+    // .registerListener(new StoryboardLogListener(getStoryboard()));
 
     static {
         LogbackAdaptor.logInternalStatus();

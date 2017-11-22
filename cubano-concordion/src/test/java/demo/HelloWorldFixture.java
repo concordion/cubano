@@ -6,10 +6,8 @@ import org.concordion.cubano.driver.web.Browser;
 import org.concordion.cubano.driver.web.SeleniumScreenshotTaker;
 import org.concordion.cubano.framework.ConcordionBase;
 import org.concordion.ext.StoryboardMarkerFactory;
-import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.slf4j.ext.ReportLogger;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
-import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -17,9 +15,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-@RunWith(ConcordionRunner.class)
 public class HelloWorldFixture extends ConcordionBase {
-
 
     ReportLogger logger = ReportLoggerFactory.getReportLogger(HelloWorldFixture.class);
 
