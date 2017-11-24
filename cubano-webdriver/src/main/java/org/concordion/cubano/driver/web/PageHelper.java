@@ -342,6 +342,8 @@ public class PageHelper {
      * @param driver WebDriver
      */
     public static void switchToMainDocument(WebDriver driver) {
+        driver.switchTo().defaultContent();
+
         driver.switchTo().window(driver.getWindowHandle());
 
         // Firefox gecko driver seems to switch to active frame rather than main document like all other browsers, including earlier versions of firefox.
