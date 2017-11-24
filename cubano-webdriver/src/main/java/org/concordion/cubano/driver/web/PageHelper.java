@@ -342,14 +342,14 @@ public class PageHelper {
      * @param driver WebDriver
      */
     public static void switchToMainDocument(WebDriver driver) {
+        // Firefox gecko driver has a lot of issues with iframes, this method now has been updated to work around this
+        // Hopefully can remove this line at some point
+        // See: https://github.com/mozilla/geckodriver/issues/937
         driver.switchTo().defaultContent();
 
         driver.switchTo().window(driver.getWindowHandle());
 
-        // Firefox gecko driver seems to switch to active frame rather than main document like all other browsers, including earlier versions of firefox.
-        // So to support firefox we move up through the parent frames until we reach the main document.
-        // Gecko driver also randomly fails with "can't access dead object" error on getCurrentFrameNameOrId();
-        // See: https://github.com/mozilla/geckodriver/issues/937
+        // As above - hopefully can remove this at some point
         for (int i = 0; i < 10; i++) {
             try {
                 String currentFrame = getCurrentFrameNameOrId(driver);
