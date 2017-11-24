@@ -347,23 +347,19 @@ public class PageHelper {
         // Firefox gecko driver seems to switch to active frame rather than main document like all other browsers, including earlier versions of firefox.
         // So to support firefox we move up through the parent frames until we reach the main document.
         // Gecko driver also randomly fails with "can't access dead object" error on getCurrentFrameNameOrId();
-        int errorCount = 0;
-
-        while (true) {
+        // See: https://github.com/mozilla/geckodriver/issues/937
+        for (int i = 0; i < 10; i++) {
             try {
                 String currentFrame = getCurrentFrameNameOrId(driver);
                 
                 if (currentFrame.isEmpty()) {
                     break;
                 }
-                
-                driver.switchTo().parentFrame();
             } catch (Throwable e) {
-                errorCount++;
-                if (errorCount > 3) {
-                    break;
-                }
+                // Do nothing
             }
+
+            driver.switchTo().parentFrame();
         }
     }
 
