@@ -6,8 +6,12 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'net.researchgate:gradle-release:2.6.0'
         classpath 'org.ajoberstar:gradle-git-publish:0.3.2'
+        classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:2.2.+'
     }
 }
+
+apply plugin: 'nebula-aggregate-javadocs'
+apply plugin: 'org.ajoberstar.git-publish'
 
 ext {
     githubUrl = "https://github.com/concordion/${project.name}"
@@ -35,6 +39,24 @@ ext {
 
 group = 'org.concordion'
 
+task publishDocs(dependsOn: ['gitPublishPush'])
+
+gitPublishCopy.dependsOn ':aggregateJavadocs'
+
+gitPublish {
+    repoUri = 'git@github.com:concordion/cubano.git'
+    branch = 'gh-pages'
+
+    contents {
+        from(':aggregateJavadocs') {
+            into 'api'
+        }
+    }
+
+    // message used when committing changes
+    commitMessage = 'Automatically publishing new Github pages'
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'findbugs'
@@ -45,7 +67,6 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: net.researchgate.release.ReleasePlugin
     apply plugin: com.jfrog.bintray.gradle.BintrayPlugin
-    apply plugin: org.ajoberstar.gradle.git.publish.GitPublishPlugin
 
     // need utf-8 to get text with non-standard chars e.g. curly apostrophes used correctly 
     tasks.withType(JavaCompile) {
@@ -177,32 +198,13 @@ subprojects {
     // 'gradle release' will also upload release to Bintray
     createReleaseTag.dependsOn bintrayUpload
 
-    gitPublishCopy.dependsOn test
-    gitPublishCopy.dependsOn javadoc
-
-    task publishDocs(dependsOn: ['gitPublishPush'])
-
     task publishSnapshot(dependsOn: ['test', 'publishMainPublicationToMavenRepository'])
 
-    task publishRelease(dependsOn: ['clean', 'test', 'javadoc', 'sourcesJar', 'javadocJar', 'publishDocs', 'release'])
+    task publishRelease(dependsOn: ['clean', 'test', 'javadoc', 'sourcesJar', 'javadocJar', 'release'])
 	commitNewVersion.enabled = false
 
     release {
         tagTemplate = '$name-$version'
-    }
-
-    gitPublish {
-        repoUri = 'git@github.com:concordion/cubano.git'
-        branch = 'gh-pages'
-
-        contents {
-            from(javadoc) {
-                into 'api'
-            }
-        }
-
-        // message used when committing changes
-        commitMessage = 'Automatically publishing new Github pages'
     }
 
     publishing {
