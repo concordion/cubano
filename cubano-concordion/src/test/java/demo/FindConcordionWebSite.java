@@ -15,11 +15,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class HelloWorldFixture extends ConcordionBase {
+public class FindConcordionWebSite extends ConcordionBase {
 
-    ReportLogger logger = ReportLoggerFactory.getReportLogger(HelloWorldFixture.class);
+    ReportLogger logger = ReportLoggerFactory.getReportLogger(FindConcordionWebSite.class);
 
-    public String getGreeting() throws InterruptedException {
+    public String google(String term, String link) {
         Browser browser = getBrowser();
 
         WebDriverWait wait = new WebDriverWait(browser.getDriver(), 5);
@@ -37,7 +37,7 @@ public class HelloWorldFixture extends ConcordionBase {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("input[name=q]")));
 
 
-        browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys("concordion");
+        browser.getDriver().findElement(By.cssSelector("input[name=q]")).sendKeys(term);
         logger.info("TYPE");
 
         logger.with()
@@ -62,7 +62,7 @@ public class HelloWorldFixture extends ConcordionBase {
                 List<WebElement> results = browser.getDriver().findElements(By.cssSelector("h3[class=r] > a"));
 
                 for (WebElement result : results) {
-                    if (result.getAttribute("href").equals("http://concordion.org/")) {
+                    if (result.getAttribute("href").equals(link)) {
 
                         logger.with()
                                 .message("Click")
@@ -85,8 +85,8 @@ public class HelloWorldFixture extends ConcordionBase {
             }
         } while (exception);
 
-        wait.until(ExpectedConditions.titleContains("Concordion"));
+        wait.until(ExpectedConditions.urlContains(link));
 
-        return "Hello World!";
+        return browser.getDriver().getCurrentUrl();
     }
 }
