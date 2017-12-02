@@ -245,11 +245,14 @@ public class ActionWait {
 
             try {
                 value = isTrue.apply();
+
                 if (value != null && Boolean.class.equals(value.getClass())) {
                     if (Boolean.TRUE.equals(value)) {
+                        LOGGER.debug("{} found after {} attempts", getMessage(), getAttempts());
                         return value;
                     }
                 } else if (value != null) {
+                    LOGGER.debug("{} found after {} attempts", getMessage(), getAttempts());
                     return value;
                 }
             } catch (Throwable e) {
