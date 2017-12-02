@@ -15,11 +15,11 @@ import com.google.common.collect.Lists;
 
 /**
  * Similar to Selenium's {@link org.openqa.selenium.support.ui.FluentWait FluentWait} implementation but designed for long running tasks such as querying a
- * database until some data appears.  Unlike {@link org.openqa.selenium.support.ui.FluentWait FluentWait} it handles exceptions other than RuntimeExceptions.
+ * database until some data appears. Unlike {@link org.openqa.selenium.support.ui.FluentWait FluentWait} it handles exceptions other than RuntimeExceptions.
  * Calling the until() method will retry until either true or a non null value is returned.
  * <p>
  * <p>
- * Each ActionWait must defines the maximum amount of time to wait for a condition, as well as
+ * Each ActionWait must defines the maximum amount of time to wait for a condition (or alternatively the maximum number of attempts to make), as well as
  * the frequency with which to check the condition. Furthermore, the user may configure the wait to
  * ignore specific types of exceptions whilst waiting, warning intervals to log a warning if action is taking
  * longer than expected, a custom message and the ability to override the default behaviour (throwing a TimeOutException)
@@ -27,13 +27,15 @@ import com.google.common.collect.Lists;
  * </p>
  * <p>
  * <p>
- * Sample usage: <pre>
+ * Sample usage:
+ * 
+ * <pre>
  * // Waiting 2 minutes for data to appear in database, checking for its presence
  * // immediately, then after 10 seconds, and every 5 seconds thereafter.
  * ActionWait wait = new ActionWait()
  *        .withTimeout(TimeUnit.MINUTES, 2)
  *        .withPollingIntervals(TimeUnit.SECONDS, 0, 10, 5)
- *        .withForMessage("some data to appear");
+ *        .withMessage("some data to appear");
  * <p>
  * // Using Java 8 Lambda Expression
  * String value = wait.until(() -> {
