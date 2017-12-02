@@ -59,7 +59,7 @@ public abstract class EntityPool<E> implements DataCleanup {
         ActionWait wait = new ActionWait()
                 .withPollingIntervals(TimeUnit.SECONDS, 0, 15)
                 .withTimeout(TimeUnit.MINUTES, 5)
-                .withForMessage(waitMessage);
+                .withMessage(waitMessage);
 
         int seed = (subset.size() > 1) ? ThreadLocalRandom.current().nextInt(0, subset.size() - 1) : 0;
 
