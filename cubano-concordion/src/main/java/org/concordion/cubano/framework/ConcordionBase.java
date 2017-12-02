@@ -37,8 +37,8 @@ public abstract class ConcordionBase implements BrowserBasedTest {
     private static List<Browser> allBrowsers = new ArrayList<Browser>();
     private static ThreadLocal<Map<String, Browser>> threadBrowsers = ThreadLocal.withInitial(HashMap::new);
     private static ThreadLocal<Integer> testCount = ThreadLocal.withInitial(() -> 0);
+    private static ThreadLocal<Boolean> browserTestRunCounted = ThreadLocal.withInitial(() -> false);
 
-    private boolean browserTestRunCounted = false;
     private static int browserCloseAfterXTests = WebDriverConfig.getInstance().getRestartBrowserAfterXTests();
 
 
@@ -64,7 +64,7 @@ public abstract class ConcordionBase implements BrowserBasedTest {
             browser.removeScreenshotTaker();
         }
 
-        browserTestRunCounted = false;
+        browserTestRunCounted.set(false);
     }
 
     @AfterSuite
@@ -112,11 +112,11 @@ public abstract class ConcordionBase implements BrowserBasedTest {
     }
 
     private void incrementBrowserTestCount() {
-        if (browserCloseAfterXTests <= 0 || browserTestRunCounted) {
+        if (browserCloseAfterXTests <= 0 || browserTestRunCounted.get()) {
             return;
         }
 
-        browserTestRunCounted = true;
+        browserTestRunCounted.set(true);
         Integer count = testCount.get();
 
         if (count >= browserCloseAfterXTests) {
