@@ -264,7 +264,7 @@ public class ActionWait {
             attempts++;
         }
 
-        String timeoutMessage = String.format("Expected result was not found after %s while waiting for ", getWaitStyle(), getMessage());
+        String timeoutMessage = String.format("Expected result was not found after %s while waiting for %s", getWaitStyle(), getMessage());
 
         if (returnResult) {
             LOGGER.debug(timeoutMessage);
