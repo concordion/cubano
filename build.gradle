@@ -12,6 +12,7 @@ buildscript {
 
 apply plugin: 'nebula-aggregate-javadocs'
 apply plugin: 'org.ajoberstar.git-publish'
+apply plugin: 'net.researchgate.release'
 
 ext {
     githubUrl = "https://github.com/concordion/${project.name}"
@@ -39,6 +40,10 @@ ext {
 
 group = 'org.concordion'
 
+task build {
+    dependsOn subprojects*.tasks*.findByName('build')
+}
+
 task publishDocs(dependsOn: ['gitPublishPush'])
 
 gitPublishCopy.dependsOn ':aggregateJavadocs'
@@ -57,6 +62,15 @@ gitPublish {
     commitMessage = 'Automatically publishing new Github pages'
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4.1'
+
+    // To download through proxy, need to update <project root>\gradle\wrapper\gradle-wrapper.properties and change
+    //     distributionUrl property from https... to http...
+    // and uncomment follow line
+    // distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
+}
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'findbugs'
@@ -65,7 +79,6 @@ subprojects {
     apply plugin: 'jacoco'
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
-    apply plugin: net.researchgate.release.ReleasePlugin
     apply plugin: com.jfrog.bintray.gradle.BintrayPlugin
 
     // need utf-8 to get text with non-standard chars e.g. curly apostrophes used correctly 
@@ -149,15 +162,6 @@ subprojects {
         exclude '**/demo/*.*'
     }
 
-    task wrapper(type: Wrapper) {
-        gradleVersion = '4.2.1'
-
-        // To download through proxy, need to update <project root>\gradle\wrapper\gradle-wrapper.properties and change 
-        //     distributionUrl property from https... to http...
-        // and uncomment follow line    
-        // distributionUrl = "https://services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
-    }
-
     test {
         exclude '**/demo/*.*'
 
@@ -194,18 +198,7 @@ subprojects {
         from javadoc.destinationDir
     }
 
-
-    // 'gradle release' will also upload release to Bintray
-    createReleaseTag.dependsOn bintrayUpload
-
     task publishSnapshot(dependsOn: ['test', 'publishMainPublicationToMavenRepository'])
-
-    task publishRelease(dependsOn: ['clean', 'test', 'javadoc', 'sourcesJar', 'javadocJar', 'release'])
-	commitNewVersion.enabled = false
-
-    release {
-        tagTemplate = '$name-$version'
-    }
 
     publishing {
         repositories {
