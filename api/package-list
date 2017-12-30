@@ -1,7 +1,1 @@
-org.concordion.cubano.driver
-org.concordion.cubano.driver.web
-org.concordion.cubano.driver.web.config
-org.concordion.cubano.driver.web.pagefactory
-org.concordion.cubano.driver.web.pagefactory.proxyhandlers
-org.concordion.cubano.driver.web.pagegrabber
 org.concordion.cubano.driver.web.provider
