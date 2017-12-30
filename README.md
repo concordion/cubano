@@ -45,6 +45,11 @@ For eclipse:
 	Checkstyle active for this project: Checked
 	Use the following check configuration for all files: Cubano - (Global)
 
+## Releasing
+
+To create a release, you will need to run `gradlew clean test javadoc sourcesJar javadocJar publishDocs release bintrayUpload`. This depends on having appropriate permissions to publish to the Concordion organisation. 
+
+To build a local release and publish to your local Maven repository, you can run `gradlew clean publishToMavenLocal`.
 
 ## Valued Partners
 
