@@ -1,11 +1,13 @@
 package org.concordion.cubano.driver.web.provider;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 import org.concordion.cubano.config.Config;
 import org.concordion.cubano.config.PropertyLoader;
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.config.ProxyConfig;
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Point;
@@ -24,6 +26,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     private PropertyLoader propertyLoader = Config.getInstance().getPropertyLoader();
     private ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
     private WebDriverConfig config = WebDriverConfig.getInstance();
+    protected String driverPath = null;
 
     /**
      * The name of the browser as used in the configuration file to retrieve browser specific settings.
@@ -64,6 +67,8 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         }
 
         instance.setup();
+
+        driverPath = instance.getBinaryPath();
     }
 
     /**
@@ -189,5 +194,15 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         }
 
         return String.class;
+    }
+
+    public void cleanup() {
+        if (driverPath != null) {
+            try {
+                Runtime.getRuntime().exec("taskkill /F /IM " + new File(driverPath).getName());
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to close browser driver", e);
+            }
+        }
     }
 }

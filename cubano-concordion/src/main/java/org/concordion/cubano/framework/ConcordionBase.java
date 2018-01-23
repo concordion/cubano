@@ -22,6 +22,8 @@ import org.concordion.ext.StoryboardLogListener;
 import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.logback.LogbackAdaptor;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sets up any Concordion extensions or other items that must be shared between index and test fixtures.
@@ -41,6 +43,7 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
     private static int browserCloseAfterXTests = WebDriverConfig.getInstance().getRestartBrowserAfterXTests();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConcordionBase.class);
 
     @Extension
     private final StoryboardExtension storyboard = new StoryboardExtension();
@@ -72,8 +75,20 @@ public abstract class ConcordionBase implements BrowserBasedTest {
         for (Browser openbrowser : allBrowsers) {
             if (openbrowser != null) {
                 openbrowser.close();
+
+                if (isLastOfType(openbrowser)) {
+                    openbrowser.getBrowserProvider().cleanup();
+                }
             }
         }
+    }
+
+    private boolean isLastOfType(Browser browser) {
+        if (allBrowsers.indexOf(browser) == allBrowsers.size() - 1)
+            return true;
+
+        return !allBrowsers.subList(allBrowsers.indexOf(browser) + 1, allBrowsers.size()).stream()
+                .filter(e -> e.isOpen() && e.getBrowserProvider().getClass() == browser.getBrowserProvider().getClass()).findFirst().isPresent();
     }
 
     @Override
