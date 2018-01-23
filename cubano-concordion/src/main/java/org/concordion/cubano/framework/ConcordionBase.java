@@ -100,43 +100,7 @@ public abstract class ConcordionBase implements BrowserBasedTest {
      * @return
      */
     public Browser getBrowser(String key) {
-        incrementBrowserTestCount();
-
-        Map<String, Browser> browsers = threadBrowsers.get();
-
-        if (browsers.get(key) == null) {
-            Browser newBrowser = new Browser();
-
-            browsers.put(key, newBrowser);
-            allBrowsers.add(newBrowser);
-        }
-
-        if (threadBrowserId.get() != key) {
-            threadBrowserId.set(key);
-        }
-
-        return browsers.get(key);
-    }
-
-    /**
-     * Switches control to specified browser. Works much the same as {@link #getBrowser(String)} except that it will not start browser if not already open.
-     * <br/>
-     * <br/>
-     * e.g. {@code switchBrowser(Browser.DEFAULT);}
-     * 
-     * @param key
-     * @return
-     */
-    public Browser switchBrowser(String key) {
-        Map<String, Browser> browsers = threadBrowsers.get();
-
-        if (browsers.get(key) == null) {
-            throw new IllegalStateException("No browser exists for key " + key);
-        }
-
-        threadBrowserId.set(key);
-
-        return browsers.get(key);
+        return getBrowser(key, null);
     }
 
     /**
@@ -159,7 +123,30 @@ public abstract class ConcordionBase implements BrowserBasedTest {
             allBrowsers.add(newBrowser);
         }
 
+        if (threadBrowserId.get() != key) {
+            threadBrowserId.set(key);
+        }
+
         return browsers.get(key);
+    }
+
+    /**
+     * Switches control to specified browser. Works much the same as {@link #getBrowser(String)} except that it will not start browser if not already open.
+     * <br/>
+     * <br/>
+     * e.g. {@code switchBrowser(Browser.DEFAULT);}
+     * 
+     * @param key
+     * @return
+     */
+    public void switchBrowser(String key) {
+        Map<String, Browser> browsers = threadBrowsers.get();
+
+        if (browsers.get(key) == null) {
+            throw new IllegalStateException("No browser exists for key " + key);
+        }
+
+        threadBrowserId.set(key);
     }
 
     private void incrementBrowserTestCount() {

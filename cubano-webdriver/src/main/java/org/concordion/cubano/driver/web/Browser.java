@@ -27,7 +27,7 @@ public class Browser {
     private EventFiringWebDriver eventFiringDriver = null;
     private SeleniumEventLogger eventListener = null;
     private SessionId sessionId = null;
-    private BrowserProvider browserProvider;
+    private BrowserProvider browserProvider = null;
 
     /**
      * Constructor - does not start the browser.
