@@ -9,16 +9,12 @@ import java.util.Map;
 
 import org.concordion.api.AfterSuite;
 import org.concordion.api.BeforeExample;
-import org.concordion.api.extension.Extension;
 import org.concordion.api.option.ConcordionOptions;
 import org.concordion.api.option.MarkdownExtensions;
 import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
-import org.concordion.ext.LoggingFormatterExtension;
-import org.concordion.ext.StoryboardExtension;
-import org.concordion.ext.StoryboardLogListener;
 import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.logback.LogbackAdaptor;
 import org.junit.runner.RunWith;
@@ -44,12 +40,13 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcordionBase.class);
 
-    @Extension
-    private final StoryboardExtension storyboard = new StoryboardExtension();
-
-    @Extension
-    private final LoggingFormatterExtension loggerExtension = new LoggingFormatterExtension()
-            .registerListener(new StoryboardLogListener(getStoryboard()));
+    // TODO Want this in here but 'bug' in concordion and/or extension where storyboard ends up on all pages, including indexes using cards from linked tests
+    // @Extension
+    // private final StoryboardExtension storyboard = new StoryboardExtension();
+    //
+    // @Extension
+    // private final LoggingFormatterExtension loggerExtension = new LoggingFormatterExtension()
+    // .registerListener(new StoryboardLogListener(getStoryboard()));
 
     static {
         LogbackAdaptor.logInternalStatus();
@@ -189,10 +186,11 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
     }
 
-    /**
-     * @return A reference to the Storyboard extension.
-     */
-    protected StoryboardExtension getStoryboard() {
-        return storyboard;
-    }
+    // TODO See above todo
+    // /**
+    // * @return A reference to the Storyboard extension.
+    // */
+    // protected StoryboardExtension getStoryboard() {
+    // return storyboard;
+    // }
 }
