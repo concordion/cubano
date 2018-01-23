@@ -2,7 +2,10 @@ package org.concordion.cubano.driver.web.provider;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import org.concordion.cubano.config.Config;
 import org.concordion.cubano.config.PropertyLoader;
@@ -55,6 +58,28 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
             case "wdm.architecture":
                 instance.architecture(Architecture.valueOf(value));
                 break;
+
+            case "wdm.checkforupdates":
+                CheckForUpdates check = CheckForUpdates.valueOf(value.toUpperCase());
+
+                if (check != CheckForUpdates.ALWAYS) {
+                    Preferences prefs = Preferences.userNodeForPackage(LocalBrowserProvider.class);
+                    String prefKey = getBrowserName() + ".LastCheckedTime";
+                    Date lastChecked = new Date(prefs.getLong(prefKey, new Date(0L).getTime()));
+
+                    if (check.recheckIsRequired(lastChecked)) {
+                        prefs.putLong(prefKey, new Date().getTime());
+                        try {
+                            prefs.flush();
+                        } catch (BackingStoreException e) {
+                            throw new RuntimeException("Unable to update last checked date", e);
+                        }
+                    } else {
+                        instance.forceCache();
+                    }
+                }
+                break;
+
             default:
                 System.setProperty(key, value);
             }
