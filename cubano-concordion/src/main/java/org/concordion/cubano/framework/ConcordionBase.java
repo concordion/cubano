@@ -34,10 +34,9 @@ import org.slf4j.LoggerFactory;
 @RunWith(ConcordionRunner.class)
 @ConcordionOptions(markdownExtensions = { MarkdownExtensions.HARDWRAPS, MarkdownExtensions.AUTOLINKS })
 public abstract class ConcordionBase implements BrowserBasedTest {
-    private static final String DEFAULT = "default";
-
     private static List<Browser> allBrowsers = new ArrayList<Browser>();
     private static ThreadLocal<Map<String, Browser>> threadBrowsers = ThreadLocal.withInitial(HashMap::new);
+    private static ThreadLocal<String> threadBrowserId = ThreadLocal.withInitial(() -> Browser.DEFAULT);
     private static ThreadLocal<Integer> testCount = ThreadLocal.withInitial(() -> 0);
     private static ThreadLocal<Boolean> browserTestRunCounted = ThreadLocal.withInitial(() -> false);
 
@@ -93,9 +92,16 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
     @Override
     public Browser getBrowser() {
-        return getBrowser(DEFAULT);
+        return getBrowser(threadBrowserId.get());
     }
 
+    /**
+     * Starts browser using the default browser provider (from config.properties), or if already open returns reference to it.
+     * All subsequent requests for a browser handle will return this browser unless focus is switched back using {@link #getBrowser()} or {@link #switchBrowser()}.
+     * 
+     * @param key
+     * @return
+     */
     public Browser getBrowser(String key) {
         incrementBrowserTestCount();
 
@@ -108,9 +114,42 @@ public abstract class ConcordionBase implements BrowserBasedTest {
             allBrowsers.add(newBrowser);
         }
 
+        if (threadBrowserId.get() != key) {
+            threadBrowserId.set(key);
+        }
+
         return browsers.get(key);
     }
 
+    /**
+     * Switches control to specified browser. Works much the same as {@link #getBrowser(String)} except that it will not start browser if not already open.
+     * <br/>
+     * <br/>
+     * e.g. {@code switchBrowser(Browser.DEFAULT);}
+     * 
+     * @param key
+     * @return
+     */
+    public Browser switchBrowser(String key) {
+        Map<String, Browser> browsers = threadBrowsers.get();
+
+        if (browsers.get(key) == null) {
+            throw new IllegalStateException("No browser exists for key " + key);
+        }
+
+        threadBrowserId.set(key);
+
+        return browsers.get(key);
+    }
+
+    /**
+     * Starts browser using the supplied browser provider, or if already open returns reference to it.
+     * All subsequent requests for a browser handle will return this browser unless switched.
+     * 
+     * @param key Id of the browser to open / switch control to
+     * @param browserProvider BrowserProvider to use if not already exist, otherwise ignored
+     * @return
+     */
     public Browser getBrowser(String key, BrowserProvider browserProvider) {
         incrementBrowserTestCount();
 
