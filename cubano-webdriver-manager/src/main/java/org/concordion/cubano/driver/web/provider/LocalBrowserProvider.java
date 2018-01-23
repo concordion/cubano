@@ -64,7 +64,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
                 if (check != CheckForUpdates.ALWAYS) {
                     Preferences prefs = Preferences.userNodeForPackage(LocalBrowserProvider.class);
-                    String prefKey = getBrowserName() + ".LastCheckedTime";
+                    String prefKey = getBrowserName() + ".last_checked_time";
                     Date lastChecked = new Date(prefs.getLong(prefKey, new Date(0L).getTime()));
 
                     if (check.recheckIsRequired(lastChecked)) {
