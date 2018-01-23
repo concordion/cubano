@@ -15,7 +15,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
 
 import io.github.bonigarcia.wdm.Architecture;
-import io.github.bonigarcia.wdm.BrowserManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 /**
  * Base class for local browser providers.
@@ -38,7 +38,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * 
      * @param instance BrowserManager instance
      */
-    protected void setupBrowserManager(BrowserManager instance) {
+    protected void setupBrowserManager(WebDriverManager instance) {
         // Make all WebDriverManager properties in configuration file system properties
         Map<String, String> result = propertyLoader.getPropertiesStartingWith("wdm.");
         Map<String, String> override = propertyLoader.getPropertiesStartingWith(getBrowserName() + ".wdm.");
