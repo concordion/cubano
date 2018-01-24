@@ -73,20 +73,21 @@ public abstract class ConcordionBase implements BrowserBasedTest {
                 openbrowser.close();
 
                 if (isLastOfType(openbrowser)) {
-                    if (openbrowser.getBrowserProvider() != null) {
-                        openbrowser.getBrowserProvider().cleanup();
-                    }
+                    openbrowser.getBrowserProvider().cleanup();
                 }
             }
         }
     }
 
     private boolean isLastOfType(Browser browser) {
+        if (browser.getBrowserProvider() == null)
+            return false;
+
         if (allBrowsers.indexOf(browser) == allBrowsers.size() - 1)
             return true;
 
         return !allBrowsers.subList(allBrowsers.indexOf(browser) + 1, allBrowsers.size()).stream()
-                .filter(e -> e.isOpen() && e.getBrowserProvider().getClass() == browser.getBrowserProvider().getClass()).findFirst().isPresent();
+                .filter(e -> e.isOpen() && e.getBrowserProvider() != null && e.getBrowserProvider().getClass() == browser.getBrowserProvider().getClass()).findFirst().isPresent();
     }
 
     @Override
