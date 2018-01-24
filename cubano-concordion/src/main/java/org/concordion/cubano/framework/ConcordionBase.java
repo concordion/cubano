@@ -73,7 +73,9 @@ public abstract class ConcordionBase implements BrowserBasedTest {
                 openbrowser.close();
 
                 if (isLastOfType(openbrowser)) {
-                    openbrowser.getBrowserProvider().cleanup();
+                    if (openbrowser.getBrowserProvider() != null) {
+                        openbrowser.getBrowserProvider().cleanup();
+                    }
                 }
             }
         }
