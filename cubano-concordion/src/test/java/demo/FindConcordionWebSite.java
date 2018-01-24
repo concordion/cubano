@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.cubano.driver.web.SeleniumScreenshotTaker;
-import org.concordion.cubano.framework.ConcordionBase;
 import org.concordion.ext.StoryboardMarkerFactory;
 import org.concordion.slf4j.ext.ReportLogger;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
@@ -15,7 +14,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class FindConcordionWebSite extends ConcordionBase {
+public class FindConcordionWebSite extends ConcordionTempBase {
 
     ReportLogger logger = ReportLoggerFactory.getReportLogger(FindConcordionWebSite.class);
 
