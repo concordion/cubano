@@ -18,8 +18,6 @@ import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.logback.LogbackAdaptor;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Sets up any Concordion extensions or other items that must be shared between index and test fixtures.
@@ -38,7 +36,7 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
     private static int browserCloseAfterXTests = WebDriverConfig.getInstance().getRestartBrowserAfterXTests();
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConcordionBase.class);
+    // private static final Logger LOGGER = LoggerFactory.getLogger(ConcordionBase.class);
 
     // TODO Want this in here but 'bug' in concordion and/or extension where storyboard ends up on all pages, including indexes using cards from linked tests
     // @Extension

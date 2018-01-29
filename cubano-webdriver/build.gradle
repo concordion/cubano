@@ -4,7 +4,7 @@ dependencies {
     compile project(':cubano-http')
 
     // Selenium WebDriver    
-    compile "org.seleniumhq.selenium:selenium-java:3.6.0"
+    compile "org.seleniumhq.selenium:selenium-java:3.8.1"
     
     // Html Elements
     //compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
