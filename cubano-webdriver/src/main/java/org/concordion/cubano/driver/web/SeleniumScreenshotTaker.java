@@ -198,7 +198,7 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
             executor.executeScript("arguments[0].style.border='2px dashed red';", element);
 
         } catch (Exception e) {
-            LOGGER.warn("Unable to set border style", e);
+            LOGGER.warn("Unable to set border style");
         }
 
         return originalStyle;
@@ -218,7 +218,7 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
                 executor.executeScript("arguments[0].style=arguments[1]", element, originalStyle);
             }
         } catch (Exception e) {
-            LOGGER.warn("Unable to remove border style", e);
+            LOGGER.warn("Unable to remove border style");
         }
     }
 }

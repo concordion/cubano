@@ -18,6 +18,9 @@ import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.logback.LogbackAdaptor;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.JavascriptExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sets up any Concordion extensions or other items that must be shared between index and test fixtures.
@@ -36,7 +39,7 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
     private static int browserCloseAfterXTests = WebDriverConfig.getInstance().getRestartBrowserAfterXTests();
 
-    // private static final Logger LOGGER = LoggerFactory.getLogger(ConcordionBase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConcordionBase.class);
 
     // TODO Want this in here but 'bug' in concordion and/or extension where storyboard ends up on all pages, including indexes using cards from linked tests
     // @Extension
@@ -142,12 +145,23 @@ public abstract class ConcordionBase implements BrowserBasedTest {
      */
     public void switchBrowser(String key) {
         Map<String, Browser> browsers = threadBrowsers.get();
+        Browser browser = browsers.get(key);
 
-        if (browsers.get(key) == null) {
+        if (browser == null) {
             throw new IllegalStateException("No browser exists for key " + key);
         }
 
         threadBrowserId.set(key);
+
+        // Attempt to set focus to the newly selected browser
+        try {
+            JavascriptExecutor executor = (JavascriptExecutor) browser.getDriver();
+            executor.executeScript("alert(\"Focus window\")");
+
+            browser.getDriver().switchTo().alert().accept();
+        } catch (Exception e) {
+            LOGGER.warn("Unable to remove border style");
+        }
     }
 
     private void incrementBrowserTestCount() {
