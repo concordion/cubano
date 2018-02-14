@@ -20,6 +20,8 @@ import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Takes screenshots of the system under test.
@@ -27,6 +29,8 @@ import org.openqa.selenium.support.events.EventFiringWebDriver;
  * @author Andrew Sumner
  */
 public class SeleniumScreenshotTaker implements ScreenshotTaker {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumScreenshotTaker.class);
 
     private final WebDriver driver;
     private final WebElement element;
@@ -178,17 +182,24 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
             return "";
         }
 
-        String originalStyle = element.getAttribute("style");
+        String originalStyle = null;
 
-        // Use the wrapped driver so not logging selenium events
-        JavascriptExecutor executor = ((JavascriptExecutor) driver);
+        try {
+            originalStyle = element.getAttribute("style");
 
-        if (!(boolean) executor.executeScript(CHECK_IN_VIEWPORT, element)) {
-            executor.executeScript("arguments[0].scrollIntoView(true);", element);
+            // Use the wrapped driver so not logging selenium events
+            JavascriptExecutor executor = ((JavascriptExecutor) driver);
+
+            if (!(boolean) executor.executeScript(CHECK_IN_VIEWPORT, element)) {
+                executor.executeScript("arguments[0].scrollIntoView(true);", element);
+            }
+
+            // executor.executeScript("arguments[0].style.outline='2px dashed red'; arguments[0].style.outlineOffset='1px';", element);
+            executor.executeScript("arguments[0].style.border='2px dashed red';", element);
+
+        } catch (Exception e) {
+            LOGGER.warn("Unable to set border style", e);
         }
-
-        // executor.executeScript("arguments[0].style.outline='2px dashed red'; arguments[0].style.outlineOffset='1px';", element);
-        executor.executeScript("arguments[0].style.border='2px dashed red';", element);
 
         return originalStyle;
     }
@@ -198,12 +209,16 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
             return;
         }
 
-        // Use the wrapped driver so not logging selenium events
-        JavascriptExecutor executor = ((JavascriptExecutor) driver);
-        if (originalStyle == null || originalStyle.isEmpty()) {
-            executor.executeScript("arguments[0].removeAttribute('style')", element);
-        } else {
-            executor.executeScript("arguments[0].style=arguments[1]", element, originalStyle);
+        try {
+            // Use the wrapped driver so not logging selenium events
+            JavascriptExecutor executor = ((JavascriptExecutor) driver);
+            if (originalStyle == null || originalStyle.isEmpty()) {
+                executor.executeScript("arguments[0].removeAttribute('style')", element);
+            } else {
+                executor.executeScript("arguments[0].style=arguments[1]", element, originalStyle);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Unable to remove border style", e);
         }
     }
 }
