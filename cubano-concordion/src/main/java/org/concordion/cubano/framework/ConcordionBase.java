@@ -158,14 +158,20 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
         // Attempt to set focus to the newly selected browser
         try {
-            JavascriptExecutor executor = (JavascriptExecutor) browser.getDriver();
-            executor.executeScript("alert(\"Focus window\")");
-            
-            PageHelper.waitUntil(browser.getDriver(), ExpectedConditions.alertIsPresent(), 1);
-
-            Alert alert = browser.getDriver().switchTo().alert();
-            
-            alert.accept();
+        	//https://github.com/SeleniumHQ/selenium/issues/3560
+//            JavascriptExecutor executor = (JavascriptExecutor) browser.getDriver();
+//            executor.executeScript("alert(\"Focus window\")");
+//            
+//            PageHelper.waitUntil(browser.getDriver(), ExpectedConditions.alertIsPresent(), 1);
+//
+//            Alert alert = browser.getDriver().switchTo().alert();
+//            
+//            alert.accept();
+        	
+        	// Assuming we are switching to a single window in the browser
+        	for(String winHandle : browser.getDriver().getWindowHandles()){
+        		browser.getDriver().switchTo().window(winHandle);
+            }
             
             
         } catch (Exception e) {
