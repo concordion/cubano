@@ -11,7 +11,7 @@ import org.concordion.cubano.driver.web.BasePageObject;
  *     private WebElement button;
  *
  *     {@literal @Override}
- *     public void setPageObject(BasePageObject<?> pageObject) {
+ *     public void setPageObject(BasePageObject&lt;?&gt; pageObject) {
  *         this.webHelper = new WebHelper(pageObject);
  *     }
  *
