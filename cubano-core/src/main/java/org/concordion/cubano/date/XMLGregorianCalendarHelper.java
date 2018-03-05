@@ -11,12 +11,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Useful methods to play with XMLGregorianCalendar.
- * <p>
- * <p>
+ * <p></p>
  * Note: requires minimum of Java 1.8
- * </p>
- *
- * @author Priya Narayanan
  */
 public class XMLGregorianCalendarHelper {
 
@@ -27,7 +23,8 @@ public class XMLGregorianCalendarHelper {
      * Converts current date/time in XMLGregorianCalendar format.
      *
      * @return XMLGregorianCalendar
-     * @throws DatatypeConfigurationException, ParseException
+     * @throws DatatypeConfigurationException
+     * @throws ParseException
      */
 
     public static XMLGregorianCalendar getTodaysDateInXMLGregorian() throws DatatypeConfigurationException, ParseException {

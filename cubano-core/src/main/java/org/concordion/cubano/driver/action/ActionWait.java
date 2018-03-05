@@ -17,16 +17,13 @@ import com.google.common.collect.Lists;
  * Similar to Selenium's {@link org.openqa.selenium.support.ui.FluentWait FluentWait} implementation but designed for long running tasks such as querying a
  * database until some data appears. Unlike {@link org.openqa.selenium.support.ui.FluentWait FluentWait} it handles exceptions other than RuntimeExceptions.
  * Calling the until() method will retry until either true or a non null value is returned.
- * <p>
- * <p>
+ * <p></p>
  * Each ActionWait must defines the maximum amount of time to wait for a condition (or alternatively the maximum number of attempts to make), as well as
  * the frequency with which to check the condition. Furthermore, the user may configure the wait to
  * ignore specific types of exceptions whilst waiting, warning intervals to log a warning if action is taking
  * longer than expected, a custom message and the ability to override the default behaviour (throwing a TimeOutException)
  * and just return a value.
- * </p>
- * <p>
- * <p>
+ * <p></p>
  * Sample usage:
  * 
  * <pre>
@@ -36,28 +33,27 @@ import com.google.common.collect.Lists;
  *        .withTimeout(TimeUnit.MINUTES, 2)
  *        .withPollingIntervals(TimeUnit.SECONDS, 0, 10, 5)
  *        .withMessage("some data to appear");
- * <p>
+ *
  * // Using Java 8 Lambda Expression
  * String value = wait.until(() -> {
  *     ResultSet rs = stmt.executeQuery(query);
- * <p>
+ *
  *     if (rs.next()) {
  *         return rs.getString("COLUMN");
  *     } else {
  *         return null;
  *     }
  * });
- * <p>
+ *
  * // Using new Function - prior to Java 8
- * String value = wait.until(new IsTrue{@literal <String>}() {
+ * String value = wait.until(new IsTrue{@literal &lt;String&gt;}() {
  *     {@literal @Override}
  *     public String apply() {
  *         ...
  *     }
  * });
  * </pre>
- * </p>
- * <p>
+ * <p></p>
  * <em>This class makes no thread safety guarantees.</em>
  *
  * @author Andrew Sumner
