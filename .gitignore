@@ -13,3 +13,6 @@ bin/
 .idea/
 *.iml
 classes/
+
+# JEnv
+.java-version
