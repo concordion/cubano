@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
  *        .withMessage("some data to appear");
  *
  * // Using Java 8 Lambda Expression
- * String value = wait.until(() -> {
+ * String value = wait.until(() -&gt; {
  *     ResultSet rs = stmt.executeQuery(query);
  *
  *     if (rs.next()) {

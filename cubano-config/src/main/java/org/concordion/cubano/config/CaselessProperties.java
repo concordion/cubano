@@ -8,7 +8,7 @@ import java.util.TreeMap;
  * A {@link Properties} implementation that ignores the case of the properties.
  * 
  * The keys are stored untouched so that if you need the original case you can still get them 
- * using <code>Enumeration&lt;String&gt; en = (Enumeration<String>) properties.propertyNames();</code>
+ * using <code>Enumeration&lt;String&gt; en = (Enumeration&lt;String&gt;) properties.propertyNames();</code>
  *
  * @author Andrew Sumner
  */
