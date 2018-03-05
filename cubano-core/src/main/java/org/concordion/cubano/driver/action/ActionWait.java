@@ -15,11 +15,11 @@ import com.google.common.collect.Lists;
 
 /**
  * Similar to Selenium's {@link org.openqa.selenium.support.ui.FluentWait FluentWait} implementation but designed for long running tasks such as querying a
- * database until some data appears.  Unlike {@link org.openqa.selenium.support.ui.FluentWait FluentWait} it handles exceptions other than RuntimeExceptions.
+ * database until some data appears. Unlike {@link org.openqa.selenium.support.ui.FluentWait FluentWait} it handles exceptions other than RuntimeExceptions.
  * Calling the until() method will retry until either true or a non null value is returned.
  * <p>
  * <p>
- * Each ActionWait must defines the maximum amount of time to wait for a condition, as well as
+ * Each ActionWait must defines the maximum amount of time to wait for a condition (or alternatively the maximum number of attempts to make), as well as
  * the frequency with which to check the condition. Furthermore, the user may configure the wait to
  * ignore specific types of exceptions whilst waiting, warning intervals to log a warning if action is taking
  * longer than expected, a custom message and the ability to override the default behaviour (throwing a TimeOutException)
@@ -27,13 +27,15 @@ import com.google.common.collect.Lists;
  * </p>
  * <p>
  * <p>
- * Sample usage: <pre>
+ * Sample usage:
+ * 
+ * <pre>
  * // Waiting 2 minutes for data to appear in database, checking for its presence
  * // immediately, then after 10 seconds, and every 5 seconds thereafter.
  * ActionWait wait = new ActionWait()
  *        .withTimeout(TimeUnit.MINUTES, 2)
  *        .withPollingIntervals(TimeUnit.SECONDS, 0, 10, 5)
- *        .withForMessage("some data to appear");
+ *        .withMessage("some data to appear");
  * <p>
  * // Using Java 8 Lambda Expression
  * String value = wait.until(() -> {
@@ -63,7 +65,8 @@ import com.google.common.collect.Lists;
 public class ActionWait {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionWait.class);
 
-    private Duration timeout;
+    private Duration timeout = null;
+    private int maxAttempts = 0;
     private TimeUnit pollingTimeUnit;
     private List<Integer> pollingIntervals = Lists.newArrayList();
     private TimeUnit warningTimeUnit = TimeUnit.SECONDS;
@@ -94,14 +97,35 @@ public class ActionWait {
     }
 
     /**
-     * Sets how long to wait for the evaluated condition to be true. Required.
+     * Sets how long to wait for the evaluated condition to be true.
+     * Either MaxAttempts or Timeout must be set, but they cannot be used together.
      *
-     * @param unit     The unit of time.
+     * @param unit The unit of time.
      * @param duration The timeout duration.
      * @return A self reference.
      */
     public ActionWait withTimeout(TimeUnit unit, long duration) {
+        if (isWaitStyleMaxAttempts()) {
+            throw new IllegalArgumentException("Timeout and MaxAttempts cannot be used together");
+        }
+
         this.timeout = new Duration(duration, unit);
+        return this;
+    }
+
+    /**
+     * Sets how many attempts to make while waiting for the for the evaluated condition to be true.
+     * Either MaxAttempts or Timeout must be set, but they cannot be used together.
+     *
+     * @param attempts. Maximum number of attempts to make.
+     * @return A self reference.
+     */
+    public ActionWait withMaxAttempts(int attempts) {
+        if (isWaitStyleTimeout()) {
+            throw new IllegalArgumentException("Timeout and MaxAttempts cannot be used together");
+        }
+
+        this.maxAttempts = attempts;
         return this;
     }
 
@@ -146,12 +170,12 @@ public class ActionWait {
     }
 
     /**
-     * Sets some text to be append to timeout and warning messages.
+     * Sets some text to be append to all messages.
      *
-     * @param message to be appended to default.
+     * @param message description of action being performed.
      * @return A self reference.
      */
-    public ActionWait withForMessage(final String message) {
+    public ActionWait withMessage(final String message) {
         this.message = message;
         return this;
     }
@@ -196,22 +220,23 @@ public class ActionWait {
         V value = null;
         clock = new SystemClock();
         sleeper = Sleeper.SYSTEM_SLEEPER;
+        attempts = 0;
 
-        boolean loggedWait = false;
         long start = clock.now();
-        long end = clock.laterBy(timeout.in(TimeUnit.MILLISECONDS));
+        long end = 0; 
 
-        while (hasMoreTime(clock, end)) {
+        if (isWaitStyleTimeout()) {
+            end = clock.laterBy(timeout.in(TimeUnit.MILLISECONDS));
+        }
+
+        LOGGER.debug("Trying for up to {} for {}", getWaitStyle(), getMessage());
+
+        while (hasMoreAttempts() || hasMoreTime(clock, end)) {
             int interval = getNextPollingInterval(clock, end);
 
             if (interval > 0) {
-                if (!loggedWait) {
-                    loggedWait = true;
-                    LOGGER.debug("Waiting for up to {}{}{}", timeout.toString().toLowerCase(), (hasMessage() ? " for " : ""), message);
-                }
-
                 try {
-                    LOGGER.trace("Pausing for {} {}", interval, pollingTimeUnit.toString().toLowerCase());
+                    LOGGER.debug("Pausing for {} {} before check for {}", interval, pollingTimeUnit.toString().toLowerCase(), getMessage());
                     sleeper.sleep(new Duration(interval, pollingTimeUnit));
                 } catch (InterruptedException e) {
                     throw new TimeoutException("Sleep failed", e);
@@ -222,11 +247,14 @@ public class ActionWait {
 
             try {
                 value = isTrue.apply();
+
                 if (value != null && Boolean.class.equals(value.getClass())) {
                     if (Boolean.TRUE.equals(value)) {
+                        LOGGER.debug("{} found after {} attempts", getMessage(), getAttempts());
                         return value;
                     }
                 } else if (value != null) {
+                    LOGGER.debug("{} found after {} attempts", getMessage(), getAttempts());
                     return value;
                 }
             } catch (Throwable e) {
@@ -236,18 +264,41 @@ public class ActionWait {
             attempts++;
         }
 
+        String timeoutMessage = String.format("Expected result was not found after %s while waiting for %s", getWaitStyle(), getMessage());
+
         if (returnResult) {
+            LOGGER.debug(timeoutMessage);
             return value;
         } else {
-            String toAppend = hasMessage() ? " waiting for " + message : "";
-            String timeoutMessage = String.format("Timed out after %s%s", timeout.toString().toLowerCase(), toAppend);
 
             throw new TimeoutException(timeoutMessage, lastException);
         }
     }
 
-    private boolean hasMessage() {
-        return message != null && !message.isEmpty();
+    private String getWaitStyle() {
+        if (isWaitStyleMaxAttempts()) {
+            return maxAttempts + " attempts";
+        } else if (isWaitStyleTimeout()) {
+            return timeout.toString().toLowerCase();
+        } else {
+            throw new IllegalStateException("Either timeout or max attempts must be set");
+        }
+    }
+
+    private boolean isWaitStyleMaxAttempts() {
+        return maxAttempts > 0;
+    }
+
+    private boolean isWaitStyleTimeout() {
+        return timeout != null;
+    }
+
+    private String getMessage() {
+        if (message != null && !message.isEmpty()) {
+            return "action to complete successfully";
+        }
+
+        return message;
     }
 
     private Throwable propagateIfNotIngored(Throwable e) {
@@ -259,7 +310,19 @@ public class ActionWait {
         throw new RuntimeException(e);
     }
 
+    private boolean hasMoreAttempts() {
+        if (maxAttempts == 0) {
+            return false;
+        }
+
+        return attempts < maxAttempts;
+    }
+
     private boolean hasMoreTime(Clock clock, long end) {
+        if (timeout == null) {
+            return false;
+        }
+
         return clock.isNowBefore(end);
     }
 
@@ -297,8 +360,7 @@ public class ActionWait {
         long nextWarnTime = startTimeInMillis + TimeUnit.MILLISECONDS.convert(interval, warningTimeUnit);
 
         if (clock.now() >= nextWarnTime) {
-            String toAppend = hasMessage() ? " waiting for " + message : "";
-            LOGGER.warn("Have been in waiting for over {} {}{}", interval, warningTimeUnit.toString(), toAppend);
+            LOGGER.warn("Have been in waiting for over {} for {}", interval, warningTimeUnit.toString(), getMessage());
 
             warnings++;
         }

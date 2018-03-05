@@ -13,4 +13,9 @@ public interface BrowserProvider {
      */
     public WebDriver createDriver();
 
+    /**
+     * Kill any left over driver instances.
+     */
+    public void cleanup();
+
 }

@@ -20,12 +20,14 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Sumner
  */
 public class Browser {
+    public static final String DEFAULT = "DEFAULT";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Browser.class);
     private WebDriver wrappedDriver = null;
     private EventFiringWebDriver eventFiringDriver = null;
     private SeleniumEventLogger eventListener = null;
     private SessionId sessionId = null;
-    private BrowserProvider browserProvider;
+    private BrowserProvider browserProvider = null;
 
     /**
      * Constructor - does not start the browser.

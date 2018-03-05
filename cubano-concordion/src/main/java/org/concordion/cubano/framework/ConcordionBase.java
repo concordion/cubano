@@ -9,16 +9,21 @@ import java.util.Map;
 
 import org.concordion.api.AfterSuite;
 import org.concordion.api.BeforeExample;
-import org.concordion.api.extension.Extension;
 import org.concordion.api.option.ConcordionOptions;
 import org.concordion.api.option.MarkdownExtensions;
 import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.cubano.driver.web.Browser;
+import org.concordion.cubano.driver.web.PageHelper;
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
-import org.concordion.ext.StoryboardExtension;
 import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.logback.LogbackAdaptor;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sets up any Concordion extensions or other items that must be shared between index and test fixtures.
@@ -27,25 +32,25 @@ import org.junit.runner.RunWith;
  * to ensure the are executed from whichever class initiates the test run.
  */
 @RunWith(ConcordionRunner.class)
-// @ConcordionResources("/customConcordion.css")
-// @Extensions({ TimestampFormatterExtension.class, RunTotalsExtension.class, ExpectedToFailInfoExtension.class })
 @ConcordionOptions(markdownExtensions = { MarkdownExtensions.HARDWRAPS, MarkdownExtensions.AUTOLINKS })
 public abstract class ConcordionBase implements BrowserBasedTest {
-    private static final String DEFAULT = "default";
-
     private static List<Browser> allBrowsers = new ArrayList<Browser>();
     private static ThreadLocal<Map<String, Browser>> threadBrowsers = ThreadLocal.withInitial(HashMap::new);
+    private static ThreadLocal<String> threadBrowserId = ThreadLocal.withInitial(() -> Browser.DEFAULT);
+    private static ThreadLocal<Integer> testCount = ThreadLocal.withInitial(() -> 0);
+    private static ThreadLocal<Boolean> browserTestRunCounted = ThreadLocal.withInitial(() -> false);
 
-    @Extension
-    private final StoryboardExtension storyboard = new StoryboardExtension();
+    private static int browserCloseAfterXTests = WebDriverConfig.getInstance().getRestartBrowserAfterXTests();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConcordionBase.class);
+
+    // TODO Want this in here but 'bug' in concordion and/or extension where storyboard ends up on all pages, including indexes using cards from linked tests
     // @Extension
-    // private final EnvironmentExtension footer = new EnvironmentExtension()
-    // .withRerunTest("MyMSD-RunSelectedTest")
-    // .withRerunParameter("token", "ALLOW")
-    // .withRerunParameter("TEST_CLASSNAME", this.getClass().getName().replace(ConcordionBase.class.getPackage().getName() + ".", ""))
-    // .withEnvironment(AppConfig.getEnvironment().toUpperCase())
-    // .withURL(AppConfig.getUrl());
+    // private final StoryboardExtension storyboard = new StoryboardExtension();
+    //
+    // @Extension
+    // private final LoggingFormatterExtension loggerExtension = new LoggingFormatterExtension()
+    // .registerListener(new StoryboardLogListener(getStoryboard()));
 
     static {
         LogbackAdaptor.logInternalStatus();
@@ -61,6 +66,8 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
             browser.removeScreenshotTaker();
         }
+
+        browserTestRunCounted.set(false);
     }
 
     @AfterSuite
@@ -68,29 +75,52 @@ public abstract class ConcordionBase implements BrowserBasedTest {
         for (Browser openbrowser : allBrowsers) {
             if (openbrowser != null) {
                 openbrowser.close();
+
+                if (isLastOfType(openbrowser)) {
+                    openbrowser.getBrowserProvider().cleanup();
+                }
             }
         }
     }
 
+    private boolean isLastOfType(Browser browser) {
+        if (browser.getBrowserProvider() == null)
+            return false;
+
+        if (allBrowsers.indexOf(browser) == allBrowsers.size() - 1)
+            return true;
+
+        return !allBrowsers.subList(allBrowsers.indexOf(browser) + 1, allBrowsers.size()).stream()
+                .filter(e -> e.isOpen() && e.getBrowserProvider() != null && e.getBrowserProvider().getClass() == browser.getBrowserProvider().getClass()).findFirst().isPresent();
+    }
+
     @Override
     public Browser getBrowser() {
-        return getBrowser(DEFAULT);
+        return getBrowser(threadBrowserId.get());
     }
 
+    /**
+     * Starts browser using the default browser provider (from config.properties), or if already open returns reference to it.
+     * All subsequent requests for a browser handle will return this browser unless focus is switched back using {@link #getBrowser()} or {@link #switchBrowser()}.
+     * 
+     * @param key
+     * @return
+     */
     public Browser getBrowser(String key) {
-        Map<String, Browser> browsers = threadBrowsers.get();
-
-        if (browsers.get(key) == null) {
-            Browser newBrowser = new Browser();
-
-            browsers.put(key, newBrowser);
-            allBrowsers.add(newBrowser);
-        }
-
-        return browsers.get(key);
+        return getBrowser(key, null);
     }
 
+    /**
+     * Starts browser using the supplied browser provider, or if already open returns reference to it.
+     * All subsequent requests for a browser handle will return this browser unless switched.
+     * 
+     * @param key Id of the browser to open / switch control to
+     * @param browserProvider BrowserProvider to use if not already exist, otherwise ignored
+     * @return
+     */
     public Browser getBrowser(String key, BrowserProvider browserProvider) {
+        incrementBrowserTestCount();
+
         Map<String, Browser> browsers = threadBrowsers.get();
 
         if (browsers.get(key) == null) {
@@ -100,13 +130,89 @@ public abstract class ConcordionBase implements BrowserBasedTest {
             allBrowsers.add(newBrowser);
         }
 
+        if (threadBrowserId.get() != key) {
+            threadBrowserId.set(key);
+        }
+
         return browsers.get(key);
     }
 
     /**
-     * @return A reference to the Storyboard extension.
+     * Switches control to specified browser. Works much the same as {@link #getBrowser(String)} except that it will not start browser if not already open.
+     * <br/>
+     * <br/>
+     * e.g. {@code switchBrowser(Browser.DEFAULT);}
+     * 
+     * @param key
+     * @return
      */
-    protected StoryboardExtension getStoryboard() {
-        return storyboard;
+    public void switchBrowser(String key) {
+        Map<String, Browser> browsers = threadBrowsers.get();
+        Browser browser = browsers.get(key);
+
+        if (browser == null) {
+            throw new IllegalStateException("No browser exists for key " + key);
+        }
+
+        threadBrowserId.set(key);
+
+        // Attempt to set focus to the newly selected browser
+        try {
+        	//https://github.com/SeleniumHQ/selenium/issues/3560
+//            JavascriptExecutor executor = (JavascriptExecutor) browser.getDriver();
+//            executor.executeScript("alert(\"Focus window\")");
+//            
+//            PageHelper.waitUntil(browser.getDriver(), ExpectedConditions.alertIsPresent(), 1);
+//
+//            Alert alert = browser.getDriver().switchTo().alert();
+//            
+//            alert.accept();
+        	
+        	// Assuming we are switching to a single window in the browser
+        	for(String winHandle : browser.getDriver().getWindowHandles()){
+        		browser.getDriver().switchTo().window(winHandle);
+            }
+            
+            
+        } catch (Exception e) {
+            LOGGER.warn("Unable to set focus to the newly selected browser");
+        }
     }
+    
+    public void switchBrowser(String key, BrowserProvider browserProvider) {
+		getBrowser(key, browserProvider);
+		switchBrowser(key);
+	}
+
+    private void incrementBrowserTestCount() {
+        if (browserCloseAfterXTests <= 0 || browserTestRunCounted.get()) {
+            return;
+        }
+
+        browserTestRunCounted.set(true);
+        Integer count = testCount.get();
+
+        if (count >= browserCloseAfterXTests) {
+            Map<String, Browser> browsers = threadBrowsers.get();
+
+            for (Iterator<String> iterator = browsers.keySet().iterator(); iterator.hasNext();) {
+                Browser browser = browsers.get(iterator.next());
+
+                browser.close();
+            }
+
+            testCount.set(0);
+        } else {
+            testCount.set(count + 1);
+        }
+
+    }
+
+    // TODO See above todo
+    // /**
+    // * @return A reference to the Storyboard extension.
+    // */
+    // protected StoryboardExtension getStoryboard() {
+    // return storyboard;
+    // }
 }

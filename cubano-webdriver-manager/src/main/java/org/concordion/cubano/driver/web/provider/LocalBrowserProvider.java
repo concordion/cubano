@@ -1,11 +1,16 @@
 package org.concordion.cubano.driver.web.provider;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import org.concordion.cubano.config.Config;
 import org.concordion.cubano.config.PropertyLoader;
-import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.config.ProxyConfig;
+import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Point;
@@ -13,7 +18,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
 
 import io.github.bonigarcia.wdm.Architecture;
-import io.github.bonigarcia.wdm.BrowserManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 /**
  * Base class for local browser providers.
@@ -24,6 +29,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     private PropertyLoader propertyLoader = Config.getInstance().getPropertyLoader();
     private ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
     private WebDriverConfig config = WebDriverConfig.getInstance();
+    protected String driverPath = null;
 
     /**
      * The name of the browser as used in the configuration file to retrieve browser specific settings.
@@ -35,7 +41,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * 
      * @param instance BrowserManager instance
      */
-    protected void setupBrowserManager(BrowserManager instance) {
+    protected void setupBrowserManager(WebDriverManager instance) {
         // Make all WebDriverManager properties in configuration file system properties
         Map<String, String> result = propertyLoader.getPropertiesStartingWith("wdm.");
         Map<String, String> override = propertyLoader.getPropertiesStartingWith(getBrowserName() + ".wdm.");
@@ -52,6 +58,28 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
             case "wdm.architecture":
                 instance.architecture(Architecture.valueOf(value));
                 break;
+
+            case "wdm.checkforupdates":
+                CheckForUpdates check = CheckForUpdates.valueOf(value.toUpperCase());
+
+                if (check != CheckForUpdates.ALWAYS) {
+                    Preferences prefs = Preferences.userNodeForPackage(LocalBrowserProvider.class);
+                    String prefKey = getBrowserName() + ".last_checked_time";
+                    Date lastChecked = new Date(prefs.getLong(prefKey, new Date(0L).getTime()));
+
+                    if (check.recheckIsRequired(lastChecked)) {
+                        prefs.putLong(prefKey, new Date().getTime());
+                        try {
+                            prefs.flush();
+                        } catch (BackingStoreException e) {
+                            throw new RuntimeException("Unable to update last checked date", e);
+                        }
+                    } else {
+                        instance.forceCache();
+                    }
+                }
+                break;
+
             default:
                 System.setProperty(key, value);
             }
@@ -64,6 +92,8 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         }
 
         instance.setup();
+
+        driverPath = instance.getBinaryPath();
     }
 
     /**
@@ -189,5 +219,15 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         }
 
         return String.class;
+    }
+
+    public void cleanup() {
+        if (driverPath != null) {
+            try {
+                Runtime.getRuntime().exec("taskkill /F /IM " + new File(driverPath).getName());
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to close browser driver", e);
+            }
+        }
     }
 }

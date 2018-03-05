@@ -1,6 +1,6 @@
 dependencies {
-    compile project(':cubano-webdriver')
-    compile project(':cubano-httpeasy')
+    compile project(':cubano-core')
+    compile project(':cubano-webdriver-manager')
     
     compile 'org.concordion:concordion:2.1.1'
     compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
