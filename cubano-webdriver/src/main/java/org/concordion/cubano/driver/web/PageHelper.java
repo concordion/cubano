@@ -303,19 +303,7 @@ public class PageHelper {
      * for selected iframe.
      */
     public String getCurrentFrameNameOrId() {
-        String script = "var frame = window.frameElement;" +
-                "if (!frame) {" +
-                "    return '';" +
-                "}" +
-                "if (frame.name) {" +
-                "    return frame.name;" +
-                "}" +
-                "if (frame.id) {" +
-                "    return frame.id;" +
-                "}" +
-                "return 'UNKNOWN FRAME';";
-
-        return (String) ((JavascriptExecutor) pageObject.getBrowser().getDriver()).executeScript(script);
+        return getCurrentFrameNameOrId(pageObject.getBrowser().getDriver());
     }
 
     /**
@@ -354,7 +342,27 @@ public class PageHelper {
      * @param driver WebDriver
      */
     public static void switchToMainDocument(WebDriver driver) {
+        // Firefox gecko driver has a lot of issues with iframes, this method now has been updated to work around this
+        // Hopefully can remove this line at some point
+        // See: https://github.com/mozilla/geckodriver/issues/937
+        driver.switchTo().defaultContent();
+
         driver.switchTo().window(driver.getWindowHandle());
+
+        // As above - hopefully can remove this at some point
+        for (int i = 0; i < 10; i++) {
+            try {
+                String currentFrame = getCurrentFrameNameOrId(driver);
+                
+                if (currentFrame.isEmpty()) {
+                    break;
+                }
+            } catch (Throwable e) {
+                // Do nothing
+            }
+
+            driver.switchTo().parentFrame();
+        }
     }
 
     private String getClickMessage(WebElement element) {

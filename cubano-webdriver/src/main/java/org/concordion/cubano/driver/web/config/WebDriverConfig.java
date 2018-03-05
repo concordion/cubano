@@ -30,6 +30,8 @@ public final class WebDriverConfig {
     private String remoteUserName;
     private String remoteApiKey;
 
+    private int restartBrowserAfterXTests;
+
     private static class WDCHolder {
         static final WebDriverConfig INSTANCE = new WebDriverConfig();
     }
@@ -97,6 +99,8 @@ public final class WebDriverConfig {
         // Yandex HtmlElements automatically implement 5 second implicit wait, default to zero so as not to interfere with
         // explicit waits
         System.setProperty("webdriver.timeouts.implicitlywait", propertyLoader.getProperty("webdriver.timeouts.implicitlywait", "0"));
+
+        restartBrowserAfterXTests = propertyLoader.getPropertyAsInteger("webdriver.browser.restartAfterXTests", "0");
     }
 
     public String getBrowserProvider() {
@@ -119,6 +123,15 @@ public final class WebDriverConfig {
      */
     public String getBrowserDimension() {
         return browserDimension;
+    }
+
+    /**
+     * Number of tests to run before restarting browser to clear memory.
+     * 
+     * @return 0 for never, otherwise limit
+     */
+    public int getRestartBrowserAfterXTests() {
+        return restartBrowserAfterXTests;
     }
 
     /**

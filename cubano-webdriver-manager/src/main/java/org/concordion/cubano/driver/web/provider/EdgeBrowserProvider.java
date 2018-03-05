@@ -50,5 +50,4 @@ public class EdgeBrowserProvider extends LocalBrowserProvider {
             options.setCapability(key, toObject(settings.get(key)));
         }
     }
-
 }

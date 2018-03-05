@@ -302,4 +302,9 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
 
         return obj1.equals(obj2);
     }
+
+    @Override
+    public void cleanup() {
+
+    }
 }
