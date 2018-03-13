@@ -7,16 +7,10 @@ dependencies {
     compile "org.seleniumhq.selenium:selenium-java:3.8.1"
     
     // Html Elements
-    //compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.18') {
-    //    exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
-    //}
-    
-    // This uses Jitpack to build and import multiple modules from Github
-    // TODO Can revert to above once 1.19 is released - and remove jitpack from root build.gradle and also release block below
-    compile('com.github.yandex-qatools.htmlelements:htmlelements-java:master-SNAPSHOT') {
+    compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.19') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
-
+    
     compile 'org.jsoup:jsoup:1.8.3'
 
     // TODO remove dependencies
