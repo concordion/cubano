@@ -47,7 +47,7 @@ For eclipse:
 
 ## Releasing
 
-To create a release, you will need to run `gradlew clean test javadoc sourcesJar javadocJar publishDocs release bintrayUpload`. This depends on having appropriate permissions to publish to the Concordion organisation. 
+To create a release, you will need to run `gradlew clean test javadoc build sourcesJar javadocJar publishDocs release bintrayUpload`. This depends on having appropriate permissions to publish to the Concordion organisation. 
 
 To build a local release and publish to your local Maven repository, you can run `gradlew clean publishToMavenLocal`.
 
