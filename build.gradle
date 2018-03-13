@@ -41,7 +41,7 @@ ext {
 group = 'org.concordion'
 
 task build {
-    dependsOn subprojects*.tasks*.findByName('build')
+    dependsOn subprojects*.tasks*.findByName('build').minus(null)
 }
 
 task publishDocs(dependsOn: ['gitPublishPush'])
