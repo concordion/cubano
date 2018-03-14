@@ -102,8 +102,6 @@ subprojects {
     targetCompatibility = 1.8
     
     repositories {
-        // Only required while webdriver project waiting for htmlelements to be published
-        maven { url "https://jitpack.io" }
         mavenCentral()
     }
 
