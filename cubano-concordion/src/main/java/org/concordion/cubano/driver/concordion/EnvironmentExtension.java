@@ -13,9 +13,9 @@ import org.concordion.api.listener.SpecificationProcessingListener;
 
 /**
  * Displays the environment details to the left hand side of the standard Concordion footer.
- * <p></p>
+ * <p>
  * Sample usage:
- * <p></p>
+ * </p>
  * <pre>
  * &#64;Extension
  * private final EnvironmentExtension footer = new EnvironmentExtension()
@@ -25,7 +25,7 @@ import org.concordion.api.listener.SpecificationProcessingListener;
  *      .withEnvironment(AppConfig.getEnvironment().toUpperCase())
  *      .withURL(AppConfig.getUrl());
  * </pre>
- * <p></p>
+ * 
  * Note:
  * <ul>
  * <li>The only required parameter for rerunning tests is "token" which must be configured in the Jenkins job</li>

@@ -41,17 +41,24 @@ public class ActionTimer {
     }
 
     /**
-     * Start a new timer, logging the supplied message.
-     * <p>
-     * Example:
-     * <p>
-     * <pre>ActionTimer timer = ActionTimer.start(LOGGER, "Starting action");</pre>
-     *
-     * @param logger Logger to use for any logging
-     * @param format Formatted message string, argument place holders can be embedded with {} marker
-     * @param args   List of arguments for the message format string
-     * @return new ActionTimer
-     */
+	 * Start a new timer, logging the supplied message.
+	 * <p>
+	 * Example:
+	 * </p>
+	 * 
+	 * <pre>
+	 * ActionTimer timer = ActionTimer.start(LOGGER, "Starting action");
+	 * </pre>
+	 *
+	 * @param logger
+	 *            Logger to use for any logging
+	 * @param format
+	 *            Formatted message string, argument place holders can be embedded
+	 *            with {} marker
+	 * @param args
+	 *            List of arguments for the message format string
+	 * @return new ActionTimer
+	 */
     public static ActionTimer start(Logger logger, String format, Object... args) {
         logger.debug(format, args);
 
@@ -68,15 +75,21 @@ public class ActionTimer {
     }
 
     /**
-     * Log supplied message.
-     * <p>
-     * Example:
-     * <p>
-     * <pre>timer.stop("Action completed in {} seconds", timer.duration().getSeconds());</pre>
-     *
-     * @param format Formatted message string, argument place holders can be embedded with {} marker
-     * @param args   List of arguments for the message format string
-     */
+	 * Log supplied message.
+	 * <p>
+	 * Example:
+	 * </p>
+	 * 
+	 * <pre>
+	 * timer.stop("Action completed in {} seconds", timer.duration().getSeconds());
+	 * </pre>
+	 *
+	 * @param format
+	 *            Formatted message string, argument place holders can be embedded
+	 *            with {} marker
+	 * @param args
+	 *            List of arguments for the message format string
+	 */
     public void stop(String format, Object... args) {
         stop(LogLevel.DEBUG, format, args);
     }

@@ -58,12 +58,13 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
 
     /**
      * Has two purposes:
-     * <p>
+     * 
+     * 
      * <ul>
      * <li>Check that an element on the page that uniquely identifies this page is present</li>
      * <li>Ensure that the page is fully loaded (eg Ajax requests have completed) so don't have to implement waits when accessing elements on the page</li>
      * </ul>
-     * <p>
+     * 
      * All PageObjects must implement this method.
      *
      * @param timeoutWaitInSeconds Number of seconds to wait for the page to load before timing out
@@ -163,7 +164,7 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
 
     /**
      * Notify listener that it should take a screenshot of the current page.
-     * <p>
+     * 
      * <p>A default description is constructed assuming that a click is about to be performed on an element
      * in the format: {@literal Clicking '<element text>'}</p>
      *
@@ -231,7 +232,7 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
     /**
      * Notify listener that it should take a screenshot of the current page and then click the supplied element
      * and return a new instance of the expected page.
-     * <p>
+     * 
      * <p>A default description is constructed in the format: {@literal Clicking '<element text>'}</p>
      *
      * @param <P>          The type of the desired page object

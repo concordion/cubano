@@ -14,16 +14,23 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 
 /**
- * Similar to Selenium's {@link org.openqa.selenium.support.ui.FluentWait FluentWait} implementation but designed for long running tasks such as querying a
- * database until some data appears. Unlike {@link org.openqa.selenium.support.ui.FluentWait FluentWait} it handles exceptions other than RuntimeExceptions.
- * Calling the until() method will retry until either true or a non null value is returned.
- * <p></p>
- * Each ActionWait must defines the maximum amount of time to wait for a condition (or alternatively the maximum number of attempts to make), as well as
- * the frequency with which to check the condition. Furthermore, the user may configure the wait to
- * ignore specific types of exceptions whilst waiting, warning intervals to log a warning if action is taking
- * longer than expected, a custom message and the ability to override the default behaviour (throwing a TimeOutException)
- * and just return a value.
- * <p></p>
+ * Similar to Selenium's {@link org.openqa.selenium.support.ui.FluentWait
+ * FluentWait} implementation but designed for long running tasks such as
+ * querying a database until some data appears. Unlike
+ * {@link org.openqa.selenium.support.ui.FluentWait FluentWait} it handles
+ * exceptions other than RuntimeExceptions. Calling the until() method will
+ * retry until either true or a non null value is returned.
+ * <p>
+ * 
+ * Each ActionWait must defines the maximum amount of time to wait for a
+ * condition (or alternatively the maximum number of attempts to make), as well
+ * as the frequency with which to check the condition. Furthermore, the user may
+ * configure the wait to ignore specific types of exceptions whilst waiting,
+ * warning intervals to log a warning if action is taking longer than expected,
+ * a custom message and the ability to override the default behaviour (throwing
+ * a TimeOutException) and just return a value.
+ * <p>
+ * 
  * Sample usage:
  * 
  * <pre>
@@ -53,7 +60,8 @@ import com.google.common.collect.Lists;
  *     }
  * });
  * </pre>
- * <p></p>
+ * 
+ * <p>
  * <em>This class makes no thread safety guarantees.</em>
  *
  * @author Andrew Sumner
@@ -113,7 +121,7 @@ public class ActionWait {
      * Sets how many attempts to make while waiting for the for the evaluated condition to be true.
      * Either MaxAttempts or Timeout must be set, but they cannot be used together.
      *
-     * @param attempts. Maximum number of attempts to make.
+     * @param attempts Maximum number of attempts to make.
      * @return A self reference.
      */
     public ActionWait withMaxAttempts(int attempts) {

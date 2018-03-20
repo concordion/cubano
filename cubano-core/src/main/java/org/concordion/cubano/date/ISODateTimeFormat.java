@@ -12,7 +12,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
  * Convert from/to ISO8601 formated dates such as '2016-04-28T00:02:40Z'.
- * <p>
+ * 
  * <p>Note: requires minimum of Java 1.8</p>
  *
  * @author Andrew Sumner
@@ -32,8 +32,8 @@ public class ISODateTimeFormat {
      * Parses an ISO8601 formatted date string.
      *
      * @param iso8601Date String containing ISO8601 formatted date
-     * @return LocalDateTime
-     * @throws ParseException
+     * @return LocalDateTime  A date-time without a time-zone in the ISO-8601 calendar system
+     * @throws ParseException unable to parse date
      */
     public static LocalDateTime parse(String iso8601Date) throws ParseException {
         if (iso8601Date.trim().matches(".*[a-zA-Z]")) {
@@ -50,8 +50,8 @@ public class ISODateTimeFormat {
      *
      * @param date    Date string
      * @param pattern Pattern to use
-     * @return LocalDateTime
-     * @throws ParseException
+     * @return LocalDateTime A date-time without a time-zone in the ISO-8601 calendar system
+     * @throws ParseException unable to parse date
      */
     public static LocalDateTime parse(String date, String pattern) throws ParseException {
         return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(pattern));
@@ -62,8 +62,8 @@ public class ISODateTimeFormat {
      *
      * @param date   LocalDateTime
      * @param zoneId ZoneId
-     * @return ISO8601 date time string
-     * @throws ParseException
+     * @return LocalDateTime  A date-time without a time-zone in the ISO-8601 calendar system
+     * @throws ParseException unable to parse date
      */
     public static String format(LocalDateTime date, ZoneId zoneId) throws ParseException {
         ZonedDateTime zdt = ZonedDateTime.of(date, ZoneId.systemDefault());
@@ -77,7 +77,7 @@ public class ISODateTimeFormat {
      *
      * @param date LocalDateTime
      * @return ISO8601 date time string
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static String formatAsLocalDateTimeString(LocalDateTime date) throws ParseException {
         return date.toString();
@@ -88,7 +88,7 @@ public class ISODateTimeFormat {
      *
      * @param date LocalDateTime
      * @return ISO8601 date time string
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static String formatAsLocalDateTime(LocalDateTime date) throws ParseException {
         return date.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
@@ -99,7 +99,7 @@ public class ISODateTimeFormat {
      *
      * @param date LocalDateTime
      * @return ISO8601 date time string
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static String formatAsUTCDateTimeString(LocalDateTime date) throws ParseException {
 
@@ -114,7 +114,7 @@ public class ISODateTimeFormat {
      *
      * @param date LocalDateTime
      * @return ISO8601 date time string
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static String formatAsUTCDateTime(LocalDateTime date) throws ParseException {
         ZonedDateTime zdt = ZonedDateTime.of(date, ZoneId.systemDefault());
@@ -128,7 +128,7 @@ public class ISODateTimeFormat {
      *
      * @param date LocalDateTime
      * @return ISO8601 date time string
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static String formatAsUTCDateTimeBPM(LocalDateTime date) throws ParseException {
         return formatAsUTCDateTimeBPM(date, "uuuu-MM-dd'T'HH:mm:ss.SSSX");
@@ -140,7 +140,7 @@ public class ISODateTimeFormat {
      * @param date   LocalDateTime
      * @param format date pattern
      * @return ISO8601 date time string
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static String formatAsUTCDateTimeBPM(LocalDateTime date, String format) throws ParseException {
         ZonedDateTime zdt = ZonedDateTime.of(date, ZoneId.systemDefault());
@@ -155,7 +155,7 @@ public class ISODateTimeFormat {
      * @param date    Date to format
      * @param pattern Pattern to use
      * @return Formatted date string
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static String format(LocalDateTime date, String pattern) throws ParseException {
         return date.format(DateTimeFormatter.ofPattern(pattern));
@@ -166,7 +166,7 @@ public class ISODateTimeFormat {
      *
      * @param lexicalRepresentation Lexical representation of one the eight XML Schema date/time datatypes.
      * @return XMLGregorianCalendar created from the lexicalRepresentation.
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static XMLGregorianCalendar toXMLGregorianCalendar(String lexicalRepresentation) throws ParseException {
         try {
@@ -181,7 +181,7 @@ public class ISODateTimeFormat {
      *
      * @param ldt LocalDateTime
      * @return XMLGregorianCalendar created from the LocalDateTime.
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static XMLGregorianCalendar toXMLGregorianCalendar(LocalDateTime ldt) throws ParseException {
         return toXMLGregorianCalendar(formatAsUTCDateTimeBPM(ldt));
@@ -192,7 +192,7 @@ public class ISODateTimeFormat {
      *
      * @param xcal XMLGregorianCalendar
      * @return A LocalDateTime representation of the XMLGregorianCalendar
-     * @throws ParseException
+     * @throws ParseException unable to parse date
      */
     public static LocalDateTime fromXMLGregorianCalendarToLocalDT(XMLGregorianCalendar xcal) throws ParseException {
         return parse(xcal.toGregorianCalendar().getTime().toInstant().toString());

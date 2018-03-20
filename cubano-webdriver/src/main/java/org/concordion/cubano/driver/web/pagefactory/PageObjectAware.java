@@ -4,7 +4,7 @@ import org.concordion.cubano.driver.web.BasePageObject;
 
 /**
  * Allows page components to perform navigation and other tasks and still use all the framework features .
- * <p></p>
+ * 
  * <pre>
  * public class SomeComponent extends HtmlElement implements PageObjectAware {
  *     private WebHelper webHelper;

@@ -37,6 +37,7 @@ public class Browser {
 
     /**
      * Constructor - does not start the browser.
+     * @param browserProvider Information required to start a browser locally or remotely
      */
     public Browser(BrowserProvider browserProvider) {
         this.browserProvider = browserProvider;

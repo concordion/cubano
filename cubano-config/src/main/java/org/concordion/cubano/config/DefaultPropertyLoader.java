@@ -16,6 +16,8 @@ public class DefaultPropertyLoader implements PropertyLoader {
 
     /**
      * Configure the optional userProperties and mandatory properties to be loaded.
+     * 
+     * @param properties properties
      */
     public DefaultPropertyLoader(Properties properties) {
         this.properties = properties;

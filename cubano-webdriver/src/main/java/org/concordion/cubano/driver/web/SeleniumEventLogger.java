@@ -15,7 +15,7 @@ import org.openqa.selenium.support.events.WebDriverEventListener;
 
 /**
  * Listens for WebDriver events and logs them.
- * <p>
+ * 
  * <p>
  * Requires Selenium 2.23.0 or later to retrieve element names from WebElement.toString().
  * </p>

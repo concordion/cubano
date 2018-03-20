@@ -8,7 +8,7 @@ import org.concordion.cubano.driver.action.ActionWait;
 
 /**
  * Maintains a global pool of of available entities and those that are in use.
- * <p>
+ * 
  * <p>
  * request() and release() methods: It is expected that the implementing class implement methods that call these - allows for customisation.
  * </p>

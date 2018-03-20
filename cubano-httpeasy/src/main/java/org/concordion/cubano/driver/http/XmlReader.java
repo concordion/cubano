@@ -43,9 +43,9 @@ public class XmlReader implements ResponseReader {
      * An xml reader.
      *
      * @param xml XML string
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
+     * @throws ParserConfigurationException  Indicates a serious configuration error
+     * @throws IOException If unable to read the response
+     * @throws SAXException SAX exception
      */
     public XmlReader(String xml) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
@@ -63,11 +63,11 @@ public class XmlReader implements ResponseReader {
      * An xml reader.
      *
      * @param node An xml node
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws TransformerFactoryConfigurationError
-     * @throws TransformerException
+     * @throws ParserConfigurationException Indicates a serious configuration error
+     * @throws SAXException a general SAX error or warning
+     * @throws IOException If unable to read the response
+     * @throws TransformerFactoryConfigurationError Thrown when a problem with configuration with the Transformer Factories exists
+     * @throws TransformerException specifies an exceptional condition that occured during the transformation process.
      */
     public XmlReader(Node node) throws ParserConfigurationException, SAXException, IOException, TransformerFactoryConfigurationError, TransformerException {
         // some Nodes cannot be cast as (Document) node;
@@ -88,31 +88,40 @@ public class XmlReader implements ResponseReader {
     }
 
     /**
-     * Evaluate an XPath expression in the specified context and return the result as the specified type..
-     *
-     * @param selector search path
-     * @return Node
-     */
+	 * Evaluate an XPath expression in the specified context and return the result
+	 * as the specified type..
+	 *
+	 * @param selector
+	 *            search path
+	 * @return Node test representing the node
+	 */
     private Node evaluate(String selector) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
         XPath xPath = XPathFactory.newInstance().newXPath();
         return (Node) xPath.evaluate(selector, document, XPathConstants.NODE);
     }
 
     /**
-     * Search a XML element's children for the requested element and returns the text content.
-     * <p>
-     * Example:
-     * </p>
-     * <pre>
-     * &lt;serviceResponse returnLength="1"&gt;
-     *   &lt;output name="documentId"&gt;idd_CD1C398E-1F25-436D-B76A-9E293BB426F5&lt;/output&gt;
-     * &lt;/serviceResponse&gt;
-     *
-     * String documentId = reader.getXmlReader().textContent("//{@literal *}/output[@name='documentId']");
-     * </pre>
-     *
-     * @param selector search path
-     * @return Node
+	 * Search a XML element's children for the requested element and returns the
+	 * text content.
+	 * <p>
+	 * Example:
+	 * </p>
+	 * 
+	 * <pre>
+	 * &lt;serviceResponse returnLength="1"&gt;
+	 *   &lt;output name="documentId"&gt;idd_CD1C398E-1F25-436D-B76A-9E293BB426F5&lt;/output&gt;
+	 * &lt;/serviceResponse&gt;
+	 *
+	 * String documentId = reader.getXmlReader().textContent("//{@literal *}/output[@name='documentId']");
+	 * </pre>
+	 *
+	 * @param selector
+	 *            search path
+	 * @return Node test representing the node
+	 * @throws ParserConfigurationException ParserConfigurationException
+     * @throws SAXException SAXException
+     * @throws IOException IOException
+     * @throws XPathExpressionException XPathExpressionException
      */
     public String textContent(String selector) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
         Node node = evaluate(selector);
@@ -169,6 +178,12 @@ public class XmlReader implements ResponseReader {
         }
     }
 
+    /**
+     * 
+     * @param node node
+     * @param name name of node
+     * @return is Node found using name
+     */
     private boolean isNodeNamed(Node node, String name) {
         String nodeName = node.getNodeName();
         int index = nodeName.indexOf(":");
@@ -186,7 +201,7 @@ public class XmlReader implements ResponseReader {
      * @param <T>   The type of the desired class
      * @param clazz Class of object to deserialize to
      * @return Populated class of the desired type
-     * @throws JAXBException
+     * @throws JAXBException jaxbException
      */
     @SuppressWarnings("unchecked")
     public <T> T from(Class<T> clazz) throws JAXBException {

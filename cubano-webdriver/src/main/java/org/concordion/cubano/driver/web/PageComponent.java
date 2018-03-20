@@ -10,7 +10,7 @@ import ru.yandex.qatools.htmlelements.element.HtmlElement;
 
 /**
  * Encapsulate a block of html elements on a page.
- * <p>
+ * 
  * <p>
  * This object has automatic access to the page object containing this components as well as the Browser and PageHelper classes.
  * </p>
