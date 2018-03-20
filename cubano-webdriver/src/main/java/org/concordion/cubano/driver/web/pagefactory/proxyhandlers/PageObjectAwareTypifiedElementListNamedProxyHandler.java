@@ -14,9 +14,11 @@ import org.openqa.selenium.support.pagefactory.ElementLocator;
 import ru.yandex.qatools.htmlelements.element.TypifiedElement;
 
 /**
- * A replacement for TypifiedElementListNamedProxyHandle that implements PageObjectAware functionality.
+ * A replacement for TypifiedElementListNamedProxyHandle that implements
+ * PageObjectAware functionality.
  *
  * @param <T>
+ *            Extension of TypifiedElement.
  * @author asumn001
  */
 public class PageObjectAwareTypifiedElementListNamedProxyHandler<T extends TypifiedElement> implements InvocationHandler {

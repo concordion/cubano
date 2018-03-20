@@ -16,7 +16,7 @@ import ru.yandex.qatools.htmlelements.element.HtmlElement;
 /**
  * A replacement for HtmlElementListNamedProxyHandler that implements PageObjectAware functionality.
  *
- * @param <T>
+ * @param <T> Extends HtmlElement.
  * @author asumn001
  */
 public class PageObjectAwareHtmlElementListNamedProxyHandler<T extends HtmlElement> implements InvocationHandler {

@@ -22,7 +22,7 @@ public class FileReader {
      *
      * @param filename Package/FileName of file
      * @return File content or null if file not found
-     * @throws IOException
+     * @throws IOException If unable to read the response
      */
     public static String readFile(String filename) throws IOException {
         String result = null;
@@ -43,7 +43,7 @@ public class FileReader {
      *
      * @param filename Package/FileName of file
      * @return File content or null if file not found
-     * @throws IOException
+     * @throws IOException If unable to read the response
      */
     public static List<String> readLines(String filename) throws IOException {
         List<String> result = null;

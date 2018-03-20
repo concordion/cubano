@@ -37,21 +37,24 @@ public class JsonLoader {
      * @param jsonFile Source file
      * @param clazz    Desired class
      * @return Desired class populated from requested file
-     * @throws IOException
+     * @throws IOException If unable to read the response
      */
     public static <T> T loadFile(String jsonFile, Class<T> clazz) throws IOException {
         return loadFile(jsonFile, (Type) clazz);
     }
 
     /**
-     * Read data file and deserialise into new class of requested type.
-     *
-     * @param <T>        Desired class
-     * @param jsonFile   Source file
-     * @param returnType Desired class
-     * @return Desired class populated from requested file
-     * @throws IOException
-     */
+	 * Read data file and deserialise into new class of requested type.
+	 *
+	 * @param <T>
+	 *            Desired class
+	 * @param jsonFile
+	 *            Source file
+	 * @param returnType
+	 *            Desired class
+	 * @return Desired class populated from requested file
+	 * @throws IOException If unable to read the response
+	 */
     public static <T> T loadFile(String jsonFile, Type returnType) throws IOException {
         LOGGER.debug("Loading JSON file {}", jsonFile);
         JsonReader json = new JsonReader(FileReader.readFile(jsonFile));

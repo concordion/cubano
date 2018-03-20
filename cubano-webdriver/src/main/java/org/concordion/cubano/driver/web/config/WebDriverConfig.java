@@ -136,6 +136,8 @@ public final class WebDriverConfig {
 
     /**
      * Browser should be maximized or not.
+     * 
+     * @return is Browser Maximized
      */
     public boolean isBrowserMaximized() {
         return browserMaximized;
@@ -143,6 +145,8 @@ public final class WebDriverConfig {
 
     /**
      * Selenium WebDriver logging should be enabled.
+     *
+     * @return is Event Logging Enabled
      */
     public boolean isEventLoggingEnabled() {
         return eventLoggingEnabled;

@@ -7,6 +7,7 @@ public interface ResponseReader {
 
     /**
      * @return The underlying data (eg XML or JSON document) as a nicely formatted string.
-     */
+     * @throws Exception  exception
+	 */
     public String asPrettyString() throws Exception;
 }

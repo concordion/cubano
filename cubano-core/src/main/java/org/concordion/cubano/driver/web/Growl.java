@@ -5,11 +5,13 @@ import org.openqa.selenium.WebDriver;
 
 /**
  * Use jQuery Growl to display messages in the browser.
- * <p>
+ * 
+ * 
  * <ul>
  * <li>This has not been tried out yet</li>
  * <li>It will need some work to support running behind a proxy</li>
  * </ul>
+ * 
  * <p>
  * See: http://ksylvest.github.io/jquery-growl
  *

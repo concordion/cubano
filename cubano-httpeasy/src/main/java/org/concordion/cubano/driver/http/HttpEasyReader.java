@@ -156,8 +156,8 @@ public class HttpEasyReader {
 
     /**
      * @return An XmlReader to handle an xml response.
-     * @throws SAXException
-     * @throws ParserConfigurationException
+     * @throws SAXException Encapsulate a general SAX error or warning
+     * @throws ParserConfigurationException Indicates a serious configuration error
      * @throws IOException If unable to read the response
      */
     public XmlReader getXmlReader() throws ParserConfigurationException, SAXException, IOException {
