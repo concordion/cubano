@@ -4,7 +4,11 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew clean check aggregateJavadocs
+  - ./gradlew clean check
+  - # gradlew aggregateJavadocs is failing with JDK9 with error "package javax.xml.bind is declared in module java.xml.bind, which is not in the module graph"
+  - jdk_switcher use oraclejdk8
+  - ./gradlew aggregateJavadocs
+
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
