@@ -103,8 +103,8 @@ public abstract class ConcordionBase implements BrowserBasedTest {
      * Starts browser using the default browser provider (from config.properties), or if already open returns reference to it.
      * All subsequent requests for a browser handle will return this browser unless focus is switched back using {@link #getBrowser()} or {@link #switchBrowser(String)}.
      * 
-     * @param key
-     * @return
+     * @param key Id of the browser to open / switch control to
+     * @return Browser browser based on key.
      */
     public Browser getBrowser(String key) {
         return getBrowser(key, null);
@@ -116,7 +116,7 @@ public abstract class ConcordionBase implements BrowserBasedTest {
      * 
      * @param key Id of the browser to open / switch control to
      * @param browserProvider BrowserProvider to use if not already exist, otherwise ignored
-     * @return
+     * @return Browser based on key
      */
     public Browser getBrowser(String key, BrowserProvider browserProvider) {
         incrementBrowserTestCount();
@@ -139,10 +139,10 @@ public abstract class ConcordionBase implements BrowserBasedTest {
 
     /**
      * Switches control to specified browser. Works much the same as {@link #getBrowser(String)} except that it will not start browser if not already open.
-     * <p></p>
+     * <p>
      * e.g. {@code switchBrowser(Browser.DEFAULT);}
-     * 
-     * @param key
+     * </p>
+     * @param key Id of the browser to open / switch control to
      */
     public void switchBrowser(String key) {
         Map<String, Browser> browsers = threadBrowsers.get();

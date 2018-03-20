@@ -5,7 +5,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * BrowserStack selenium grid provider.
- * <p>
+ * 
  * <p>Browser and device options: https://www.browserstack.com/automate/java</p>
  */
 public class BrowserStackBrowserProvider extends RemoteBrowserProvider {

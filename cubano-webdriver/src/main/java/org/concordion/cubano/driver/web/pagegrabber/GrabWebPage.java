@@ -25,7 +25,7 @@ public class GrabWebPage {
      * Constructor.
      *
      * @param browser Browser driver
-     * @param httpDownloader
+     * @param httpDownloader  File download interface
      */
     public GrabWebPage(WebDriver browser, HttpDownloader httpDownloader) {
         this.driver = browser;
@@ -38,7 +38,7 @@ public class GrabWebPage {
      *
      * @param outputDirPath Destination folder
      * @param fileName      Name of HTML file
-     * @throws Exception
+     * @throws Exception exception
      */
     public void getWebPage(String outputDirPath, String fileName) throws Exception {
         File outputDir = new File(outputDirPath);

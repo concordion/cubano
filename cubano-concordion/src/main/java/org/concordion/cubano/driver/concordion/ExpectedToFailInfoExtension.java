@@ -10,17 +10,17 @@ import org.concordion.api.listener.ExampleListener;
  * Displays the Note and a Reason in the corresponding specification/markdown,
  * when the annotation expectedToFail is used.
  * 
- * <p></p>
+ * <p>
  * Sample usage:
- * <p></p>
+ * </p>
  * <pre>
  * In a Fixture add:
- * @Extensions({ ExpectedToFailInfoExtension.class })
+ * org.concordion.api.extension.Extensions({ ExpectedToFailInfoExtension.class })
  * 
  * To a specification add:
  * ## [My Specification Name](- "Reason my specification is failing c:status=expectedToFail") 
  * </pre>
- * <p></p>
+ * 
  * In the completed specification:
  * <ul>
  * <li>Note: resolves to 'This example has been marked as EXPECTED_TO_FAIL'</li>

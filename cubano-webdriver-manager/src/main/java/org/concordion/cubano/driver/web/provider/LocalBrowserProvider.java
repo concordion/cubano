@@ -32,7 +32,8 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     protected String driverPath = null;
 
     /**
-     * The name of the browser as used in the configuration file to retrieve browser specific settings.
+     * 
+     * @return The name of the browser as used in the configuration file to retrieve browser specific settings.
      */
     protected abstract String getBrowserName();
 

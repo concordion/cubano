@@ -9,13 +9,13 @@ import java.io.IOException;
 public interface HttpDownloader {
 
     /**
-     * Download file.
-     * 
-     * @param url
-     * @param outputFolder
-     * @param cookieHeader
-     * @return
-     * @throws IOException
-     */
+	 * Download file.
+	 * 
+	 * @param url url of file to download
+	 * @param outputFolder the output folder
+	 * @param cookieHeader cookie header
+	 * @return File that was downloaded
+	 * @throws IOException Signals that an I/O exception of some sort has occurred
+	 */
     File downloadFile(String url, String outputFolder, String cookieHeader) throws IOException;
 }

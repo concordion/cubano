@@ -6,7 +6,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
  * SauceLabs selenium grid provider.
- * <p>
+ * 
  * <p>Browser and device options: https://wiki.saucelabs.com/display/DOCS/Platform+Configurator</p>
  */
 public class SauceLabsBrowserProvider extends RemoteBrowserProvider {

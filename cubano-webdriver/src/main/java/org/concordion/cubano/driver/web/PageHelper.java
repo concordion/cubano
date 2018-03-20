@@ -149,7 +149,7 @@ public class PageHelper {
 
     /**
      * Capture a screenshot of the current page and add it to the log and story board.
-     * <p>
+     * 
      * <p>
      * A default description is constructed assuming that a click is about to be performed on an element
      * in the format: {@literal Clicking '<element text>'}
@@ -213,7 +213,7 @@ public class PageHelper {
     /**
      * Capture a screenshot of the current page and add it to the log and story board and then click the supplied element
      * and return a new instance of the expected page.
-     * <p>
+     * 
      * <p>
      * A default description is constructed in the format: {@literal Clicking '<element text>'}
      * </p>

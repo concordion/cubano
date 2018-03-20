@@ -31,6 +31,7 @@ public class DefaultPropertiesLoader implements PropertiesLoader {
      * Allow injection of properties for testing purposes.
      *
      * @param properties Default properties
+     * @param userProperties Custom user properties
      */
     protected DefaultPropertiesLoader(String properties, String userProperties) {
         this.properties = new CaselessProperties();

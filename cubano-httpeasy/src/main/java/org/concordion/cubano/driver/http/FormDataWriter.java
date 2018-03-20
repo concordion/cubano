@@ -130,7 +130,7 @@ class FormDataWriter implements DataWriter {
      * @param fieldName  name attribute in <input type="file" name="..." />
      * @param uploadFile a File to be uploaded
      * @param type       MediaType of the file
-     * @throws IOException
+     * @throws IOException If unable to read the response
      */
     private void addFilePart(String fieldName, File uploadFile, MediaType type) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(uploadFile)) {
@@ -145,7 +145,7 @@ class FormDataWriter implements DataWriter {
      * @param inputStream a File to be uploaded
      * @param type        MediaType of the file
      * @param fileName    name of file to be uploaded
-     * @throws IOException
+     * @throws IOException If unable to read the response
      */
     private void addFilePart(String fieldName, InputStream inputStream, MediaType type, String fileName) throws IOException {
         StringBuilder buf = new StringBuilder();
