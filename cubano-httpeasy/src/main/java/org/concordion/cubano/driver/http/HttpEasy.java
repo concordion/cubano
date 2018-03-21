@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
@@ -27,8 +26,6 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.concordion.cubano.config.Config;
-import org.concordion.cubano.config.ProxyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,17 +168,23 @@ public class HttpEasy {
         return logRequestDetails;
     }
 
-    static {
-        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
-
-        if (proxyConfig.isProxyRequired()) {
-            HttpEasy.withDefaults()
-                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
-                    .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
-                    .bypassProxyForLocalAddresses(true);
-        }
-
-    }
+// TODO Andrew / Nigel: This should not be here as restricts how can use httpeasy, but should it be in cubano framework or individual project? 
+//    static {
+//        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
+//
+//		HttpEasy.withDefaults()
+//			.allowAllHosts()
+//			.trustAllCertificates()
+//				.baseUrl(AppConfig.getInstance().getBaseUrl());
+//		
+//        if (proxyConfig.isProxyRequired()) {
+//            HttpEasy.withDefaults()
+//                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
+//                    .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
+//                    .bypassProxyForLocalAddresses(true);
+//        }
+//
+//    }
 
     /**
      * @return Default settings object
@@ -671,7 +674,7 @@ public class HttpEasy {
         return connection;
     }
 
-    private void log(String message) {
+	public void log(String message) {
         if (logWriter != null) {
             logWriter.info(message);
         } else if (HttpEasyDefaults.getDefaultLogWriter() != null) {

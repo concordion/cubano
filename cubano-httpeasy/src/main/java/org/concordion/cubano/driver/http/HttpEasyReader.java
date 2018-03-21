@@ -46,9 +46,9 @@ public class HttpEasyReader {
                     sb.append("\t").append(header.getKey()).append(": ").append(value).append(System.lineSeparator());
                 }
             }
-
-            HttpEasy.LOGGER.trace("With Response Headers:{}{}", System.lineSeparator(), sb);
-            HttpEasy.LOGGER.trace("With Response:{}{}", System.lineSeparator(), asString());
+            
+            request.log(String.format("With Response Headers:%%", System.lineSeparator(), sb));
+			request.log(String.format("With Response:%s%s", System.lineSeparator(), asString()));
         }
 
         if (resposeFamily != Family.SUCCESSFUL) {
