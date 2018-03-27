@@ -176,10 +176,7 @@ public class ProxyConfig {
                 proxyPassword = System.getenv("HTTP_PROXY_PASS");
             }
 
-			String envVarNoProxy = System.getenv("NO_PROXY");
-			if (envVarNoProxy != null && !envVarNoProxy.isEmpty()) {
-				nonProxyHosts = envVarNoProxy;
-			}
+			nonProxyHosts = System.getenv("NO_PROXY");
         }
     }
 

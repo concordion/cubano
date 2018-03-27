@@ -132,7 +132,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         proxy.setFtpProxy(browserProxy);
         proxy.setSslProxy(browserProxy);
 
-        if (!browserNonProxyHosts.isEmpty()) {
+		if (browserNonProxyHosts != null && !browserNonProxyHosts.isEmpty()) {
 			// proxy.setNoProxy - defines a String, but expects an array (as per
 			// https://w3c.github.io/webdriver/webdriver-spec.html#proxy)
 			// BUG raised at - https://github.com/mozilla/geckodriver/issues/1164
