@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Map;
 
 import org.openqa.selenium.InvalidArgumentException;
-import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -112,37 +111,6 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
     	}
 	}
 
-    @Override
-    protected void addProxyCapabilities(MutableCapabilities capabilities) {
-    	if (getPropertyAsBoolean("useLegacyDriver", "false")) {
-    		super.addProxyCapabilities(capabilities);
-    	} else {
-            // TODO Proxy support only comming with Firefox 57. Cannot test yet as geckodriver win32 0.19.0 not available
-            // WebDriverConfig config = WebDriverConfig.getInstance();
-            //
-            // if (!config.isProxyRequired()) {
-            // return;
-            // }
-            //
-            // String proxy = config.getProxyHost();
-            // int port = config.getProxyPort();
-            // String browserNonProxyHosts = config.getNonProxyHosts();
-            //
-            // JsonObject json = new JsonObject();
-            //
-            // json.addProperty("proxyType", "manual");
-            // json.addProperty("httpProxy", proxy);
-            // json.addProperty("httpProxyPort", port);
-            // json.addProperty("ftpProxy", proxy);
-            // json.addProperty("ftpProxyPort", port);
-            // json.addProperty("sslProxy", proxy);
-            // json.addProperty("sslProxyPort", port);
-            //
-            // capabilities.setCapability(CapabilityType.PROXY, proxy.toString());
-            // capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-        }
-    }
-    
 	private void addProfileProperties(FirefoxProfile profile) {
         Map<String, String> properties = getPropertiesStartingWith("profile.");
 
