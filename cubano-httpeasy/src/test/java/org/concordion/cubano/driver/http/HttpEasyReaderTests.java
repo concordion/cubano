@@ -1,37 +1,48 @@
 package org.concordion.cubano.driver.http;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
+import org.concordion.cubano.config.Config;
+import org.concordion.cubano.config.ProxyConfig;
 import org.junit.Test;
 
+
 public class HttpEasyReaderTests {
-	private static final String URL = "https://jsonplaceholder.typicode.com";
 
 	@Test
 	public void httpEasyRequest() throws HttpResponseException, IOException {
-		HttpEasy easy = HttpEasy.request().baseURI(URL).path("/posts/1");
 
 		HttpEasy.withDefaults()
 			.allowAllHosts()
 			.trustAllCertificates();
-//			.baseUrl(AppConfig.getInstance().getBaseUrl());
 
-//	if (Config.getInstance().getProxyConfig().isProxyRequired()) {
-		HttpEasy.withDefaults()
-				.proxy(new Proxy(Proxy.Type.HTTP,
-						new InetSocketAddress("ProxyHost", 8080)))
-				//.proxyAuth(Config.getInstance().getProxyConfig().getProxyUsername(), Config.getInstance().getProxyConfig().getProxyPassword())
-				.bypassProxyForLocalAddresses(true);
-//	}
+		ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
 
-	
-		JsonReader response = easy
-				.withLogWriter(new TestLogWriter())
-				.logRequestDetails()
-				.get()
-				.getJsonReader();
+		if (proxyConfig.isProxyRequired()) {
+			HttpEasy.withDefaults()
+					.proxy(new Proxy(Proxy.Type.HTTP,
+							new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
+					.proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
+					.bypassProxyForLocalAddresses(true);
+		}
+
+		JsonReader response 
+				= HttpEasy.request()
+					.baseURI("http://httpbin.org")
+	                .path("get")
+					.queryParam("name", "fred")
+					.withLogWriter(new TestLogWriter())
+					.logRequestDetails()
+					.get()
+					.getJsonReader();
+
+		assertThat(response.getAsString("url"), is("http://httpbin.org/get?name=fred"));
+
 	}
 
 }
