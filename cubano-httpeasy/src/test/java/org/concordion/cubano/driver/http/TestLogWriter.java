@@ -10,8 +10,8 @@ public class TestLogWriter implements LogWriter {
 	public void info(String message) {
 		System.out.println(message);
 		this.message = message;
-		// log.with().message(" TODO for TODO")
-		// .attachment(message, "TODO", MediaType.JSON)
+        // log.with().message(" Message for Message")
+        // .attachment(message, "Message", MediaType.JSON)
 		// .marker(StoryboardMarkerFactory.addCard(message, StockCardImage.JSON,
 		// CardResult.SUCCESS))
 		// .debug();
