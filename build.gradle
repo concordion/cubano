@@ -289,7 +289,7 @@ subprojects {
         key = bintrayApiKey         // set this in your ~/.gradle/gradle.properties file
         publications = ['main'] // see publications closure
 //        dryRun = true
-//        publish = true
+        publish = true
         pkg {
             repo = 'maven'
             userOrg = 'concordion'
@@ -307,12 +307,12 @@ subprojects {
                     sign = true
                     passphrase = bintrayPassphrase // set this in your ~/.gradle/gradle.properties file
                 }
-                //            mavenCentralSync {
-                //                sync = true
-                //                user = sonatypeUsername              // set this in your ~/.gradle/gradle.properties file
-                //                password = sonatypePassword          // OSS user password// set this in your ~/.gradle/gradle.properties file
-                //                close = '1'
-                //            }
+                mavenCentralSync {
+                    sync = true
+                    user = sonatypeUsername              // set this in your ~/.gradle/gradle.properties file
+                    password = sonatypePassword          // OSS user password// set this in your ~/.gradle/gradle.properties file
+                    close = '1'
+               }
             }
         }
     }
