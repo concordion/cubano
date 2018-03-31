@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -40,15 +41,26 @@ public class HttpEasyReader {
 
         if (request.isLogRequestDetails()) {
             StringBuilder sb = new StringBuilder();
+            List<String> headers = new ArrayList<>();
 
             for (Entry<String, List<String>> header : getConnection().getHeaderFields().entrySet()) {
                 for (String value : header.getValue()) {
-                    sb.append("\t").append(header.getKey()).append(": ").append(value).append(System.lineSeparator());
+                    if (header.getKey() == null || header.getKey().isEmpty()) {
+                        sb.append("\t").append(value).append(System.lineSeparator());
+                    } else {
+                        headers.add(String.format("%s: %s", header.getKey(), value));
+                    }
                 }
             }
             
-            request.log(String.format("With Response Headers:%%", System.lineSeparator(), sb));
-			request.log(String.format("With Response:%s%s", System.lineSeparator(), asString()));
+            headers.sort((h1, h2) -> h1.compareTo(h2));
+            
+            for (String value : headers) {
+                sb.append("\t").append(value).append(System.lineSeparator());
+            }
+            
+            request.log(String.format("Response Headers:%s%s", System.lineSeparator(), sb));
+            request.log(String.format("Response:%s%s", System.lineSeparator(), asString()));
         }
 
         if (resposeFamily != Family.SUCCESSFUL) {

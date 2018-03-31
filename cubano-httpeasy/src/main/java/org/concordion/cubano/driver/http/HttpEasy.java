@@ -661,8 +661,7 @@ public class HttpEasy {
                 }
             }
 
-            log("With Request Headers:" + System.lineSeparator() + sb.toString());
-            //LOGGER.trace("With Request Headers:{}{}", System.lineSeparator(), sb);
+            log(System.lineSeparator() + "Request Headers:" + System.lineSeparator() + sb.toString());
         }
 
         connection.connect();

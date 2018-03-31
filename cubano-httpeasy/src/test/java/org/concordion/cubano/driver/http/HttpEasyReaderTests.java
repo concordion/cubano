@@ -33,7 +33,7 @@ public class HttpEasyReaderTests {
 					.baseURI("http://httpbin.org")
 	                .path("get")
 					.queryParam("name", "fred")
-					.withLogWriter(new TestLogWriter())
+                    .withLogWriter(new TestLogWriter())
 					.logRequestDetails()
 					.get()
 					.getJsonReader();
