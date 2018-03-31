@@ -653,11 +653,22 @@ public class HttpEasy {
 
         if (logRequestDetails) {
             StringBuilder sb = new StringBuilder();
+            List<String> headers = new ArrayList<>();
 
             for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
                 for (String value : header.getValue()) {
-                    sb.append("\t").append(header.getKey()).append(": ").append(value).append(System.lineSeparator());
+                    if (header.getKey() == null || header.getKey().isEmpty()) {
+                        sb.append("\t").append(value).append(System.lineSeparator());
+                    } else {
+                        headers.add(String.format("%s: %s", header.getKey(), value));
+                    }
                 }
+            }
+
+            headers.sort((h1, h2) -> h1.compareTo(h2));
+
+            for (String value : headers) {
+                sb.append("\t").append(value).append(System.lineSeparator());
             }
 
             log(System.lineSeparator() + "Request Headers:" + System.lineSeparator() + sb.toString());
