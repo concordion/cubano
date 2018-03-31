@@ -228,10 +228,20 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
     public void cleanup() {
         if (driverPath != null) {
-            try {
-                Runtime.getRuntime().exec("taskkill /F /IM " + new File(driverPath).getName());
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to close browser driver", e);
+            boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+
+            if (isDebug) {
+                try {
+                    boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+
+                    if (isWindows) {
+                        Runtime.getRuntime().exec("taskkill /F /IM " + new File(driverPath).getName());
+                    } else {
+                        Runtime.getRuntime().exec("pkill -f \"" + new File(driverPath).getName() + "\"");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Unable to close browser driver", e);
+                }
             }
         }
     }
