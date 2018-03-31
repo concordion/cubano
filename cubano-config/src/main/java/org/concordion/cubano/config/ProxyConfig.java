@@ -180,6 +180,14 @@ public class ProxyConfig {
         }
     }
 
+    /**
+     * Environment variable HTTP_PROXY should be set like:
+     * http://[username]:[password]@[proxyHost]:[proxyPort]
+     * 
+     * e.g. http://myusername:mypassword@corporateproxy.com:8080
+     * 
+     * @return represents a Uniform Resource Locator
+     */
     private URL getProxyUrl() {
         String proxyInput = System.getenv("HTTP_PROXY");
 
