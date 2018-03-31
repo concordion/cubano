@@ -650,7 +650,6 @@ public class HttpEasy {
         }
 
         log("Sending " + requestMethod + authUser + " to " + url.toString());
-        //LOGGER.debug("Sending {}{} to {}", requestMethod, authUser, url.toString());
 
         if (logRequestDetails) {
             StringBuilder sb = new StringBuilder();
