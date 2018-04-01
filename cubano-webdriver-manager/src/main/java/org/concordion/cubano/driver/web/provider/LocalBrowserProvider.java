@@ -16,6 +16,8 @@ import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.github.bonigarcia.wdm.Architecture;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -26,6 +28,8 @@ import io.github.bonigarcia.wdm.WebDriverManager;
  * @author Andrew Sumner
  */
 public abstract class LocalBrowserProvider implements BrowserProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalBrowserProvider.class);
+
     private PropertyLoader propertyLoader = Config.getInstance().getPropertyLoader();
     private ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
     private WebDriverConfig config = WebDriverConfig.getInstance();
@@ -232,15 +236,19 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
             if (isDebug) {
                 try {
+                    String cmd;
                     boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
 
                     if (isWindows) {
-                        Runtime.getRuntime().exec("taskkill /F /IM " + new File(driverPath).getName());
+                        cmd = String.format("taskkill /F /IM %s", new File(driverPath).getName());
                     } else {
-                        Runtime.getRuntime().exec("pkill -f \"" + new File(driverPath).getName() + "\"");
+                        cmd = String.format("pkill -f \"%s\"", new File(driverPath).getName());
                     }
+
+                    LOGGER.debug("Cleaning up any orphaned browser drivers using command: {}", cmd);
+                    Runtime.getRuntime().exec(cmd);
                 } catch (IOException e) {
-                    throw new RuntimeException("Unable to close browser driver", e);
+                    LOGGER.warn("Unable to terminate browser driver", e);
                 }
             }
         }
