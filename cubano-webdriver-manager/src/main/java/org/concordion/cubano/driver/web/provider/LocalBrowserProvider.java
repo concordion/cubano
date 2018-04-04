@@ -234,7 +234,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         if (driverPath != null) {
             boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
 
-            if (isDebug) {
+            if (WebDriverConfig.getInstance().isCleanupDriver() || isDebug) {
                 try {
                     String cmd;
                     boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;

@@ -26,7 +26,8 @@ public final class WebDriverConfig {
     private String browserPosition;
     private boolean browserMaximized;
     private boolean eventLoggingEnabled;
-
+    private boolean cleanupDriver;
+    
     private String remoteUserName;
     private String remoteApiKey;
 
@@ -92,7 +93,8 @@ public final class WebDriverConfig {
         browserPosition = propertyLoader.getProperty("webdriver.browser.position", null);
         browserMaximized = propertyLoader.getPropertyAsBoolean("webdriver.browser.maximized", "false");
         eventLoggingEnabled = propertyLoader.getPropertyAsBoolean("webdriver.event.logging", "true");
-
+        cleanupDriver = propertyLoader.getPropertyAsBoolean("webdriver.browserdriver.cleanup", "false");
+                
         remoteUserName = propertyLoader.getProperty("remotewebdriver.userName", null);
         remoteApiKey = propertyLoader.getProperty("remotewebdriver.apiKey", null);
 
@@ -150,6 +152,15 @@ public final class WebDriverConfig {
      */
     public boolean isEventLoggingEnabled() {
         return eventLoggingEnabled;
+    }
+    
+    /**
+     * Terminate browser driver.
+     * 
+     * @return is cleanup enabled
+     */
+    public boolean isCleanupDriver() {
+        return cleanupDriver;
     }
     
     /**
