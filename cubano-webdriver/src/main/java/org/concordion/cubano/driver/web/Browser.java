@@ -181,8 +181,6 @@ public class Browser {
         		this.eventFiringDriver.unregister(this.eventListener);
         	}
 
-            // Calling close then quit as this can help closing driver processes that sometimes get left behind if just calling quit
-            // getActiveDriver().close();
             getActiveDriver().quit();
         } catch (Exception ex) {
             LOGGER.warn("Exception attempting to quit the browser: " + ex.getMessage());
