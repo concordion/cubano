@@ -131,7 +131,7 @@ public class Browser {
     }
 
     private WebDriver getActiveDriver() {
-    	return this.eventFiringDriver == null ? this.wrappedDriver : this.eventFiringDriver;
+        return this.eventFiringDriver == null ? this.wrappedDriver : this.eventFiringDriver;
     }
     
     /**
