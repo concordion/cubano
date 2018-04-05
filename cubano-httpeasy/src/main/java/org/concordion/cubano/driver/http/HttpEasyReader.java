@@ -43,6 +43,8 @@ public class HttpEasyReader {
             StringBuilder sb = new StringBuilder();
             List<String> headers = new ArrayList<>();
 
+            sb.append("Response Headers:").append(System.lineSeparator());
+
             for (Entry<String, List<String>> header : getConnection().getHeaderFields().entrySet()) {
                 for (String value : header.getValue()) {
                     if (header.getKey() == null || header.getKey().isEmpty()) {
@@ -58,9 +60,10 @@ public class HttpEasyReader {
             for (String value : headers) {
                 sb.append("\t").append(value).append(System.lineSeparator());
             }
+
+            sb.append(String.format("Response:%s%s", System.lineSeparator(), asString()));
             
-            request.log(String.format("Response Headers:%s%s", System.lineSeparator(), sb));
-            request.log(String.format("Response:%s%s", System.lineSeparator(), asString()));
+            request.log(sb.toString(), LogType.RESPONSE);
         }
 
         if (resposeFamily != Family.SUCCESSFUL) {

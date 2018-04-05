@@ -687,7 +687,7 @@ public class HttpEasy {
                 sb.append(TAB).append(value);
             }
 
-            log(sb.toString());
+            log(sb.toString(), LogType.REQUEST);
         }
 
         connection.connect();
@@ -699,11 +699,11 @@ public class HttpEasy {
         return connection;
     }
 
-	public void log(String message) {
+    public void log(String message, LogType logType) {
         if (logWriter != null) {
-            logWriter.info(message);
+            logWriter.info(message, logType);
         } else if (HttpEasyDefaults.getDefaultLogWriter() != null) {
-            HttpEasyDefaults.getDefaultLogWriter().info(message);
+            HttpEasyDefaults.getDefaultLogWriter().info(message, logType);
         } else {
             LOGGER.trace(message);
         }
