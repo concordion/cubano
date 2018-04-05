@@ -4,42 +4,44 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
+import org.concordion.cubano.config.Config;
+import org.concordion.cubano.config.ProxyConfig;
 import org.junit.Test;
-
 
 public class HttpEasyReaderTests {
 
-	@Test
-	public void httpEasyRequest() throws HttpResponseException, IOException {
+    @Test
+    public void httpEasyRequest() throws HttpResponseException, IOException {
 
-		HttpEasy.withDefaults()
-			.allowAllHosts()
-			.trustAllCertificates();
+        HttpEasy.withDefaults()
+                .allowAllHosts()
+                .trustAllCertificates();
 
-        // No longer a dependency on the 'cubano-config' project.
-        // ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
-        //
-        // if (proxyConfig.isProxyRequired()) {
-        // HttpEasy.withDefaults()
-        // .proxy(new Proxy(Proxy.Type.HTTP,
-        // new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
-        // .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
-        // .bypassProxyForLocalAddresses(true);
-        // }
+        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
 
-		JsonReader response 
-				= HttpEasy.request()
-					.baseURI("http://httpbin.org")
-	                .path("get")
-					.queryParam("name", "fred")
-                    .withLogWriter(new TestLogWriter())
-					.logRequestDetails()
-					.get()
-					.getJsonReader();
+        if (proxyConfig.isProxyRequired()) {
+            HttpEasy.withDefaults()
+                    .proxy(new Proxy(Proxy.Type.HTTP,
+                            new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
+                    .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
+                    .bypassProxyForLocalAddresses(true);
+        }
 
-		assertThat(response.getAsString("url"), is("http://httpbin.org/get?name=fred"));
+        JsonReader response = HttpEasy.request()
+                .baseURI("http://httpbin.org")
+                .header("hellow", "world")
+                .path("get")
+                .queryParam("name", "fred")
+                .withLogWriter(new TestLogWriter())
+                .logRequestDetails()
+                .get()
+                .getJsonReader();
 
-	}
+        assertThat(response.getAsString("url"), is("http://httpbin.org/get?name=fred"));
+
+    }
 
 }
