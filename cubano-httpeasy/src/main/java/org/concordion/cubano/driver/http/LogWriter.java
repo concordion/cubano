@@ -11,6 +11,7 @@ public interface LogWriter {
      * Write info level log message.
      *
      * @param message Log message
+     * @param logType Log message is Request or Response
      */
-    public void info(String message);
+    public void info(String message, LogType logType);
 }

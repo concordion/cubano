@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
@@ -27,8 +26,6 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.concordion.cubano.config.Config;
-import org.concordion.cubano.config.ProxyConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -169,18 +166,6 @@ public class HttpEasy {
 
     boolean isLogRequestDetails() {
         return logRequestDetails;
-    }
-
-    static {
-        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
-
-        if (proxyConfig.isProxyRequired()) {
-            HttpEasy.withDefaults()
-                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
-                    .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
-                    .bypassProxyForLocalAddresses(true);
-        }
-
     }
 
     /**
@@ -640,26 +625,51 @@ public class HttpEasy {
         }
 
         String authUser = "";
+        String authMsg = "";
 
         if (authString != null && !authString.isEmpty()) {
             authUser = authString.substring(0, authString.indexOf(":"));
-            authUser = " as user '" + authUser + "'";
+            authMsg = " as user '" + authUser + "'";
         }
 
-        log("Sending " + requestMethod + authUser + " to " + url.toString());
-        //LOGGER.debug("Sending {}{} to {}", requestMethod, authUser, url.toString());
+        LOGGER.debug("Sending " + requestMethod + authMsg + " to " + url.toString());
+
+        String TAB = "\t";
+        String NEW_LINE = System.getProperty("line.separator");
 
         if (logRequestDetails) {
             StringBuilder sb = new StringBuilder();
+            sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
+            sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
+            sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy()).append(NEW_LINE);
+            sb.append("Query Params:").append(NEW_LINE);
+            for (String value : query.toString().split("&")) {
+                sb.append(TAB).append(value).append(NEW_LINE);
+            }
+            if (!authUser.isEmpty()) {
+                sb.append("Authorization:").append(TAB).append(authUser).append(NEW_LINE);
+            }
+            sb.append("Request Headers:").append(NEW_LINE);
+
+            List<String> headers = new ArrayList<>();
 
             for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
                 for (String value : header.getValue()) {
-                    sb.append("\t").append(header.getKey()).append(": ").append(value).append(System.lineSeparator());
+                    if (header.getKey() == null || header.getKey().isEmpty()) {
+                        sb.append(TAB).append(value).append(NEW_LINE);
+                    } else {
+                        headers.add(String.format("%s: %s", header.getKey(), value));
+                    }
                 }
             }
 
-            log("With Request Headers:" + System.lineSeparator() + sb.toString());
-            //LOGGER.trace("With Request Headers:{}{}", System.lineSeparator(), sb);
+            headers.sort((h1, h2) -> h1.compareTo(h2));
+
+            for (String value : headers) {
+                sb.append(TAB).append(value);
+            }
+
+            log(sb.toString(), LogType.REQUEST);
         }
 
         connection.connect();
@@ -671,11 +681,11 @@ public class HttpEasy {
         return connection;
     }
 
-    private void log(String message) {
+    public void log(String message, LogType logType) {
         if (logWriter != null) {
-            logWriter.info(message);
+            logWriter.info(message, logType);
         } else if (HttpEasyDefaults.getDefaultLogWriter() != null) {
-            HttpEasyDefaults.getDefaultLogWriter().info(message);
+            HttpEasyDefaults.getDefaultLogWriter().info(message, logType);
         } else {
             LOGGER.trace(message);
         }
