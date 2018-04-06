@@ -16,6 +16,8 @@ import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.github.bonigarcia.wdm.Architecture;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -26,10 +28,12 @@ import io.github.bonigarcia.wdm.WebDriverManager;
  * @author Andrew Sumner
  */
 public abstract class LocalBrowserProvider implements BrowserProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalBrowserProvider.class);
+
     private PropertyLoader propertyLoader = Config.getInstance().getPropertyLoader();
     private ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
     private WebDriverConfig config = WebDriverConfig.getInstance();
-    protected String driverPath = null;
+    private String driverPath = null;
 
     /**
      * 
@@ -102,7 +106,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * 
      * @return Path to browser executable
      */
-    public String getBrowserExe() {
+    protected String getBrowserExe() {
         String localBrowserExe = propertyLoader.getProperty(getBrowserName() + ".exe", null);
 
         if (!localBrowserExe.isEmpty()) {
@@ -228,10 +232,22 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
     public void cleanup() {
         if (driverPath != null) {
-            try {
-                Runtime.getRuntime().exec("taskkill /F /IM " + new File(driverPath).getName());
-            } catch (IOException e) {
-                throw new RuntimeException("Unable to close browser driver", e);
+            if (WebDriverConfig.getInstance().isCleanupDriver()) {
+                try {
+                    String cmd;
+                    boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+
+                    if (isWindows) {
+                        cmd = String.format("taskkill /F /IM %s", new File(driverPath).getName());
+                    } else {
+                        cmd = String.format("pkill -f \"%s\"", new File(driverPath).getName());
+                    }
+
+                    LOGGER.debug("Cleaning up any orphaned browser drivers using command: {}", cmd);
+                    Runtime.getRuntime().exec(cmd);
+                } catch (IOException e) {
+                    LOGGER.warn("Unable to terminate browser driver", e);
+                }
             }
         }
     }
