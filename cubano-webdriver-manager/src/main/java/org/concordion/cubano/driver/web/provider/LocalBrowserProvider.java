@@ -33,7 +33,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
     private PropertyLoader propertyLoader = Config.getInstance().getPropertyLoader();
     private ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
     private WebDriverConfig config = WebDriverConfig.getInstance();
-    protected String driverPath = null;
+    private String driverPath = null;
 
     /**
      * 
@@ -106,7 +106,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * 
      * @return Path to browser executable
      */
-    public String getBrowserExe() {
+    protected String getBrowserExe() {
         String localBrowserExe = propertyLoader.getProperty(getBrowserName() + ".exe", null);
 
         if (!localBrowserExe.isEmpty()) {
@@ -232,9 +232,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
     public void cleanup() {
         if (driverPath != null) {
-            boolean isDebug = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
-
-            if (WebDriverConfig.getInstance().isCleanupDriver() || isDebug) {
+            if (WebDriverConfig.getInstance().isCleanupDriver()) {
                 try {
                     String cmd;
                     boolean isWindows = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
