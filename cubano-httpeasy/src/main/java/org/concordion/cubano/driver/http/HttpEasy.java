@@ -168,24 +168,6 @@ public class HttpEasy {
         return logRequestDetails;
     }
 
-// TODO Andrew / Nigel: This should not be here as restricts how can use httpeasy, but should it be in cubano framework or individual project? 
-//    static {
-//        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
-//
-//		HttpEasy.withDefaults()
-//			.allowAllHosts()
-//			.trustAllCertificates()
-//				.baseUrl(AppConfig.getInstance().getBaseUrl());
-//		
-//        if (proxyConfig.isProxyRequired()) {
-//            HttpEasy.withDefaults()
-//                    .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
-//                    .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
-//                    .bypassProxyForLocalAddresses(true);
-//        }
-//
-//    }
-
     /**
      * @return Default settings object
      */
