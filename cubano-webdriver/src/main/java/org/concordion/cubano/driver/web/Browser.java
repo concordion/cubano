@@ -131,7 +131,7 @@ public class Browser {
     }
 
     private WebDriver getActiveDriver() {
-    	return this.eventFiringDriver == null ? this.wrappedDriver : this.eventFiringDriver;
+        return this.eventFiringDriver == null ? this.wrappedDriver : this.eventFiringDriver;
     }
     
     /**
@@ -180,9 +180,10 @@ public class Browser {
         	if (this.eventListener != null) {
         		this.eventFiringDriver.unregister(this.eventListener);
         	}
+
             getActiveDriver().quit();
         } catch (Exception ex) {
-            LOGGER.debug("Exception attempting to quit the browser: " + ex.getMessage());
+            LOGGER.warn("Exception attempting to quit the browser: " + ex.getMessage());
         }
 
         this.eventFiringDriver = null;
