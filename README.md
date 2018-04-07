@@ -1,5 +1,5 @@
 [![Build Status](https://img.shields.io/travis/concordion/cubano.svg)](https://travis-ci.org/concordion/cubano)
-[![Maven Central](https://img.shields.io/maven-central/v/org.concordion/cubano-concordion.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.concordion%22%20AND%20a%3A%cubano-concordion%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.concordion/cubano-concordion.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.concordion%22%20AND%20a%3A%22cubano-concordion%22)
 [![Apache License 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 # cubano
