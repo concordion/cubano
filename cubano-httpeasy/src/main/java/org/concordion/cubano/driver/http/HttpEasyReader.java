@@ -14,6 +14,8 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -25,13 +27,15 @@ public class HttpEasyReader {
     private HttpURLConnection connection;
     private String returned = null;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpEasyReader.class);
+
     /**
      * Create new HttpEasyReader.
      *
      * @param connection HttpURLConnection
-     * @param request    Request that is creating this reader
+     * @param request Request that is creating this reader
      * @throws HttpResponseException if request failed
-     * @throws IOException           for connection errors
+     * @throws IOException for connection errors
      */
     public HttpEasyReader(HttpURLConnection connection, HttpEasy request) throws HttpResponseException, IOException {
 
@@ -54,15 +58,16 @@ public class HttpEasyReader {
                     }
                 }
             }
-            
+
             headers.sort((h1, h2) -> h1.compareTo(h2));
-            
+
             for (String value : headers) {
                 sb.append("\t").append(value).append(System.lineSeparator());
             }
 
-            sb.append(String.format("Response:%s%s", System.lineSeparator(), asString()));
-            
+            sb.append(String.format("Response:%s%s", System.lineSeparator(),
+                    formatAsReaderUsingContentType(asString(), getConnection().getContentType())));
+
             request.log(sb.toString(), LogType.RESPONSE);
         }
 
@@ -80,6 +85,28 @@ public class HttpEasyReader {
                             "\r\nResponse Content: " + asString(connection.getErrorStream()));
         }
 
+    }
+
+    private String formatAsReaderUsingContentType(String asString, String contentType) {
+
+        if (contentType != null) {
+            try {
+
+                if (contentType.contains("json")) {
+                    return new JsonReader(asString).asPrettyString();
+                }
+
+                if (contentType.contains("xml")) {
+                    return new XmlReader(asString).asPrettyString();
+                }
+
+            } catch (Exception e) {
+                LOGGER.error(String.format("Unable to parse response using ContentType '%s', Error Msg '%s'", contentType, e.getMessage()));
+                return asString;
+            }
+        }
+
+        return asString;
     }
 
     private <T> boolean listContains(List<T> array, T targetValue) {
@@ -106,7 +133,7 @@ public class HttpEasyReader {
      * Gets the status code from an HTTP response message, see {@link HttpURLConnection#getResponseCode()}.
      *
      * @return Response code
-     * @throws IOException  if an error occurred connecting to the server
+     * @throws IOException if an error occurred connecting to the server
      */
     public int getResponseCode() throws IOException {
         return connection.getResponseCode();
@@ -116,7 +143,7 @@ public class HttpEasyReader {
      * Gets the family of the status code from an HTTP response message, see {@link Family}.
      *
      * @return Response family
-     * @throws IOException  if an error occurred connecting to the server
+     * @throws IOException if an error occurred connecting to the server
      */
     public Family getResponseCodeFamily() throws IOException {
         return Family.familyOf(connection.getResponseCode());
@@ -179,7 +206,6 @@ public class HttpEasyReader {
         return new XmlReader(asString());
     }
 
-
     /**
      * Download a file from the response.
      *
@@ -202,10 +228,10 @@ public class HttpEasyReader {
 
         fileName = new File(fileName).getName();
 
-//        System.out.println("Content-Type = " + connection.getContentType());
-//        System.out.println("Content-Disposition = " + disposition);
-//        System.out.println("Content-Length = " + connection.getContentLength());
-//        System.out.println("fileName = " + fileName);
+        // System.out.println("Content-Type = " + connection.getContentType());
+        // System.out.println("Content-Disposition = " + disposition);
+        // System.out.println("Content-Length = " + connection.getContentLength());
+        // System.out.println("fileName = " + fileName);
 
         File folder = new File(saveDir);
         if (!folder.exists()) {
@@ -218,8 +244,7 @@ public class HttpEasyReader {
 
         try (
                 InputStream inputStream = connection.getInputStream();
-                FileOutputStream outputStream = new FileOutputStream(saveFile);
-        ) {
+                FileOutputStream outputStream = new FileOutputStream(saveFile);) {
 
             int bytesRead = -1;
             byte[] buffer = new byte[bufferSize];
@@ -238,7 +263,7 @@ public class HttpEasyReader {
      *
      * @param dispositionString The entire "Content-disposition" string
      * @return <code>null</code> if no filename could be found, otherwise,
-     * returns the filename
+     *         returns the filename
      * @see #parseForAttribute(String, String)
      */
     private String parseDispositionFilename(String dispositionString) {
@@ -248,13 +273,15 @@ public class HttpEasyReader {
     /**
      * Parses a string looking for a attribute-value pair, and returns the value.
      * For example:
+     * 
      * <pre>
-     *      String parseString = "Content-Disposition: filename=\"bob\" name=\"jack\"";
-     *      MultipartIterator.parseForAttribute(parseString, "name");
+     * String parseString = "Content-Disposition: filename=\"bob\" name=\"jack\"";
+     * MultipartIterator.parseForAttribute(parseString, "name");
      * </pre>
+     * 
      * That will return "bob".
      *
-     * @param attribute   The name of the attribute you're trying to get
+     * @param attribute The name of the attribute you're trying to get
      * @param parseString The string to retrieve the value from
      * @return The value of the attribute, or <code>null</code> if none could be found
      */
