@@ -82,7 +82,7 @@ public class HttpEasyReader {
 
             throw new HttpResponseException(getResponseCode(),
                     "Server returned HTTP response code " + connection.getResponseCode() + ": " + connection.getResponseMessage() +
-                            "\r\nResponse Content: " + asString(connection.getErrorStream()));
+                            "\r\nResponse Content: " + asString());
         }
 
     }
