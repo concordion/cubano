@@ -59,10 +59,10 @@ To build a local release and publish to your local Maven repository, you can run
 
 Thanks to [Te Manatū Whakahiato Ora, the Ministry of Social Development, NZ](http://www.msd.govt.nz/) for contributing this framework to the open source community.
 
-[![MSD](https://catalogue.data.govt.nz/uploads/group/2017-06-09-002021.456412image.jpg)](http://www.msd.govt.nz/) 
+<img src="https://catalogue.data.govt.nz/uploads/group/2017-06-09-002021.456412image.jpg" alt="MSD logo" width="200"/>
 
 ---
 
-Thanks to [Structure 101](http://structure101.com/) for their software architecture visualisation tool - helping us keep the architecture in check. 
+Thanks also to [Structure 101](http://structure101.com/) for their software architecture visualisation tool - helping us keep the architecture in check. 
 
 [![Structure 101](http://structure101.com/static-content/images/s101_170.png)](http://structure101.com/)
