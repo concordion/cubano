@@ -11,18 +11,14 @@ import org.concordion.slf4j.ext.ReportLoggerFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.events.WebDriverEventListener;
+import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
 
 /**
  * Listens for WebDriver events and logs them.
  * 
- * <p>
- * Requires Selenium 2.23.0 or later to retrieve element names from WebElement.toString().
- * </p>
- *
  * @author Andrew Sumner
  */
-public class SeleniumEventLogger implements WebDriverEventListener {
+public class SeleniumEventLogger extends AbstractWebDriverEventListener {
     private static final ReportLogger LOGGER = ReportLoggerFactory.getReportLogger(SeleniumEventLogger.class);
     private static final String FUNKY_ARROW = "&#8658;";
 
@@ -31,33 +27,6 @@ public class SeleniumEventLogger implements WebDriverEventListener {
     private WebElement prevElement = null;
     private String prevScript = null;
     private String prevError = null;
-
-    // private String getElementName(WebElement element) {
-    // if (element == null) {
-    // return "";
-    // }
-    //
-    // String[] names = element.toString().split("[\\[\\]]");
-    // String name = names[names.length - 1];
-    // if (name.startsWith(" -> ")) {
-    // name = name.substring(4);
-    // }
-    //
-    // int pos = name.indexOf(":");
-    // if (pos > 0) {
-    // String remainder = name.substring(pos);
-    // names = name.substring(0, pos).toString().split(" ");
-    // name = names[0];
-    //
-    // for (int i = 1; i < names.length; i++) {
-    // name += names[i].substring(0, 1).toUpperCase() + names[i].substring(1);
-    // }
-    //
-    // name += remainder;
-    // }
-    //
-    // return name;
-    // }
 
     private String getElementName(WebElement element) {
         if (element == null) {
@@ -129,10 +98,6 @@ public class SeleniumEventLogger implements WebDriverEventListener {
     }
 
     @Override
-    public void afterNavigateTo(String url, WebDriver driver) {
-    }
-
-    @Override
     public void beforeNavigateBack(WebDriver driver) {
         LOGGER.with()
                 .htmlMessage("Navigating back from {} <span class=\"greyed\">{}</span>", FUNKY_ARROW, driver.getCurrentUrl())
@@ -187,10 +152,6 @@ public class SeleniumEventLogger implements WebDriverEventListener {
     }
 
     @Override
-    public void afterFindBy(By by, WebElement element, WebDriver driver) {
-    }
-
-    @Override
     public void beforeClickOn(WebElement element, WebDriver driver) {
         LOGGER.with()
                 .htmlMessage("Click {} <span class=\"greyed\">{}</span>", FUNKY_ARROW, getElementName(element))
@@ -199,13 +160,7 @@ public class SeleniumEventLogger implements WebDriverEventListener {
     }
 
     @Override
-    public void afterClickOn(WebElement element, WebDriver driver) {
-    }
-
-
-    @Override
     public void beforeChangeValueOf(WebElement element, WebDriver driver, CharSequence[] keysToSend) {
-        //originalValue = element.getText();
         originalValue = Arrays.toString(keysToSend);
 
         // What if the element is not visible anymore?
@@ -219,20 +174,8 @@ public class SeleniumEventLogger implements WebDriverEventListener {
         String changedValue = "";
 
         changedValue = Arrays.toString(keysToSend);
-//        try {
-//            changedValue = element.getText();
-//
-//            if (changedValue.isEmpty()) {
-//                changedValue = element.getAttribute("value");
-//            }
-//        } catch (StaleElementReferenceException e) {
-//            changedValue = "[Could not log change of element, because of a stale element reference exception]";
-//            return;
-//        }
 
         String name = getElementName(element);
-
-        // LOGGER.trace("{} - Changed value from '{}' to '{}'", name, originalValue, changedValue);
 
         LOGGER.with()
                 .htmlMessage("Change value {} <span class=\"greyed\">of {} from '{}' to '{}'</span>", FUNKY_ARROW, name, originalValue, changedValue)
@@ -278,10 +221,6 @@ public class SeleniumEventLogger implements WebDriverEventListener {
     }
 
     @Override
-    public void afterScript(String script, WebDriver driver) {
-    }
-
-    @Override
     public void onException(Throwable throwable, WebDriver driver) {
         if (prevError != null) {
             if (prevError.equals(throwable.getClass().getName())) {
@@ -301,30 +240,5 @@ public class SeleniumEventLogger implements WebDriverEventListener {
                                 .replace("\n", "<br />"))
                 .locationAwareParent(getParentLocation())
                 .trace();
-    }
-
-    @Override
-    public void beforeNavigateRefresh(WebDriver driver) {
-        LOGGER.trace("Refreshing Page");
-    }
-
-    @Override
-    public void afterNavigateRefresh(WebDriver driver) {
-    }
-
-    @Override
-    public void beforeAlertAccept(WebDriver driver) {
-    }
-
-    @Override
-    public void afterAlertAccept(WebDriver driver) {
-    }
-
-    @Override
-    public void afterAlertDismiss(WebDriver driver) {
-    }
-
-    @Override
-    public void beforeAlertDismiss(WebDriver driver) {
     }
 }
