@@ -59,7 +59,7 @@ To build a local release and publish to your local Maven repository, you can run
 
 Thanks to [Te Manatū Whakahiato Ora, the Ministry of Social Development, NZ](http://www.msd.govt.nz/) for contributing this framework to the open source community.
 
-[![https://catalogue.data.govt.nz/uploads/group/2017-06-09-002021.456412image.jpg]](http://www.msd.govt.nz/) 
+[![MSD](https://catalogue.data.govt.nz/uploads/group/2017-06-09-002021.456412image.jpg)](http://www.msd.govt.nz/) 
 
 ---
 
