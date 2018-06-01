@@ -1,5 +1,6 @@
 package org.concordion.cubano.config;
 
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,8 +33,7 @@ public class ProxyConfig {
         setProxyFromEnvironmentVariables();
 
         if (proxyIsRequired && proxyHost.isEmpty()) {
-            // Raise error if proxy not set
-            propertyLoader.getProperty("proxy.host");
+            throw new IllegalArgumentException("proxy.host has not been set when proxy.required is set to true");
         }
     }
 

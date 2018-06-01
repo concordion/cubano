@@ -1,5 +1,6 @@
 package org.concordion.cubano.driver.web.provider;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -123,7 +124,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * @param capabilities Options
      */
     protected void addProxyCapabilities(MutableCapabilities capabilities) {
-        if (!proxyConfig.isProxyRequired()) {
+        if (!proxyConfig.isProxyRequired() && (proxyConfig.getProxyType().isEmpty() || ProxyType.valueOf(proxyConfig.getProxyType()) == ProxyType.MANUAL)) {
             return;
         }
 
