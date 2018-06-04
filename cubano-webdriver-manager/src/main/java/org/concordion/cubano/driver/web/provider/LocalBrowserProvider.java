@@ -1,5 +1,6 @@
 package org.concordion.cubano.driver.web.provider;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -14,6 +15,7 @@ import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.Proxy.ProxyType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.CapabilityType;
 import org.slf4j.Logger;
@@ -122,7 +124,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
      * @param capabilities Options
      */
     protected void addProxyCapabilities(MutableCapabilities capabilities) {
-        if (!proxyConfig.isProxyRequired()) {
+        if (!proxyConfig.isProxyRequired() && (proxyConfig.getProxyType().isEmpty() || ProxyType.valueOf(proxyConfig.getProxyType()) == ProxyType.MANUAL)) {
             return;
         }
 
@@ -131,17 +133,24 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
         final org.openqa.selenium.Proxy proxy = new org.openqa.selenium.Proxy();
 
-        proxy.setProxyType(org.openqa.selenium.Proxy.ProxyType.MANUAL);
-        proxy.setHttpProxy(browserProxy);
-        proxy.setFtpProxy(browserProxy);
-        proxy.setSslProxy(browserProxy);
+        ProxyType proxyType = ProxyType.MANUAL;
+        if (!proxyConfig.getProxyType().isEmpty()) {
+            proxyType = ProxyType.valueOf(proxyConfig.getProxyType());
+        }
+        proxy.setProxyType(proxyType);
 
-        if (browserNonProxyHosts != null && !browserNonProxyHosts.isEmpty()) {
-            // proxy.setNoProxy - defines a String, but expects an array (as per
-            // https://w3c.github.io/webdriver/webdriver-spec.html#proxy)
-            // BUG raised at - https://github.com/mozilla/geckodriver/issues/1164
-            // Workaround defined at - https://github.com/SeleniumHQ/selenium/issues/5004
-            proxy.setNoProxy(browserNonProxyHosts);
+        if (proxyType == ProxyType.MANUAL) {
+            proxy.setHttpProxy(browserProxy);
+            proxy.setFtpProxy(browserProxy);
+            proxy.setSslProxy(browserProxy);
+
+            if (browserNonProxyHosts != null && !browserNonProxyHosts.isEmpty()) {
+                // proxy.setNoProxy - defines a String, but expects an array (as per
+                // https://w3c.github.io/webdriver/webdriver-spec.html#proxy)
+                // BUG raised at - https://github.com/mozilla/geckodriver/issues/1164
+                // Workaround defined at - https://github.com/SeleniumHQ/selenium/issues/5004
+                proxy.setNoProxy(browserNonProxyHosts);
+            }
         }
 
         capabilities.setCapability(CapabilityType.PROXY, proxy);

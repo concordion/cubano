@@ -1,5 +1,6 @@
 package org.concordion.cubano.config;
 
+
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,6 +18,7 @@ public class ProxyConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProxyConfig.class);
 
     private boolean proxyIsRequired;
+    private String proxyType;
     private String proxyHost;
     private int proxyPort = 0;
     private String proxyUsername = "";
@@ -31,8 +33,7 @@ public class ProxyConfig {
         setProxyFromEnvironmentVariables();
 
         if (proxyIsRequired && proxyHost.isEmpty()) {
-            // Raise error if proxy not set
-            propertyLoader.getProperty("proxy.host");
+            throw new IllegalArgumentException("proxy.host has not been set when proxy.required is set to true");
         }
     }
 
@@ -44,6 +45,20 @@ public class ProxyConfig {
      */
     public boolean isProxyRequired() {
         return proxyIsRequired;
+    }
+
+    /**
+     * @return The type of Proxy to use for a browser:
+     *         <ul>
+     *         <li>DIRECT: Direct connection, no proxy (default on Windows)</li>
+     *         <li>MANUAL: Manual proxy settings (e.g. for httpProxy). Will default to this if proxy.host is set</li>
+     *         <li>PAC: Proxy auto-configuration from URL</li>
+     *         <li>AUTODETECT: Proxy auto-detection (presumably with WPAD)</li>
+     *         <li>SYSTEM: Use system settings (default on Linux)</li>
+     *         </ul>
+     */
+    public String getProxyType() {
+        return proxyType;
     }
 
     /**
@@ -106,6 +121,7 @@ public class ProxyConfig {
     }
 
     private void setProxyFromConfigFile(PropertyLoader propertyLoader) {
+        proxyType = propertyLoader.getProperty("proxy.type", "");
         proxyHost = propertyLoader.getProperty("proxy.host", "");
 
         if (proxyHost.isEmpty()) {
