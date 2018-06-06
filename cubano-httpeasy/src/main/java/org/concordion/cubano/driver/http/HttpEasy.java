@@ -16,6 +16,8 @@ import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -53,10 +55,11 @@ import com.google.common.net.MediaType;
  * <p>
  * Note: if your url can contain weird characters you will want to encode it,
  * something like this: myUrl = URLEncoder.encode(myUrl, "UTF-8");
- * </p> 
+ * </p>
  * <p>
  * <b>Example</b>
  * </p>
+ * 
  * <pre>
  * HttpEasyReader r = HttpEasy.request()
  *                          .baseURI(someUrl)
@@ -94,12 +97,12 @@ import com.google.common.net.MediaType;
  * <b>Host and Certificate Verification</b>
  * </p>
  * <p>
- * There is no fine grained control, its more of an all or nothing approach:
+ * This will disable SSL and Hostname checking on HTTPS connections:
  * </p>
+ * 
  * <pre>
  * HttpEasy.withDefaults()
- *      .allowAllHosts()
- *      .trustAllCertificates();
+ *         .trustAllCertificates(true);
  * </pre>
  * <p>
  * <b>Proxy</b>
@@ -108,6 +111,7 @@ import com.google.common.net.MediaType;
  * Only basic authentication is supported, although I believe the domain can be added by included "domain/"
  * in front of the username (not tested)
  * </p>
+ * 
  * <pre>
  * HttpEasy.withDefaults()
  *     .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(user, password))))
@@ -121,6 +125,7 @@ import com.google.common.net.MediaType;
  * Redirects are NOT automatically followed - at least for REST base calls - even though the documentation
  * for HttpURLConnection says that it should...
  * </p>
+ * 
  * <pre>
  * HttpEasyReader response = HttpEasy.request()
  *     .doNotFailOn(Family.REDIRECTION)
@@ -163,6 +168,7 @@ public class HttpEasy {
     private LogWriter logWriter = null;
     private boolean logRequestDetails;
     private Integer timeout = null;
+    private boolean trustAllCertificates = false;
 
     boolean isLogRequestDetails() {
         return logRequestDetails;
@@ -234,7 +240,18 @@ public class HttpEasy {
     }
 
     /**
-     * Set the path part of the URL for the end-point.  baseURI, path and query are helpers only and any of these can take full URL.
+     * Instruct the current request to skip validation of any SSL certificates. Only applies to HTTPS connections.
+     * 
+     * @param trustAll Set to true to trust all certificates, the default is false
+     * @return A self reference
+     */
+    public HttpEasy trustAllCertificates(boolean trustAll) {
+        this.trustAllCertificates = trustAll;
+        return this;
+    }
+
+    /**
+     * Set the path part of the URL for the end-point. baseURI, path and query are helpers only and any of these can take full URL.
      *
      * @param path The host and port of the URL
      * @return A self reference
@@ -752,6 +769,15 @@ public class HttpEasy {
 
         if (url.getProtocol().equals("https")) {
             connection = (HttpsURLConnection) url.openConnection(useProxy);
+
+            if (trustAllCertificates || HttpEasyDefaults.isTrustAllCertificates()) {
+                try {
+                    ((HttpsURLConnection) connection).setHostnameVerifier(SSLUtilities.getTrustAllHostsVerifier());
+                    ((HttpsURLConnection) connection).setSSLSocketFactory(SSLUtilities.getTrustAllCertificatesSocketFactory());
+                } catch (KeyManagementException | NoSuchAlgorithmException e) {
+                    throw new IOException("Unable to trust all certificates", e);
+                }
+            }
         } else {
             connection = (HttpURLConnection) url.openConnection(useProxy);
         }
