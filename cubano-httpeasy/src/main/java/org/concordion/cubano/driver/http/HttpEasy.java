@@ -10,8 +10,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -217,7 +219,7 @@ public class HttpEasy {
      * and when reading from Input stream when a connection is established .
      * <p>
      * If the timeout expires a java.net.SocketTimeoutException is raised.
-     * <p>
+     * </p>
      * A timeout of zero is interpreted as an infinite timeout.
      *
      * @param milliseconds Timeout value in milliseconds
@@ -621,6 +623,7 @@ public class HttpEasy {
         setHeaders(connection);
 
         connection.setRequestMethod(requestMethod);
+        connection.setUseCaches(false);
 
         if (timeout != null) {
             connection.setConnectTimeout(timeout);
@@ -649,10 +652,10 @@ public class HttpEasy {
             authMsg = " as user '" + authUser + "'";
         }
 
-        LOGGER.debug("Sending " + requestMethod + authMsg + " to " + url.toString());
+        LOGGER.debug("Sending {}{} to {}", requestMethod, authMsg, url.toString());
 
         String TAB = "\t";
-        String NEW_LINE = System.getProperty("line.separator");
+        String NEW_LINE = System.lineSeparator();
 
         if (logRequestDetails) {
             StringBuilder sb = new StringBuilder();
@@ -664,7 +667,11 @@ public class HttpEasy {
                 sb.append(TAB).append(value).append(NEW_LINE);
             }
             if (!authUser.isEmpty()) {
-                sb.append("Authorization:").append(TAB).append(authUser).append(NEW_LINE);
+                sb.append("Preemptive Basic Authorization:").append(TAB).append(authUser).append(NEW_LINE);
+            }
+            PasswordAuthentication auth = Authenticator.requestPasswordAuthentication(null, null, (Integer) null, null, null, null, url, null);
+            if (auth != null) {
+                sb.append("Basic Authorization:").append(TAB).append(auth.getUserName()).append(NEW_LINE);
             }
             sb.append("Request Headers:").append(NEW_LINE);
 
@@ -767,7 +774,7 @@ public class HttpEasy {
             useProxy = Proxy.NO_PROXY;
         }
 
-        if (url.getProtocol().equals("https")) {
+        if (url.getProtocol().equalsIgnoreCase("https")) {
             connection = (HttpsURLConnection) url.openConnection(useProxy);
 
             if (trustAllCertificates || HttpEasyDefaults.isTrustAllCertificates()) {

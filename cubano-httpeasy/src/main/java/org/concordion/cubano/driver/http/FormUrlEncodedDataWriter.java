@@ -55,7 +55,7 @@ class FormUrlEncodedDataWriter implements DataWriter {
     @Override
     public void write(Logger logger) throws IOException {
         if (logger != null) {
-            logger.trace("With Content:{}\t{}", System.lineSeparator(), new String(postEndcoded, "UTF-8"));
+            logger.trace("With application/x-www-form-urlencoded content:{}\t{}", System.lineSeparator(), new String(postEndcoded, "UTF-8"));
         }
 
         try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {

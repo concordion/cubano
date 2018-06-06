@@ -70,7 +70,7 @@ class FormDataWriter implements DataWriter {
             writeFinalBoundary();
         } finally {
             if (logger != null) {
-                logger.trace("With Content:{}\t{}", LINE_FEED, logBuffer.toString().replace(LINE_FEED, LINE_FEED + "\t"));
+                logger.trace("With multipart/form-data content:{}\t{}", LINE_FEED, logBuffer.toString().replace(LINE_FEED, LINE_FEED + "\t"));
             }
 
             if (writer != null) {
