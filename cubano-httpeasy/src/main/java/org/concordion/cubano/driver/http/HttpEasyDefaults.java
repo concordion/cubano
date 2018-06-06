@@ -19,7 +19,8 @@ public class HttpEasyDefaults {
     private static String proxyPassword = null;
     private static boolean bypassProxyForLocalAddresses = true;
     private static String baseURI = "";
-    private static LogWriter defaultLogWriter = null;
+    private static LogWriter defaultLogWriter = new LoggerLogWriter();
+    private static boolean logRequestDetails = false;
 
     /**
      * Create all-trusting certificate and host name verifier per HTTPS request.
@@ -43,7 +44,7 @@ public class HttpEasyDefaults {
         try {
             HttpsURLConnection.setDefaultSSLSocketFactory(SSLUtilities.getTrustAllCertificatesSocketFactory());
         } catch (Exception e) {
-            HttpEasy.LOGGER.error(e.getMessage());
+            defaultLogWriter.error(e.getMessage(), e);
         }
 
         return this;
@@ -134,6 +135,11 @@ public class HttpEasyDefaults {
         return this;
     }
 
+    public HttpEasyDefaults logRequestDetails() {
+        HttpEasyDefaults.logRequestDetails = true;
+        return this;
+    }
+
     public static Proxy getProxy() {
         return HttpEasyDefaults.proxy;
     }
@@ -156,6 +162,10 @@ public class HttpEasyDefaults {
 
     public static LogWriter getDefaultLogWriter() {
         return HttpEasyDefaults.defaultLogWriter;
+    }
+
+    public static boolean getLogRequestDetails() {
+        return logRequestDetails;
     }
 
     private static void setBaseUrl(String baseUrl) {

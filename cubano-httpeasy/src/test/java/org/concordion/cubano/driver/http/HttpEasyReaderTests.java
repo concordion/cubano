@@ -16,10 +16,6 @@ public class HttpEasyReaderTests {
     @Test
     public void httpEasyRequest() throws HttpResponseException, IOException {
 
-        HttpEasy.withDefaults()
-                .allowAllHosts()
-                .trustAllCertificates();
-
         ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
 
         if (proxyConfig.isProxyRequired()) {

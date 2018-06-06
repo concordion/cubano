@@ -30,9 +30,6 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.net.MediaType;
 
 /**
@@ -147,8 +144,6 @@ import com.google.common.net.MediaType;
  * </p>
  */
 public class HttpEasy {
-    static final Logger LOGGER = LoggerFactory.getLogger(HttpEasy.class);
-
     // These only apply per request - but are visible to package
     List<Integer> ignoreResponseCodes = new ArrayList<Integer>();
     List<Family> ignoreResponseFamily = new ArrayList<Family>();
@@ -167,14 +162,11 @@ public class HttpEasy {
     private MediaType rawDataMediaType = null;
     private Map<String, Object> headers = new LinkedHashMap<String, Object>();
     private List<Field> fields = new ArrayList<Field>();
+    private LogManager logManager = null;
     private LogWriter logWriter = null;
-    private boolean logRequestDetails;
+    private boolean logRequestDetails = false;
     private Integer timeout = null;
     private boolean trustAllCertificates = false;
-
-    boolean isLogRequestDetails() {
-        return logRequestDetails;
-    }
 
     /**
      * @return Default settings object
@@ -317,7 +309,7 @@ public class HttpEasy {
         this.logRequestDetails = true;
         return this;
     }
-
+    
     /**
      * Override the default parameter start and end tokens.  By default any part of the url containing {...} is treated as a parameter and
      * replaced by the values passed in by {@link #urlParameters(Object...)}.
@@ -563,7 +555,7 @@ public class HttpEasy {
      *
      * @return The request response wrapped by {@link HttpEasyReader}
      * @throws HttpResponseException if request failed
-     * @throws IOException           for connection errors
+     * @throws IOException for connection errors
      */
     public HttpEasyReader get() throws HttpResponseException, IOException {
         return new HttpEasyReader(getConnectionMethod("GET"), this);
@@ -614,6 +606,10 @@ public class HttpEasy {
         return new HttpEasyReader(getConnectionMethod("DELETE"), this);
     }
 
+    public LogManager getLogManager() {
+        return logManager;
+    }
+
     private HttpURLConnection getConnectionMethod(String requestMethod) throws IOException {
         int fifteenSeconds = 15 * 1000;
         DataWriter dataWriter = null;
@@ -644,6 +640,23 @@ public class HttpEasy {
             }
         }
 
+        this.logManager = new LogManager(logWriter, logRequestDetails);
+
+        logRequest(connection, requestMethod, url);
+
+        connection.connect();
+
+        if (dataWriter != null) {
+            dataWriter.write(logManager);
+        }
+
+        return connection;
+    }
+
+    private void logRequest(HttpURLConnection connection, String requestMethod, URL url) {
+        String TAB = "\t";
+        String NEW_LINE = System.lineSeparator();
+
         String authUser = "";
         String authMsg = "";
 
@@ -652,67 +665,44 @@ public class HttpEasy {
             authMsg = " as user '" + authUser + "'";
         }
 
-        LOGGER.debug("Sending {}{} to {}", requestMethod, authMsg, url.toString());
+        StringBuilder sb = new StringBuilder();
+        sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
+        sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
+        sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy()).append(NEW_LINE);
+        if (!authUser.isEmpty()) {
+            sb.append("Preemptive Basic Authorization User:").append(TAB).append(authUser).append(NEW_LINE);
+        }
+        PasswordAuthentication auth = Authenticator.requestPasswordAuthentication(null, null, 0, null, null, null, url, null);
+        if (auth != null) {
+            sb.append("Basic Authorization User:").append(TAB).append(auth.getUserName()).append(NEW_LINE);
+        }
 
-        String TAB = "\t";
-        String NEW_LINE = System.lineSeparator();
+        sb.append("Query Params:").append(NEW_LINE);
+        for (String value : query.toString().split("&")) {
+            sb.append(TAB).append(value).append(NEW_LINE);
+        }
 
-        if (logRequestDetails) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
-            sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
-            sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy()).append(NEW_LINE);
-            sb.append("Query Params:").append(NEW_LINE);
-            for (String value : query.toString().split("&")) {
-                sb.append(TAB).append(value).append(NEW_LINE);
-            }
-            if (!authUser.isEmpty()) {
-                sb.append("Preemptive Basic Authorization:").append(TAB).append(authUser).append(NEW_LINE);
-            }
-            PasswordAuthentication auth = Authenticator.requestPasswordAuthentication(null, null, (Integer) null, null, null, null, url, null);
-            if (auth != null) {
-                sb.append("Basic Authorization:").append(TAB).append(auth.getUserName()).append(NEW_LINE);
-            }
-            sb.append("Request Headers:").append(NEW_LINE);
+        sb.append("Request Headers:").append(NEW_LINE);
+        List<String> headers = new ArrayList<>();
 
-            List<String> headers = new ArrayList<>();
-
-            for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
-                for (String value : header.getValue()) {
-                    if (header.getKey() == null || header.getKey().isEmpty()) {
-                        sb.append(TAB).append(value).append(NEW_LINE);
-                    } else {
-                        headers.add(String.format("%s: %s", header.getKey(), value));
-                    }
+        for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
+            for (String value : header.getValue()) {
+                if (header.getKey() == null || header.getKey().isEmpty()) {
+                    sb.append(TAB).append(value).append(NEW_LINE);
+                } else {
+                    headers.add(String.format("%s: %s", header.getKey(), value));
                 }
             }
-
-            headers.sort((h1, h2) -> h1.compareTo(h2));
-
-            for (String value : headers) {
-                sb.append(TAB).append(value);
-            }
-
-            log(sb.toString(), LogType.REQUEST);
         }
 
-        connection.connect();
+        headers.sort((h1, h2) -> h1.compareTo(h2));
 
-        if (dataWriter != null) {
-            dataWriter.write(logRequestDetails ? LOGGER : null);
+        for (String value : headers) {
+            sb.append(TAB).append(value);
         }
 
-        return connection;
-    }
-
-    public void log(String message, LogType logType) {
-        if (logWriter != null) {
-            logWriter.info(message, logType);
-        } else if (HttpEasyDefaults.getDefaultLogWriter() != null) {
-            HttpEasyDefaults.getDefaultLogWriter().info(message, logType);
-        } else {
-            LOGGER.trace(message);
-        }
+        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, url.toString());
+        this.logManager.request(sb.toString());
     }
 
     private DataWriter getDataWriter(URL url, HttpURLConnection connection) throws UnsupportedEncodingException {

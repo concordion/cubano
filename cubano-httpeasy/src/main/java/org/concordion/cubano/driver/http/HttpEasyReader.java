@@ -43,33 +43,7 @@ public class HttpEasyReader {
 
         Family resposeFamily = getResponseCodeFamily();
 
-        if (request.isLogRequestDetails()) {
-            StringBuilder sb = new StringBuilder();
-            List<String> headers = new ArrayList<>();
-
-            sb.append("Response Headers:").append(System.lineSeparator());
-
-            for (Entry<String, List<String>> header : getConnection().getHeaderFields().entrySet()) {
-                for (String value : header.getValue()) {
-                    if (header.getKey() == null || header.getKey().isEmpty()) {
-                        sb.append("\t").append(value).append(System.lineSeparator());
-                    } else {
-                        headers.add(String.format("%s: %s", header.getKey(), value));
-                    }
-                }
-            }
-
-            headers.sort((h1, h2) -> h1.compareTo(h2));
-
-            for (String value : headers) {
-                sb.append("\t").append(value).append(System.lineSeparator());
-            }
-
-            sb.append(String.format("Response:%s%s", System.lineSeparator(),
-                    formatAsReaderUsingContentType(asString(), getConnection().getContentType())));
-
-            request.log(sb.toString(), LogType.RESPONSE);
-        }
+        logResponse(request);
 
         if (resposeFamily != Family.SUCCESSFUL) {
             if (listContains(request.ignoreResponseCodes, getResponseCode())) {
@@ -84,7 +58,34 @@ public class HttpEasyReader {
                     "Server returned HTTP response code " + connection.getResponseCode() + ": " + connection.getResponseMessage() +
                             "\r\nResponse Content: " + asString());
         }
+    }
 
+    private void logResponse(HttpEasy request) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        List<String> headers = new ArrayList<>();
+
+        sb.append("Response Headers:").append(System.lineSeparator());
+
+        for (Entry<String, List<String>> header : getConnection().getHeaderFields().entrySet()) {
+            for (String value : header.getValue()) {
+                if (header.getKey() == null || header.getKey().isEmpty()) {
+                    sb.append("\t").append(value).append(System.lineSeparator());
+                } else {
+                    headers.add(String.format("%s: %s", header.getKey(), value));
+                }
+            }
+        }
+
+        headers.sort((h1, h2) -> h1.compareTo(h2));
+
+        for (String value : headers) {
+            sb.append("\t").append(value).append(System.lineSeparator());
+        }
+
+        sb.append(String.format("Response:%s%s", System.lineSeparator(),
+                formatAsReaderUsingContentType(asString(), getConnection().getContentType())));
+
+        request.getLogManager().response(sb.toString());
     }
 
     /**
