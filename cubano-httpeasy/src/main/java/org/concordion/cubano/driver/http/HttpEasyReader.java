@@ -83,7 +83,7 @@ public class HttpEasyReader {
         }
 
         sb.append(String.format("Response:%s%s", System.lineSeparator(),
-                formatAsReaderUsingContentType(asString(), getConnection().getContentType())));
+                formatAsReaderUsingContentType(getConnection().getContentType())));
 
         request.getLogManager().response(sb.toString());
     }
@@ -94,26 +94,29 @@ public class HttpEasyReader {
      * @param contentType from the Http Header.
      * @return A String (as original), a JsonReader or a XMLReader, depending on the content type.
      */
-    private String formatAsReaderUsingContentType(String asString, String contentType) {
+    private String formatAsReaderUsingContentType(String contentType) {
 
         if (contentType != null) {
             try {
 
                 if (contentType.contains("json")) {
-                    return new JsonReader(asString).asPrettyString();
+                    return new JsonReader(asString()).asPrettyString();
                 }
 
                 if (contentType.contains("xml")) {
-                    return new XmlReader(asString).asPrettyString();
+                    return new XmlReader(asString()).asPrettyString();
+                }
+
+                if (contentType.contains("text")) {
+                    return asString();
                 }
 
             } catch (Exception e) {
                 LOGGER.error(String.format("Unable to parse response using ContentType '%s', Error Msg '%s'", contentType, e.getMessage()));
-                return asString;
             }
         }
 
-        return asString;
+        return String.format("Unable to parse content of type %s", contentType);
     }
 
     private <T> boolean listContains(List<T> array, T targetValue) {
