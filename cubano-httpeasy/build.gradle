@@ -3,5 +3,5 @@ dependencies {
 
 	compile 'com.google.code.gson:gson:2.8.5'
 	// Breaks plgins in Jenkins if go higher than this
-	compile 'com.google.guava:guava:22.0'
+	compile 'com.google.guava:guava:19.0'
 }
