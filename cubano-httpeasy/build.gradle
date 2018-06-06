@@ -1,6 +1,4 @@
 dependencies {
-    compile project(':cubano-http')
-    
     testCompile project(':cubano-config')
     
     compile group: 'com.google.guava', name: 'guava', version: '22.0'

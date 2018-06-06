@@ -5,7 +5,6 @@ import org.concordion.api.extension.ConcordionExtension;
 import org.concordion.api.listener.ThrowableCaughtEvent;
 import org.concordion.api.listener.ThrowableCaughtListener;
 import org.concordion.cubano.driver.http.HttpDownloader;
-import org.concordion.cubano.driver.http.HttpEasyDownloader;
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.cubano.driver.web.pagegrabber.GrabWebPage;
 import org.concordion.ext.StoryboardExtension;
