@@ -19,6 +19,10 @@ public class LogManager {
         }
     }
 
+    public boolean isLogRequestDetails() {
+        return logRequestDetails;
+    }
+
     public void info(String msg, Object... args) {
         logWriter.info(msg, args);
     }

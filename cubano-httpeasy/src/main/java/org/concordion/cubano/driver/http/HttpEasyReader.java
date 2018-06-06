@@ -61,6 +61,10 @@ public class HttpEasyReader {
     }
 
     private void logResponse(HttpEasy request) throws IOException {
+        if (!request.getLogManager().isLogRequestDetails()) {
+            return;
+        }
+
         StringBuilder sb = new StringBuilder();
         List<String> headers = new ArrayList<>();
 
@@ -116,7 +120,7 @@ public class HttpEasyReader {
             }
         }
 
-        return String.format("Unable to parse content of type %s", contentType);
+        return String.format("Unable to display response for content of type '%s'", contentType);
     }
 
     private <T> boolean listContains(List<T> array, T targetValue) {

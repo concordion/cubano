@@ -665,44 +665,47 @@ public class HttpEasy {
             authMsg = " as user '" + authUser + "'";
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
-        sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
-        sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy()).append(NEW_LINE);
-        if (!authUser.isEmpty()) {
-            sb.append("Preemptive Basic Authorization User:").append(TAB).append(authUser).append(NEW_LINE);
-        }
-        PasswordAuthentication auth = Authenticator.requestPasswordAuthentication(null, null, 0, null, null, null, url, null);
-        if (auth != null) {
-            sb.append("Basic Authorization User:").append(TAB).append(auth.getUserName()).append(NEW_LINE);
-        }
+        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, url.toString());
 
-        sb.append("Query Params:").append(NEW_LINE);
-        for (String value : query.toString().split("&")) {
-            sb.append(TAB).append(value).append(NEW_LINE);
-        }
+        if (logManager.isLogRequestDetails()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
+            sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
+            sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy()).append(NEW_LINE);
+            if (!authUser.isEmpty()) {
+                sb.append("Preemptive Basic Authorization User:").append(TAB).append(authUser).append(NEW_LINE);
+            }
+            PasswordAuthentication auth = Authenticator.requestPasswordAuthentication(null, null, 0, null, null, null, url, null);
+            if (auth != null) {
+                sb.append("Basic Authorization User:").append(TAB).append(auth.getUserName()).append(NEW_LINE);
+            }
 
-        sb.append("Request Headers:").append(NEW_LINE);
-        List<String> headers = new ArrayList<>();
+            sb.append("Query Params:").append(NEW_LINE);
+            for (String value : query.toString().split("&")) {
+                sb.append(TAB).append(value).append(NEW_LINE);
+            }
 
-        for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
-            for (String value : header.getValue()) {
-                if (header.getKey() == null || header.getKey().isEmpty()) {
-                    sb.append(TAB).append(value).append(NEW_LINE);
-                } else {
-                    headers.add(String.format("%s: %s", header.getKey(), value));
+            sb.append("Request Headers:").append(NEW_LINE);
+            List<String> headers = new ArrayList<>();
+
+            for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
+                for (String value : header.getValue()) {
+                    if (header.getKey() == null || header.getKey().isEmpty()) {
+                        sb.append(TAB).append(value).append(NEW_LINE);
+                    } else {
+                        headers.add(String.format("%s: %s", header.getKey(), value));
+                    }
                 }
             }
+
+            headers.sort((h1, h2) -> h1.compareTo(h2));
+
+            for (String value : headers) {
+                sb.append(TAB).append(value);
+            }
+
+            this.logManager.request(sb.toString());
         }
-
-        headers.sort((h1, h2) -> h1.compareTo(h2));
-
-        for (String value : headers) {
-            sb.append(TAB).append(value);
-        }
-
-        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, url.toString());
-        this.logManager.request(sb.toString());
     }
 
     private DataWriter getDataWriter(URL url, HttpURLConnection connection) throws UnsupportedEncodingException {
