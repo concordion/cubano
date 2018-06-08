@@ -167,6 +167,7 @@ public class HttpEasy {
     private boolean logRequestDetails = false;
     private Integer timeout = null;
     private boolean trustAllCertificates = false;
+    private boolean skipEmptyValues = false;
 
     /**
      * @return Default settings object
@@ -219,6 +220,18 @@ public class HttpEasy {
      */
     public HttpEasy setTimeout(int milliseconds) {
         this.timeout = milliseconds;
+        return this;
+    }
+
+    /**
+     * When adding fields and query parameters, do not add them if the value is null or empty.
+     * This must be called before setting any values.
+     * 
+     * @param skipEmptyValues
+     * @return A self reference
+     */
+    public HttpEasy skipEmptyValues(boolean skipEmptyValues) {
+        this.skipEmptyValues = skipEmptyValues;
         return this;
     }
 
@@ -284,6 +297,10 @@ public class HttpEasy {
         }
 
         if (value == null) {
+            return this;
+        }
+
+        if (skipEmptyValues && value instanceof String && ((String) value).isEmpty()) {
             return this;
         }
 
@@ -461,7 +478,13 @@ public class HttpEasy {
             throw new InvalidParameterException("InputStream must provide filename");
         }
 
+        if (skipEmptyValues) {
+            if (value == null ) return this;
+            if (value instanceof String && ((String)value).isEmpty()) return this;
+        }
+        
         fields.add(new Field(name, value, type, fileName));
+        
         return this;
     }
 
