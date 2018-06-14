@@ -10,10 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +28,8 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
 import com.google.common.net.MediaType;
 
 /**
@@ -694,15 +694,10 @@ public class HttpEasy {
             StringBuilder sb = new StringBuilder();
             sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
             sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
-            sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy()).append(NEW_LINE);
-            if (!authUser.isEmpty()) {
-                sb.append("Preemptive Basic Authorization User:").append(TAB).append(authUser).append(NEW_LINE);
+            sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy(url)).append(NEW_LINE);
+            if (!Strings.isNullOrEmpty(authUser) && !Strings.isNullOrEmpty(HttpEasyDefaults.getAuthUser())) {
+                sb.append("Basic Authorization User:").append(TAB).append(MoreObjects.firstNonNull(authUser, HttpEasyDefaults.getAuthUser())).append(NEW_LINE);
             }
-            PasswordAuthentication auth = Authenticator.requestPasswordAuthentication(null, null, 0, null, null, null, url, null);
-            if (auth != null) {
-                sb.append("Basic Authorization User:").append(TAB).append(auth.getUserName()).append(NEW_LINE);
-            }
-
             sb.append("Query Params:").append(NEW_LINE);
             for (String value : query.toString().split("&")) {
                 sb.append(TAB).append(value).append(NEW_LINE);
@@ -784,11 +779,7 @@ public class HttpEasy {
 
     private HttpURLConnection getConnection(URL url) throws IOException {
         HttpURLConnection connection;
-        Proxy useProxy = HttpEasyDefaults.getProxy();
-
-        if (HttpEasyDefaults.isBypassProxyForLocalAddresses() && isLocalAddress(url)) {
-            useProxy = Proxy.NO_PROXY;
-        }
+        Proxy useProxy = HttpEasyDefaults.getProxy(url);
 
         if (url.getProtocol().equalsIgnoreCase("https")) {
             connection = (HttpsURLConnection) url.openConnection(useProxy);
@@ -808,15 +799,11 @@ public class HttpEasy {
         return connection;
     }
 
-    private boolean isLocalAddress(URL url) {
-        return "localhost, 127.0.0.1".contains(url.getHost());
-    }
-
     private URL getURL() throws MalformedURLException {
         String spec = "";
 
         if (!containsProtol(path) && !containsProtol(query.toString())) {
-            spec = (baseURI == null || baseURI.isEmpty()) ? HttpEasyDefaults.getBaseURI() : baseURI;
+            spec = (baseURI == null || baseURI.isEmpty()) ? HttpEasyDefaults.getBaseUrl() : baseURI;
         }
 
         spec = appendSegmentToUrl(spec, path, "/");

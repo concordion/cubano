@@ -1,10 +1,7 @@
 package org.concordion.cubano.driver.http;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.net.Proxy;
-
-import javax.net.ssl.HttpsURLConnection;
+import java.net.URL;
 
 /**
  * Allows setting of default properties used by all subsequent HttpEasy requests.
@@ -12,13 +9,21 @@ import javax.net.ssl.HttpsURLConnection;
  * @author Andrew Sumner
  */
 public class HttpEasyDefaults {
-    // Static values are set by RestRequestDefaults and apply to all requests
+    private static String baseUrl = "";
     private static boolean trustAllCertificates = false;
+
+    // Request authorisation
+    private static String authUser = null;
+    private static String authPassword = null;
+
+    // Proxy
+    private static ProxyDetection proxyDetection = ProxyDetection.AUTO;
+    private static volatile ProxySearch proxySearch = null;
     private static Proxy proxy = Proxy.NO_PROXY;
     private static String proxyUser = null;
     private static String proxyPassword = null;
-    private static boolean bypassProxyForLocalAddresses = true;
-    private static String baseURI = "";
+
+    // Logging
     private static LogWriter defaultLogWriter = new LoggerLogWriter();
     private static boolean logRequestDetails = false;
 
@@ -35,46 +40,15 @@ public class HttpEasyDefaults {
     }
 
     /**
-     * Create a global all-trusting certificate verifier.
-     * This might have unintended consequences and you should consider using the {@link #trustAllCertificates(boolean)} instead.
-     * 
-     * @return A self reference
-     */
-    public HttpEasyDefaults trustAllCertificates() {
-        try {
-            HttpsURLConnection.setDefaultSSLSocketFactory(SSLUtilities.getTrustAllCertificatesSocketFactory());
-        } catch (Exception e) {
-            defaultLogWriter.error(e.getMessage(), e);
-        }
-
-        return this;
-    }
-
-    /**
-     * Create all-trusting host name verifier.
-     * This might have uninteded consequences and you should consider using the {@link #trustAllCertificates(boolean)} instead.
-     * 
-     * @return A self reference
-     */
-    public HttpEasyDefaults allowAllHosts() {
-        HttpsURLConnection.setDefaultHostnameVerifier(SSLUtilities.getTrustAllHostsVerifier());
-
-        return this;
-    }
-
-    /**
-     * Add default authorization.
+     * Add default authorization for any requests made. Will set the auth header for every request.
      *
-     * @param username username if need NTLM authentication format would be DOMAIN\\user
-     * @param password password
+     * @param username User name, if need NTLM authentication format would be DOMAIN\\user
+     * @param password Password
      * @return A self reference
      */
     public HttpEasyDefaults authorization(final String username, final String password) {
-        Authenticator.setDefault(new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password.toCharArray());
-            }
-        });
+        HttpEasyDefaults.authUser = username;
+        HttpEasyDefaults.authPassword = password;
 
         return this;
     }
@@ -86,7 +60,8 @@ public class HttpEasyDefaults {
      * @return A self reference
      */
     public HttpEasyDefaults proxy(Proxy proxy) {
-        HttpEasyDefaults.setProxy(proxy);
+        HttpEasyDefaults.proxy = proxy;
+
         return this;
     }
 
@@ -98,18 +73,9 @@ public class HttpEasyDefaults {
      * @return A self reference
      */
     public HttpEasyDefaults proxyAuth(String userName, String password) {
-        HttpEasyDefaults.setProxyAuth(userName, password);
-        return this;
-    }
+        HttpEasyDefaults.proxyUser = userName;
+        HttpEasyDefaults.proxyPassword = password;
 
-    /**
-     * Use proxy, or not, for local addresses.
-     *
-     * @param bypassLocalAddresses Value
-     * @return A self reference
-     */
-    public HttpEasyDefaults bypassProxyForLocalAddresses(boolean bypassLocalAddresses) {
-        HttpEasyDefaults.setBypassProxyForLocalAddresses(bypassLocalAddresses);
         return this;
     }
 
@@ -120,7 +86,8 @@ public class HttpEasyDefaults {
      * @return A self reference
      */
     public HttpEasyDefaults baseUrl(String baseUrl) {
-        HttpEasyDefaults.setBaseUrl(baseUrl);
+        HttpEasyDefaults.baseUrl = baseUrl;
+
         return this;
     }
 
@@ -131,17 +98,43 @@ public class HttpEasyDefaults {
      * @return A self reference
      */
     public HttpEasyDefaults withLogWriter(LogWriter logWriter) {
-        HttpEasyDefaults.setDefaultLogWriter(logWriter);
+        HttpEasyDefaults.defaultLogWriter = logWriter;
+
         return this;
     }
 
     public HttpEasyDefaults logRequestDetails() {
         HttpEasyDefaults.logRequestDetails = true;
+
         return this;
     }
 
-    public static Proxy getProxy() {
-        return HttpEasyDefaults.proxy;
+    public static boolean isTrustAllCertificates() {
+        return trustAllCertificates;
+    }
+
+    public static String getAuthUser() {
+        return HttpEasyDefaults.authUser;
+    }
+
+    public static String getAuthPassword() {
+        return HttpEasyDefaults.authPassword;
+    }
+
+    public static Proxy getProxy(URL url) {
+        if (proxyDetection != ProxyDetection.AUTO) {
+            return proxy;
+        }
+
+        if (proxySearch == null) {
+            synchronized (HttpEasyDefaults.class) {
+                if (proxySearch == null) {
+                    proxySearch = new ProxySearch();
+                }
+            }
+        }
+
+        return proxySearch.select(url);
     }
 
     public static String getProxyUser() {
@@ -152,12 +145,8 @@ public class HttpEasyDefaults {
         return HttpEasyDefaults.proxyPassword;
     }
 
-    public static boolean isBypassProxyForLocalAddresses() {
-        return HttpEasyDefaults.bypassProxyForLocalAddresses;
-    }
-
-    public static String getBaseURI() {
-        return HttpEasyDefaults.baseURI;
+    public static String getBaseUrl() {
+        return HttpEasyDefaults.baseUrl;
     }
 
     public static LogWriter getDefaultLogWriter() {
@@ -166,30 +155,5 @@ public class HttpEasyDefaults {
 
     public static boolean getLogRequestDetails() {
         return logRequestDetails;
-    }
-
-    private static void setBaseUrl(String baseUrl) {
-        HttpEasyDefaults.baseURI = baseUrl;
-    }
-
-    private static void setDefaultLogWriter(LogWriter logWriter) {
-        HttpEasyDefaults.defaultLogWriter = logWriter;
-    }
-
-    private static void setProxy(Proxy proxy) {
-        HttpEasyDefaults.proxy = proxy;
-    }
-
-    private static void setProxyAuth(String userName, String password) {
-        HttpEasyDefaults.proxyUser = userName;
-        HttpEasyDefaults.proxyPassword = password;
-    }
-
-    private static void setBypassProxyForLocalAddresses(boolean bypassLocalAddresses) {
-        HttpEasyDefaults.bypassProxyForLocalAddresses = bypassLocalAddresses;
-    }
-
-    public static boolean isTrustAllCertificates() {
-        return trustAllCertificates;
     }
 }

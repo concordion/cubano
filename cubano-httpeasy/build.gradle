@@ -1,5 +1,5 @@
 dependencies {
-    testCompile project(':cubano-config')
+    //testCompile project(':cubano-config')
 
 	compile 'com.google.code.gson:gson:2.8.5'
 	// Breaks plgins in Jenkins if go higher than this.  Only using it to get MediaType so probably not an issue
