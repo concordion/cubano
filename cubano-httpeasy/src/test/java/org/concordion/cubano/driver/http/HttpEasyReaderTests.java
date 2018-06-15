@@ -11,7 +11,7 @@ public class HttpEasyReaderTests {
 
     @Test
     public void httpEasyRequest() throws HttpResponseException, IOException {
-
+        
         // ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
 
         // if (proxyConfig.isProxyRequired()) {
@@ -27,6 +27,16 @@ public class HttpEasyReaderTests {
                 .header("hellow", "world")
                 .path("get")
                 .queryParam("name", "fred")
+                .withLogWriter(new TestLogWriter())
+                .logRequestDetails()
+                .get()
+                .getJsonReader();
+
+        response = HttpEasy.request()
+                .baseURI("http://httpbin.org")
+                .header("hell", "world")
+                .path("get")
+                .queryParam("myname", "fred")
                 .withLogWriter(new TestLogWriter())
                 .logRequestDetails()
                 .get()

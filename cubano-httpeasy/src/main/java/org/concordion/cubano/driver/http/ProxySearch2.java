@@ -25,7 +25,7 @@ import java.util.Map;
  * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/net/proxies.html">Java Networking and Proxies</a>
  *
  */
-public class ProxySearch {
+public class ProxySearch2 {
     static {
         System.setProperty("java.net.useSystemProxies", "true");
     }
@@ -41,11 +41,11 @@ public class ProxySearch {
         }
     };
 
-    public ProxySearch() {
+    public ProxySearch2() {
         this(ProxySelector.getDefault());
     }
 
-    public ProxySearch(ProxySelector selector) {
+    public ProxySearch2(ProxySelector selector) {
         this.selector = selector;
     }
 

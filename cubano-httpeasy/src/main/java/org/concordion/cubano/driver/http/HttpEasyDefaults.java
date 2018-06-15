@@ -1,7 +1,13 @@
 package org.concordion.cubano.driver.http;
 
 import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
+
+import com.github.markusbernhardt.proxy.ProxySearch;
 
 /**
  * Allows setting of default properties used by all subsequent HttpEasy requests.
@@ -18,7 +24,7 @@ public class HttpEasyDefaults {
 
     // Proxy
     private static ProxyDetection proxyDetection = ProxyDetection.AUTO;
-    private static volatile ProxySearch proxySearch = null;
+    private static volatile ProxySelector proxySearch = null;
     private static Proxy proxy = Proxy.NO_PROXY;
     private static String proxyUser = null;
     private static String proxyPassword = null;
@@ -129,12 +135,34 @@ public class HttpEasyDefaults {
         if (proxySearch == null) {
             synchronized (HttpEasyDefaults.class) {
                 if (proxySearch == null) {
-                    proxySearch = new ProxySearch();
+                    proxySearch = ProxySearch.getDefaultProxySearch().getProxySelector();
                 }
             }
         }
 
-        return proxySearch.select(url);
+        Proxy proxy = Proxy.NO_PROXY;
+
+        // Get list of proxies from default ProxySelector available for given URL
+        List<Proxy> proxies = proxySearch.select(getUri(url));
+
+        // Find first proxy for HTTP/S. Any DIRECT proxy in the list returned is only second choice
+        if (proxies != null) {
+            loop:
+            for (Proxy p : proxies) {
+                switch (p.type()) {
+                case HTTP:
+                    proxy = p;
+                    break loop;
+                case DIRECT:
+                    proxy = p;
+                    break;
+                default:
+                    // ignore other proxy types
+                }
+            }
+        }
+
+        return proxy;
     }
 
     public static String getProxyUser() {
@@ -155,5 +183,13 @@ public class HttpEasyDefaults {
 
     public static boolean getLogRequestDetails() {
         return logRequestDetails;
+    }
+
+    private static URI getUri(URL url) {
+        try {
+            return url.toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }
