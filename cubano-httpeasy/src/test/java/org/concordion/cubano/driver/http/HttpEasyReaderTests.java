@@ -32,16 +32,6 @@ public class HttpEasyReaderTests {
                 .get()
                 .getJsonReader();
 
-        response = HttpEasy.request()
-                .baseURI("http://httpbin.org")
-                .header("hell", "world")
-                .path("get")
-                .queryParam("myname", "fred")
-                .withLogWriter(new TestLogWriter())
-                .logRequestDetails()
-                .get()
-                .getJsonReader();
-
         assertThat(response.getAsString("url"), is("http://httpbin.org/get?name=fred"));
 
     }
