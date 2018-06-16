@@ -5,6 +5,8 @@ import java.net.ProxySelector;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.markusbernhardt.proxy.ProxySearch;
@@ -17,6 +19,7 @@ import com.github.markusbernhardt.proxy.ProxySearch;
 public class HttpEasyDefaults {
     private static String baseUrl = "";
     private static boolean trustAllCertificates = false;
+    private static List<String> sensitiveParameters = new ArrayList<>();
 
     // Request authorisation
     private static String authUser = null;
@@ -32,6 +35,7 @@ public class HttpEasyDefaults {
     // Logging
     private static LogWriter defaultLogWriter = new LoggerLogWriter();
     private static boolean logRequestDetails = false;
+
 
     /**
      * Create all-trusting certificate and host name verifier per HTTPS request.
@@ -110,6 +114,12 @@ public class HttpEasyDefaults {
         return this;
     }
 
+    public HttpEasyDefaults sensitiveParameters(String... params) {
+        HttpEasyDefaults.sensitiveParameters.addAll(Arrays.asList(params));
+        
+        return this;
+    }
+
     /**
      * Set the default logger to write to.
      *
@@ -130,6 +140,10 @@ public class HttpEasyDefaults {
 
     public static boolean isTrustAllCertificates() {
         return trustAllCertificates;
+    }
+
+    public static List<String> getSensitiveParameters() {
+        return sensitiveParameters;
     }
 
     public static String getAuthUser() {

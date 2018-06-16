@@ -697,7 +697,13 @@ public class HttpEasy {
             authMsg = " as user '" + authUser + "'";
         }
 
-        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, url.toString());
+        String logurl = url.toString();
+
+        for (String key : HttpEasyDefaults.getSensitiveParameters()) {
+            logurl = logurl.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
+        }
+
+        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, logurl);
 
         if (logManager.isLogRequestDetails()) {
             StringBuilder sb = new StringBuilder();
@@ -709,6 +715,9 @@ public class HttpEasy {
             }
             sb.append("Query Params:").append(NEW_LINE);
             for (String value : query.toString().split("&")) {
+                for (String key : HttpEasyDefaults.getSensitiveParameters()) {
+                    value = value.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
+                }
                 sb.append(TAB).append(value).append(NEW_LINE);
             }
 
