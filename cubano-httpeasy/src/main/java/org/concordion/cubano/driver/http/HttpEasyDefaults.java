@@ -23,7 +23,7 @@ public class HttpEasyDefaults {
     private static String authPassword = null;
 
     // Proxy
-    private static ProxyDetection proxyDetection = ProxyDetection.AUTO;
+    private static ProxyConfiguration proxyConfiguration = ProxyConfiguration.MANUAL;
     private static volatile ProxySelector proxySearch = null;
     private static Proxy proxy = Proxy.NO_PROXY;
     private static String proxyUser = null;
@@ -56,6 +56,19 @@ public class HttpEasyDefaults {
         HttpEasyDefaults.authUser = username;
         HttpEasyDefaults.authPassword = password;
 
+        return this;
+    }
+
+
+    /**
+     * Set the proxy configuration type.
+     * 
+     * @param configuration Automatic or Manual (default)
+     * @return A self reference
+     */
+    public HttpEasyDefaults proxyConfiguration(ProxyConfiguration configuration) {
+        HttpEasyDefaults.proxyConfiguration = configuration;
+        
         return this;
     }
 
@@ -128,7 +141,7 @@ public class HttpEasyDefaults {
     }
 
     public static Proxy getProxy(URL url) {
-        if (proxyDetection != ProxyDetection.AUTO) {
+        if (proxyConfiguration != ProxyConfiguration.MANUAL) {
             return proxy;
         }
 

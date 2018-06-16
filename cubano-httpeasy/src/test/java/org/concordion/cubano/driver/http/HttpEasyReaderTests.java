@@ -12,6 +12,7 @@ public class HttpEasyReaderTests {
     @Test
     public void httpEasyRequest() throws HttpResponseException, IOException {
         
+        HttpEasy.withDefaults().proxyConfiguration(ProxyConfiguration.AUTOMATIC);
         // ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
 
         // if (proxyConfig.isProxyRequired()) {

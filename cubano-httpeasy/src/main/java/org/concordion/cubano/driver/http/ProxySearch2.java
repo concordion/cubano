@@ -11,16 +11,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/*
- * If this proves to be insufficent look at https://github.com/MarkusBernhardt/proxy-vole - supports PAC
- * http://www.rgagnon.com/javadetails/java-0085.html   
- * https://stackoverflow.com/questions/4933677/detecting-windows-ie-proxy-setting-using-java?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
- */
-
 /**
  * Automatically detect proxy.
  * 
- * This does not support proxy automation script (PAC).
+ * This does not support proxy automation script (PAC) which is a big show stopper so this class is a waste of time and I'm using proxy-vole instead. However
+ * proxy-vole (https://github.com/MarkusBernhardt/proxy-vole) seems like overkill and so this is remaining as a starting point for a lightweight implementation...
  * 
  * @see <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/net/proxies.html">Java Networking and Proxies</a>
  *
