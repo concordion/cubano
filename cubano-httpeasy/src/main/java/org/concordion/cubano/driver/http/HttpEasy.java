@@ -167,7 +167,7 @@ public class HttpEasy {
     private boolean logRequestDetails = false;
     private Integer timeout = null;
     private boolean trustAllCertificates = false;
-    private boolean skipEmptyValues = false;
+    private boolean includeEmptyValues = false;
 
     /**
      * @return Default settings object
@@ -224,14 +224,14 @@ public class HttpEasy {
     }
 
     /**
-     * When adding fields and query parameters, do not add them if the value is null or empty.
-     * This must be called before setting any values.
+     * By default fields and query parameters are ignored if the field is null, or an empty string,
+     * to override this behaviour then use this method with a value of true.
      * 
-     * @param skipEmptyValues
+     * @param includeEmptyValues Set behaviour
      * @return A self reference
      */
-    public HttpEasy skipEmptyValues(boolean skipEmptyValues) {
-        this.skipEmptyValues = skipEmptyValues;
+    public HttpEasy includeEmptyValues(boolean includeEmptyValues) {
+        this.includeEmptyValues = includeEmptyValues;
         return this;
     }
 
@@ -292,15 +292,7 @@ public class HttpEasy {
      * @return A self reference
      */
     public HttpEasy queryParam(String name, Object value) {
-        if (name == null || name.isEmpty()) {
-            return this;
-        }
-
-        if (value == null) {
-            return this;
-        }
-
-        if (skipEmptyValues && value instanceof String && ((String) value).isEmpty()) {
+        if (skipEmptyParameter(name, value)) {
             return this;
         }
 
@@ -478,11 +470,10 @@ public class HttpEasy {
             throw new InvalidParameterException("InputStream must provide filename");
         }
 
-        if (skipEmptyValues) {
-            if (value == null ) return this;
-            if (value instanceof String && ((String)value).isEmpty()) return this;
+        if (skipEmptyParameter(name, value)) {
+            return this;
         }
-        
+
         fields.add(new Field(name, value, type, fileName));
         
         return this;
@@ -674,6 +665,24 @@ public class HttpEasy {
         }
 
         return connection;
+    }
+
+    private boolean skipEmptyParameter(String name, Object value) {
+        if (name == null || name.isEmpty()) {
+            return true;
+        }
+
+        if (!includeEmptyValues) {
+            if (value == null) {
+                return true;
+            }
+
+            if (value instanceof String && ((String) value).isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void logRequest(HttpURLConnection connection, String requestMethod, URL url) {
