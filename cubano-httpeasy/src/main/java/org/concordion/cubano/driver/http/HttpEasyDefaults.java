@@ -141,7 +141,7 @@ public class HttpEasyDefaults {
     }
 
     public static Proxy getProxy(URL url) {
-        if (proxyConfiguration != ProxyConfiguration.MANUAL) {
+        if (proxyConfiguration == ProxyConfiguration.MANUAL) {
             return proxy;
         }
 
