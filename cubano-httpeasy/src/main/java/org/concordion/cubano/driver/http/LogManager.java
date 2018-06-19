@@ -13,7 +13,7 @@ public class LogManager {
         }
 
         if (!logRequestDetails) {
-            this.logRequestDetails = HttpEasyDefaults.getLogRequestDetails();
+            this.logRequestDetails = HttpEasyDefaults.getLogRequest() && HttpEasyDefaults.getLogRequestDetails();
         } else {
             this.logRequestDetails = logRequestDetails;
         }

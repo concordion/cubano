@@ -58,7 +58,7 @@ class FormUrlEncodedDataWriter implements DataWriter {
             logparams = logparams.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
         }
 
-        logger.info("With application/x-www-form-urlencoded content:{}\t{}", System.lineSeparator(), logparams);
+        logger.info("\tWith application/x-www-form-urlencoded content:{}\t\t{}", System.lineSeparator(), logparams);
 
         try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
             wr.write(postEndcoded);

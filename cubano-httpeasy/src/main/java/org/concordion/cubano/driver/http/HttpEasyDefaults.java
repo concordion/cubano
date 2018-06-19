@@ -34,6 +34,7 @@ public class HttpEasyDefaults {
 
     // Logging
     private static LogWriter defaultLogWriter = new LoggerLogWriter();
+    private static boolean logRequest = true;
     private static boolean logRequestDetails = false;
 
 
@@ -132,8 +133,20 @@ public class HttpEasyDefaults {
         return this;
     }
 
+    public HttpEasyDefaults logRequest(boolean logRequest) {
+        HttpEasyDefaults.logRequest = logRequest;
+
+        return this;
+    }
+
     public HttpEasyDefaults logRequestDetails() {
         HttpEasyDefaults.logRequestDetails = true;
+
+        return this;
+    }
+
+    public HttpEasyDefaults logRequestDetails(boolean logRequestDetails) {
+        HttpEasyDefaults.logRequestDetails = logRequestDetails;
 
         return this;
     }
@@ -206,6 +219,10 @@ public class HttpEasyDefaults {
 
     public static LogWriter getDefaultLogWriter() {
         return HttpEasyDefaults.defaultLogWriter;
+    }
+
+    public static boolean getLogRequest() {
+        return logRequest;
     }
 
     public static boolean getLogRequestDetails() {
