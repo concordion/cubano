@@ -63,20 +63,20 @@ class RawDataWriter implements DataWriter {
         StringBuilder logBuffer = new StringBuilder();
 
         if (uploadFile != null) {
-            logBuffer.append("\tWith content of file: ").append(uploadFile.getAbsolutePath());
+            logBuffer.append("  With content of file: ").append(uploadFile.getAbsolutePath());
 
             try (FileInputStream inputStream = new FileInputStream(uploadFile)) {
                 write(inputStream);
             }
 
         } else if (uploadStream != null) {
-            logBuffer.append("\tWith content of file: ").append(uploadFileName);
+            logBuffer.append("  With content of file: ").append(uploadFileName);
 
             long length = write(uploadStream);
             connection.setRequestProperty("Content-Length", Long.toString(length));
 
         } else {
-            logBuffer.append("\tWith content: ").append(Arrays.toString(postEndcoded));
+            logBuffer.append("  With content: ").append(Arrays.toString(postEndcoded));
 
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
                 wr.write(postEndcoded);
