@@ -2,7 +2,8 @@ package org.concordion.cubano.driver.http;
 
 public class LogManager {
     private LogWriter logWriter;
-    private boolean logRequestDetails = false;
+    private boolean logRequest;
+    private boolean logRequestDetails;
     
     public LogManager(LogWriter logWriter, boolean logRequestDetails) {
         // If not provided, revert to default setting
@@ -12,10 +13,14 @@ public class LogManager {
             this.logWriter = logWriter;
         }
 
-        if (!logRequestDetails) {
-            this.logRequestDetails = HttpEasyDefaults.getLogRequest() && HttpEasyDefaults.getLogRequestDetails();
-        } else {
+        logRequest = HttpEasyDefaults.getLogRequest();
+
+        if (logRequestDetails) {
+            this.logRequest = true;
             this.logRequestDetails = logRequestDetails;
+        } else {
+            this.logRequest = HttpEasyDefaults.getLogRequest();
+            this.logRequestDetails = HttpEasyDefaults.getLogRequest() && HttpEasyDefaults.getLogRequestDetails();
         }
     }
 
@@ -24,7 +29,9 @@ public class LogManager {
     }
 
     public void info(String msg, Object... args) {
-        logWriter.info(msg, args);
+        if (logRequest) {
+            logWriter.info(msg, args);
+        }
     }
 
     public void request(String msg, Object... args) {

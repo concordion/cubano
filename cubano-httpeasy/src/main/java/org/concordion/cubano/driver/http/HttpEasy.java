@@ -686,10 +686,6 @@ public class HttpEasy {
     }
 
     private void logRequest(HttpURLConnection connection, String requestMethod, URL url) {
-        if (!HttpEasyDefaults.getLogRequest() && !logRequestDetails) {
-            return;
-        }
-
         String TAB = "\t";
         String NEW_LINE = System.lineSeparator();
 
