@@ -74,6 +74,13 @@ public class HttpEasyDefaults {
     public HttpEasyDefaults proxyConfiguration(ProxyConfiguration configuration) {
         HttpEasyDefaults.proxyConfiguration = configuration;
         
+        if (configuration == ProxyConfiguration.AUTOMATIC && proxySearch == null) {
+            synchronized (HttpEasyDefaults.class) {
+                if (proxySearch == null) {
+                    proxySearch = ProxySearch.getDefaultProxySearch().getProxySelector();
+                }
+            }
+        }
         return this;
     }
 
@@ -172,32 +179,26 @@ public class HttpEasyDefaults {
             return proxy;
         }
 
-        if (proxySearch == null) {
-            synchronized (HttpEasyDefaults.class) {
-                if (proxySearch == null) {
-                    proxySearch = ProxySearch.getDefaultProxySearch().getProxySelector();
-                }
-            }
-        }
-
         Proxy proxy = Proxy.NO_PROXY;
 
-        // Get list of proxies from default ProxySelector available for given URL
-        List<Proxy> proxies = proxySearch.select(getUri(url));
+        if (proxySearch != null) {
+            // Get list of proxies from default ProxySelector available for given URL
+            List<Proxy> proxies = proxySearch.select(getUri(url));
 
-        // Find first proxy for HTTP/S. Any DIRECT proxy in the list returned is only second choice
-        if (proxies != null) {
-            loop:
-            for (Proxy p : proxies) {
-                switch (p.type()) {
-                case HTTP:
-                    proxy = p;
-                    break loop;
-                case DIRECT:
-                    proxy = p;
-                    break;
-                default:
-                    // ignore other proxy types
+            // Find first proxy for HTTP/S. Any DIRECT proxy in the list returned is only second choice
+            if (proxies != null) {
+                loop:
+                for (Proxy p : proxies) {
+                    switch (p.type()) {
+                    case HTTP:
+                        proxy = p;
+                        break loop;
+                    case DIRECT:
+                        proxy = p;
+                        break;
+                    default:
+                        // ignore other proxy types
+                    }
                 }
             }
         }
