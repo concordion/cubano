@@ -10,4 +10,4 @@ So that I can bask in its awesomeness
 ## [Google Concordion](-)
 Given I have opened Google Search 
 When I search for [Concordion](- "#term")
-Then I can find and follow the link to [http://concordion.org/](- "?=google(#term, #TEXT)")
+Then I can find and follow the link to [https://concordion.org/](- "?=google(#term, #TEXT)")
