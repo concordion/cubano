@@ -18,6 +18,15 @@ The framework is easy to configure, for example supported browsers are simple to
 
 It is built in Java using [Concordion](http://concordion.org) and incorporates numerous extensions.
 
+## Cubano Template and Demo Projects
+Cubano provides a [Cubano Demo Project](https://github.com/concordion/cubano-demo#cubano-demo-project), which contains information regarding
+* usage
+* documentation
+* working examples 
+* and set up instructions 
+
+Once you are ready to start writing your own tests, pull down the [Cubano Template Project](https://github.com/concordion/cubano-template) and adapt this base to start automating your project.
+
 ## Contributing
 
 All contributions are welcome, we do ask however that you follow our coding standards.  This is rather easy as we have checkstyle and code formatter configuration files ready to use.
