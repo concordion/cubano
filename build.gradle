@@ -14,6 +14,22 @@ apply plugin: 'nebula-aggregate-javadocs'
 apply plugin: 'org.ajoberstar.git-publish'
 apply plugin: 'net.researchgate.release'
 
+jar {
+    manifest {
+        attributes  'Specification-Title'   : project.name,
+                'Implementation-Title'  : project.name,
+                'Specification-Version' : version.substring(0, version.lastIndexOf(".")),
+                'Implementation-Version': version,
+                'Implementation-Vendor' : 'concordion.org',
+                'Specification-Vendor'  : 'concordion.org',
+                'Created-By'            : System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')',
+                'Built-With'            : "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}",
+                'Build-Time'            : String.format("%tFT%<tRZ", Calendar.getInstance(TimeZone.getTimeZone("Z"))),
+                'Build-Revision'        : versioning.info.commit,
+                'Build-OS'              : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+    }
+}
+
 ext {
     githubUrl = "https://github.com/concordion/${project.name}"
     issuesUrl = "${githubUrl}/issues"
