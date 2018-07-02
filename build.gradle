@@ -14,7 +14,7 @@ apply plugin: 'nebula-aggregate-javadocs'
 apply plugin: 'org.ajoberstar.git-publish'
 apply plugin: 'net.researchgate.release'
 
-jar {
+task (type: Jar, overwrite: true) {
     manifest {
         attributes  'Specification-Title'   : project.name,
                 'Implementation-Title'  : project.name,
