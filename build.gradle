@@ -7,28 +7,14 @@ buildscript {
         classpath 'net.researchgate:gradle-release:2.6.0'
         classpath 'org.ajoberstar:gradle-git-publish:0.3.2'
         classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:2.2.+'
+        classpath 'net.nemerosa:versioning:2.7.1'
     }
 }
 
 apply plugin: 'nebula-aggregate-javadocs'
 apply plugin: 'org.ajoberstar.git-publish'
 apply plugin: 'net.researchgate.release'
-
-task (type: Jar, overwrite: true) {
-    manifest {
-        attributes  'Specification-Title'   : project.name,
-                'Implementation-Title'  : project.name,
-                'Specification-Version' : version.substring(0, version.lastIndexOf(".")),
-                'Implementation-Version': version,
-                'Implementation-Vendor' : 'concordion.org',
-                'Specification-Vendor'  : 'concordion.org',
-                'Created-By'            : System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')',
-                'Built-With'            : "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}",
-                'Build-Time'            : String.format("%tFT%<tRZ", Calendar.getInstance(TimeZone.getTimeZone("Z"))),
-                'Build-Revision'        : versioning.info.commit,
-                'Build-OS'              : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
-    }
-}
+apply plugin: 'net.nemerosa.versioning'
 
 ext {
     githubUrl = "https://github.com/concordion/${project.name}"
@@ -97,6 +83,22 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: com.jfrog.bintray.gradle.BintrayPlugin
 
+
+	jar {
+	    manifest {
+	        attributes  'Specification-Title'   : project.name,
+	                'Implementation-Title'  : project.name,
+	                'Specification-Version' : version.substring(0, version.lastIndexOf(".")),
+	                'Implementation-Version': version,
+	                'Implementation-Vendor' : 'concordion.org',
+	                'Specification-Vendor'  : 'concordion.org',
+	                'Created-By'            : System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')',
+	                'Built-With'            : "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}",
+	                'Build-Time'            : String.format("%tFT%<tRZ", Calendar.getInstance(TimeZone.getTimeZone("Z"))),
+	                'Build-Revision'        : versioning.info.commit,
+	                'Build-OS'              : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+	    }
+	}
     // need utf-8 to get text with non-standard chars e.g. curly apostrophes used correctly 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
