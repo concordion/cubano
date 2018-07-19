@@ -2,13 +2,13 @@ dependencies {
     compile project(':cubano-core')
     compile project(':cubano-webdriver-manager')
     
-    compile 'org.concordion:concordion:2.1.3'
+    compile 'org.concordion:concordion:2.2.0'
     compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
     compile 'org.concordion:concordion-timestamp-formatter-extension:1.1.2'
-    compile 'org.concordion:concordion-run-totals-extension:1.1.0'
+    compile 'org.concordion:concordion-run-totals-extension:1.2.0'
     compile 'org.concordion:concordion-logging-tooltip-extension:1.1.2'
-    compile 'org.concordion:concordion-embed-extension:1.1.2'
-    compile 'org.concordion:concordion-executeonlyif-extension:0.2.1'
+    compile 'org.concordion:concordion-embed-extension:1.2.0'
+    compile 'org.concordion:concordion-executeonlyif-extension:0.3.0'
     compile 'org.concordion:concordion-logback-extension:2.0.0'
     compile 'org.concordion:concordion-storyboard-extension:2.0.0'
 }
