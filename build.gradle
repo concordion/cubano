@@ -88,7 +88,7 @@ subprojects {
 	    manifest {
 	        attributes  'Specification-Title'   : project.name,
 	                'Implementation-Title'  : project.name,
-	                'Specification-Version' : version.substring(0, version.lastIndexOf(".")),
+	                'Specification-Version' : version.substring(0, version.lastIndexOf(".") != -1 ? version.lastIndexOf(".") : version.length()),
 	                'Implementation-Version': version,
 	                'Implementation-Vendor' : 'concordion.org',
 	                'Specification-Vendor'  : 'concordion.org',
