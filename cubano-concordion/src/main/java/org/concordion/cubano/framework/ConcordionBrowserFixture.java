@@ -1,13 +1,10 @@
 package org.concordion.cubano.framework;
 
-import org.concordion.api.AfterSuite;
 import org.concordion.api.BeforeExample;
 import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -16,15 +13,12 @@ import java.util.*;
  * Includes and configures the Storyboard and Logging extensions.
  **/
 public abstract class ConcordionBrowserFixture extends ConcordionFixture implements BrowserBasedTest {
-    private static List<Browser> allBrowsers = new ArrayList<Browser>();
     private static ThreadLocal<Map<String, Browser>> threadBrowsers = ThreadLocal.withInitial(HashMap::new);
     private static ThreadLocal<String> threadBrowserId = ThreadLocal.withInitial(() -> Browser.DEFAULT);
     private static ThreadLocal<Integer> browserTestCount = ThreadLocal.withInitial(() -> 0);
     private static ThreadLocal<Boolean> browserTestRunCounted = ThreadLocal.withInitial(() -> false);
 
     private static int browserCloseAfterXTests = WebDriverConfig.getInstance().getRestartBrowserAfterXTests();
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConcordionBrowserFixture.class);
 
     @BeforeExample
     private final void beforeExample() {
@@ -40,30 +34,6 @@ public abstract class ConcordionBrowserFixture extends ConcordionFixture impleme
         browserTestRunCounted.set(false);
     }
 
-    @AfterSuite
-    private final void afterSuite() {
-        for (Browser openBrowser : allBrowsers) {
-            if (openBrowser != null) {
-                openBrowser.close();
-
-                if (isLastOfType(openBrowser)) {
-                    openBrowser.getBrowserProvider().cleanup();
-                }
-            }
-        }
-    }
-
-    private boolean isLastOfType(Browser browser) {
-        if (browser.getBrowserProvider() == null)
-            return false;
-
-        if (allBrowsers.indexOf(browser) == allBrowsers.size() - 1)
-            return true;
-
-        return !allBrowsers.subList(allBrowsers.indexOf(browser) + 1, allBrowsers.size()).stream()
-                .filter(e -> e.isOpen() && e.getBrowserProvider() != null && e.getBrowserProvider().getClass() == browser.getBrowserProvider().getClass()).findFirst().isPresent();
-    }
-
     @Override
     public Browser getBrowser() {
         return getBrowser(threadBrowserId.get());
@@ -77,7 +47,7 @@ public abstract class ConcordionBrowserFixture extends ConcordionFixture impleme
      * @return Browser browser based on key.
      */
     public Browser getBrowser(String key) {
-        return getBrowser(key, null);
+        return getBrowser(key, Browser.getConfiguredBrowserProvider());
     }
 
     /**
@@ -97,7 +67,10 @@ public abstract class ConcordionBrowserFixture extends ConcordionFixture impleme
             Browser newBrowser = new Browser(browserProvider);
 
             browsers.put(key, newBrowser);
-            allBrowsers.add(newBrowser);
+            if(!isRegistered(browserProvider, ResourceScope.SUITE)) {
+                registerCloseableResource(browserProvider, ResourceScope.SUITE);
+            }
+            registerCloseableResource(newBrowser, ResourceScope.SUITE);
         }
 
         if (threadBrowserId.get() != key) {
@@ -143,7 +116,7 @@ public abstract class ConcordionBrowserFixture extends ConcordionFixture impleme
             }
 
         } catch (Exception e) {
-            LOGGER.warn("Unable to set focus to the newly selected browser");
+            logger.warn("Unable to set focus to the newly selected browser");
         }
     }
 
@@ -173,7 +146,5 @@ public abstract class ConcordionBrowserFixture extends ConcordionFixture impleme
         } else {
             browserTestCount.set(count + 1);
         }
-
     }
 }
-
