@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -61,5 +62,26 @@ public class ConcordionBrowserFixtureTest {
         verify(mockDriver1, times(2)).quit();
         verify(mockProvider2, times(1)).close();
         verify(mockDriver2, times(1)).quit();
+    }
+
+    @Test
+    public void runningTestsAsSeparateSuites_browsersAreNotReused() {
+        BrowserProvider mockProvider = mock(BrowserProvider.class);
+
+        ConcordionBrowserFixture test = this.test1;
+        Browser browser1 = test.getBrowser("X", mockProvider);
+        afterSuite(test);
+
+        ConcordionBrowserFixture test2 = new ConcordionBrowserFixture() {};
+        Browser browser2 = test2.getBrowser("X", mockProvider);
+        afterSuite(test2);
+
+        assertThat(browser1, is(not(browser2)));
+    }
+
+    /** Calls the methods that are set up as @AfterSuite methods in the test class. **/
+    private void afterSuite(ConcordionBrowserFixture test) {
+        test.closeSuiteResources();
+        test.resetThreadBrowsers();
     }
 }

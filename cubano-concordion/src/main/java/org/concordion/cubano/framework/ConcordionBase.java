@@ -39,6 +39,7 @@ public abstract class ConcordionBase {
      * @param scope the resource will be closed once it goes out of this scope
      */
     protected void registerCloseableResource(Closeable resource, ResourceScope scope) {
+        logger.debug("Registering {} to {}.", resource, scope);
         if (scope.equals(ResourceScope.SPECIFICATION)) {
             specificationResources.push(resource);
         } else if (scope.equals(ResourceScope.SUITE)) {
@@ -63,6 +64,7 @@ public abstract class ConcordionBase {
      */
     @AfterSpecification
     protected void closeSpecificationResources() {
+        logger.debug("Closing specification resources {}.", specificationResources);
         closeResources(specificationResources);
     }
 
@@ -71,13 +73,14 @@ public abstract class ConcordionBase {
      */
     @AfterSuite
     protected void closeSuiteResources() {
+        logger.debug("Closing suite resources {}.", suiteResources);
         closeResources(suiteResources);
     }
 
     private void closeResources(Deque<Closeable> resources) {
         resources.forEach(resource -> {
             try {
-                logger.debug("Closing " + resource);
+                logger.debug("Closing {}.", resource);
                 resource.close();
             } catch (IOException e) {
                 logger.warn("IOException when closing resource", e);
@@ -89,7 +92,7 @@ public abstract class ConcordionBase {
     @AfterSuite
     private final void afterSuite() {
 
-        logger.info("@AfterSuite method. Tearing down the acceptance test class {} on thread {}. ", this.getClass().getSimpleName(),
+        logger.info("@AfterSuite method. Tearing down the test suite. (called from test class {} on thread {}). ", this.getClass().getSimpleName(),
                 Thread.currentThread().getName());
 
     }

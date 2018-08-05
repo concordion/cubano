@@ -1,5 +1,6 @@
 package org.concordion.cubano.framework;
 
+import org.concordion.api.AfterSuite;
 import org.concordion.api.BeforeExample;
 import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.cubano.driver.web.Browser;
@@ -146,5 +147,13 @@ public abstract class ConcordionBrowserFixture extends ConcordionFixture impleme
         } else {
             browserTestCount.set(count + 1);
         }
+    }
+
+    @AfterSuite
+    public void resetThreadBrowsers() {
+        threadBrowsers.remove();
+        threadBrowserId.remove();
+        browserTestCount.remove();
+        browserTestRunCounted.remove();
     }
 }
