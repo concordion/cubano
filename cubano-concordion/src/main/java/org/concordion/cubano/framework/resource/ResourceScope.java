@@ -1,9 +1,13 @@
-package org.concordion.cubano.framework;
+package org.concordion.cubano.framework.resource;
 
 /**
  * The scope to be used for closing resources.
  */
 public enum ResourceScope {
+    /**
+     * Per Concordion Specification Example
+     */
+    EXAMPLE,
     /**
      * Per Concordion Specification
      */
@@ -13,5 +17,5 @@ public enum ResourceScope {
      * Other tests that are invoked from the top-level test using the Run Command are part of the suite.
      * Other tests invoked directly (from JUnit) form independent suites.
      */
-    SUITE
+    SUITE;
 }

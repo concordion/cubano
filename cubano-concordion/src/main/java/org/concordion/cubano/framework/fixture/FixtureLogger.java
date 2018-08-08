@@ -1,5 +1,7 @@
-package org.concordion.cubano.framework;
+package org.concordion.cubano.framework.fixture;
 
+import org.concordion.cubano.framework.ConcordionBase;
+import org.concordion.cubano.framework.fixture.FixtureListener;
 import org.slf4j.Logger;
 
 public class FixtureLogger implements FixtureListener {

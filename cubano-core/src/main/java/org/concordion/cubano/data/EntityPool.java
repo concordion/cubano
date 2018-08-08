@@ -1,5 +1,6 @@
 package org.concordion.cubano.data;
 
+import java.io.Closeable;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +16,7 @@ import org.concordion.cubano.driver.action.ActionWait;
  *
  * @param <E> Class of the entity being held
  */
-public abstract class EntityPool<E> implements DataCleanup {
+public abstract class EntityPool<E> implements Closeable {
 
     /**
      * @return A static list of all available entities.
@@ -128,7 +129,7 @@ public abstract class EntityPool<E> implements DataCleanup {
     }
 
     @Override
-    public void cleanup() {
+    public void close() {
         releaseAll();
     }
 
