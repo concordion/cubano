@@ -1,8 +1,7 @@
 package org.concordion.cubano.framework;
 
 
-import org.concordion.api.AfterSpecification;
-import org.concordion.api.AfterSuite;
+import org.concordion.api.*;
 import org.concordion.api.option.ConcordionOptions;
 import org.concordion.api.option.MarkdownExtensions;
 import org.concordion.integration.junit4.ConcordionRunner;
@@ -29,6 +28,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 @ConcordionOptions(markdownExtensions = {MarkdownExtensions.HARDWRAPS, MarkdownExtensions.AUTOLINKS})
 public abstract class ConcordionBase {
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected FixtureListener fixtureListener = new FixtureLogger();
 
     private final Deque<Closeable> specificationResources = new ArrayDeque<>();
     private static final Deque<Closeable> suiteResources = new ConcurrentLinkedDeque<>();
@@ -89,11 +89,42 @@ public abstract class ConcordionBase {
         resources.clear();
     }
 
+    @BeforeExample
+    private void actionBeforeExample(@ExampleName String exampleName) {
+        fixtureListener.beforeExample(this.getClass(), exampleName, logger);
+    }
+
+    @AfterExample
+    private void actionAfterExample(@ExampleName String exampleName) {
+        fixtureListener.afterExample(this.getClass(), exampleName, logger);
+    }
+
+    @BeforeSpecification
+    private void actionBeforeSpecification() {
+        fixtureListener.beforeSpecification(this.getClass(), logger);
+    }
+
+    @AfterSpecification
+    private void actionAfterSpecification() {
+        fixtureListener.afterSpecification(this.getClass(), logger);
+    }
+
+    @BeforeSuite
+    private void actionBeforeSuite() {
+        fixtureListener.beforeSuite(this.getClass(), logger);
+    }
+
     @AfterSuite
-    private final void afterSuite() {
+    private void actionAfterSuite() {
+        fixtureListener.afterSuite(this.getClass(), logger);
+    }
 
-        logger.info("@AfterSuite method. Tearing down the test suite. (called from test class {} on thread {}). ", this.getClass().getSimpleName(),
-                Thread.currentThread().getName());
-
+    /**
+     * Replace the FixtureLogger with a different FixtureListener.
+     *
+     * @param fixtureListener the fixture listener to use
+     */
+    protected void withFixtureListener(FixtureListener fixtureListener) {
+        this.fixtureListener = fixtureListener;
     }
 }
