@@ -50,7 +50,7 @@ public abstract class ConcordionBase implements ResourceRegistry {
     }
 
     /**
-     * Register a resource to be automatically invoked once the fixture goes out of scope.
+     * Register a resource to be automatically closed once the fixture goes out of scope.
      * @param resource the closeable resource
      * @param scope the resource will be closed once it goes out of this scope
      */
@@ -61,7 +61,7 @@ public abstract class ConcordionBase implements ResourceRegistry {
     }
 
     /**
-     * Register a resource to be automatically invoked once the fixture goes out of scope with events published to
+     * Register a resource to be automatically closed once the fixture goes out of scope with events published to
      * listener.
      * @param resource the closeable resource
      * @param scope the resource will be closed once it goes out of this scope
