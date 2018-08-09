@@ -12,6 +12,8 @@ import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
+
 /**
  * A wrapper around Selenium WebDriver to make it easier to open and close a
  * specific browser regardless of whether that browser is running locally or
@@ -19,7 +21,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Sumner
  */
-public class Browser {
+public class Browser implements Closeable {
     public static final String DEFAULT = "DEFAULT";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Browser.class);
@@ -149,7 +151,7 @@ public class Browser {
 
         this.browserProvider = config;
         this.wrappedDriver = config.createDriver();
-        
+
         if (WebDriverConfig.getInstance().isEventLoggingEnabled()) {
     	    this.eventFiringDriver = new EventFiringWebDriver(this.wrappedDriver);        
             this.eventListener = new SeleniumEventLogger();

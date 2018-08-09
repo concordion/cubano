@@ -304,7 +304,7 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     }
 
     @Override
-    public void cleanup() {
+    public void close() {
 
     }
 }
