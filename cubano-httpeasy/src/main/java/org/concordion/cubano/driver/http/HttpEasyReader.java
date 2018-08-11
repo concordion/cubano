@@ -41,16 +41,16 @@ public class HttpEasyReader {
 
         this.connection = connection;
 
-        Family resposeFamily = getResponseCodeFamily();
+        Family responseFamily = getResponseCodeFamily();
 
         logResponse(request);
 
-        if (resposeFamily != Family.SUCCESSFUL) {
+        if (responseFamily != Family.SUCCESSFUL) {
             if (listContains(request.ignoreResponseCodes, getResponseCode())) {
                 return;
             }
 
-            if (listContains(request.ignoreResponseFamily, resposeFamily)) {
+            if (listContains(request.ignoreResponseFamily, responseFamily)) {
                 return;
             }
 
