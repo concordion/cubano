@@ -18,7 +18,7 @@ import com.github.markusbernhardt.proxy.ProxySearch;
  */
 public class HttpEasyDefaults {
     private static String baseUrl = "";
-    private static boolean trustAllCertificates = false;
+    private static boolean trustAllEndPoints = false;
     private static List<String> sensitiveParameters = new ArrayList<>();
 
     // Request authorisation
@@ -41,11 +41,11 @@ public class HttpEasyDefaults {
     /**
      * Create all-trusting certificate and host name verifier per HTTPS request.
      * 
-     * @param trustAllCertificates Set to true to trust all certificates, the default is false
+     * @param trustAllEndPoints Set to true to trust all certificates and hosts, the default is false
      * @return A self reference
      */
-    public HttpEasyDefaults trustAllCertificates(boolean trustAllCertificates) {
-        HttpEasyDefaults.trustAllCertificates = trustAllCertificates;
+    public HttpEasyDefaults trustAllEndPoints(boolean trustAllEndPoints) {
+        HttpEasyDefaults.trustAllEndPoints = trustAllEndPoints;
 
         return this;
     }
@@ -158,8 +158,8 @@ public class HttpEasyDefaults {
         return this;
     }
 
-    public static boolean isTrustAllCertificates() {
-        return trustAllCertificates;
+    public static boolean isTrustAllEndPoints() {
+        return trustAllEndPoints;
     }
 
     public static List<String> getSensitiveParameters() {

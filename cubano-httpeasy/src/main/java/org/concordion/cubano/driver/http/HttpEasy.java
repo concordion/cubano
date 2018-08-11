@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -79,19 +80,19 @@ import com.google.common.net.MediaType;
  * <p>
  * In order to prevent an exception being thrown for an expected response use
  * one of the following methods:
- * <p>
- * * request().doNotFailOn(Integer... reponseCodes)
- * * request().doNotFailOn(Family... responseFamily)
- * </p>
+ * <ul>
+ * <li>request().doNotFailOn(Integer... reponseCodes)</li>
+ * <li>request().doNotFailOn(Family... responseFamily)</li>
+ * </ul>
  * <p>
  * <b>Authentication</b>
  * </p>
  * <p>
  * Supports two formats
- * <p>
- * * http://username:password@where.ever
- * * request().authorization(username, password)
- * </p>
+ * <ul>
+ * <li>http://username:password@where.ever</li>
+ * <li>request().authorization(username, password)</li>
+ * </ul>
  * <p>
  * <b>Host and Certificate Verification</b>
  * </p>
@@ -101,7 +102,7 @@ import com.google.common.net.MediaType;
  * 
  * <pre>
  * HttpEasy.withDefaults()
- *         .trustAllCertificates(true);
+ *         .trustAllEndPoints(true);
  * </pre>
  * <p>
  * <b>Proxy</b>
@@ -166,7 +167,7 @@ public class HttpEasy {
     private LogWriter logWriter = null;
     private boolean logRequestDetails = false;
     private Integer timeout = null;
-    private boolean trustAllCertificates = false;
+    private Optional<Boolean> trustAllEndPoints = Optional.empty();
     private boolean includeEmptyValues = false;
 
     /**
@@ -252,8 +253,8 @@ public class HttpEasy {
      * @param trustAll Set to true to trust all certificates, the default is false
      * @return A self reference
      */
-    public HttpEasy trustAllCertificates(boolean trustAll) {
-        this.trustAllCertificates = trustAll;
+    public HttpEasy trustAllEndPoints(boolean trustAll) {
+        this.trustAllEndPoints = Optional.of(trustAll);
         return this;
     }
 
@@ -802,7 +803,7 @@ public class HttpEasy {
         if (url.getProtocol().equalsIgnoreCase("https")) {
             connection = (HttpsURLConnection) url.openConnection(useProxy);
 
-            if (trustAllCertificates || HttpEasyDefaults.isTrustAllCertificates()) {
+            if (trustAllEndPoints.orElse(HttpEasyDefaults.isTrustAllEndPoints())) {
                 try {
                     ((HttpsURLConnection) connection).setHostnameVerifier(SSLUtilities.getTrustAllHostsVerifier());
                     ((HttpsURLConnection) connection).setSSLSocketFactory(SSLUtilities.getTrustAllCertificatesSocketFactory());
