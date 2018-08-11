@@ -13,15 +13,6 @@ public class HttpEasyReaderTests {
     public void httpEasyRequest() throws HttpResponseException, IOException {
         
         HttpEasy.withDefaults().proxyConfiguration(ProxyConfiguration.AUTOMATIC);
-        // ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
-
-        // if (proxyConfig.isProxyRequired()) {
-        // HttpEasy.withDefaults()
-        // .proxy(new Proxy(Proxy.Type.HTTP,
-        // new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
-        // .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
-        // .bypassProxyForLocalAddresses(true);
-        // }
 
         JsonReader response = HttpEasy.request()
                 .baseUrl("http://httpbin.org")
