@@ -698,13 +698,13 @@ public class HttpEasy {
             authMsg = " as user '" + authUser + "'";
         }
 
-        String logurl = url.toString();
+        String logUrl = url.toString();
 
         for (String key : HttpEasyDefaults.getSensitiveParameters()) {
-            logurl = logurl.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
+            logUrl = logUrl.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
         }
 
-        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, logurl);
+        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, logUrl);
 
         if (logManager.isLogRequestDetails()) {
             StringBuilder sb = new StringBuilder();
