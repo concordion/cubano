@@ -24,7 +24,7 @@ public class HttpEasyReaderTests {
         // }
 
         JsonReader response = HttpEasy.request()
-                .baseURI("http://httpbin.org")
+                .baseUrl("http://httpbin.org")
                 .header("hellow", "world")
                 .path("get")
                 .queryParam("name", "fred")

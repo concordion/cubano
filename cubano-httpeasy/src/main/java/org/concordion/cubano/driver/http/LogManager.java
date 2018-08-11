@@ -6,22 +6,10 @@ public class LogManager {
     private boolean logRequestDetails;
     
     public LogManager(LogWriter logWriter, boolean logRequestDetails) {
-        // If not provided, revert to default setting
-        if (logWriter == null) {
-            this.logWriter = HttpEasyDefaults.getDefaultLogWriter();
-        } else {
-            this.logWriter = logWriter;
-        }
+        this.logRequest = HttpEasyDefaults.getLogRequest() || logRequestDetails;
+        this.logRequestDetails = logRequestDetails;
 
-        logRequest = HttpEasyDefaults.getLogRequest();
-
-        if (logRequestDetails) {
-            this.logRequest = true;
-            this.logRequestDetails = logRequestDetails;
-        } else {
-            this.logRequest = HttpEasyDefaults.getLogRequest();
-            this.logRequestDetails = HttpEasyDefaults.getLogRequest() && HttpEasyDefaults.getLogRequestDetails();
-        }
+        this.logWriter = logWriter;
     }
 
     public boolean isLogRequestDetails() {

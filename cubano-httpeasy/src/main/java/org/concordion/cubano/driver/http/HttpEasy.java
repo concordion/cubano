@@ -62,7 +62,7 @@ import com.google.common.net.MediaType;
  * 
  * <pre>
  * HttpEasyReader r = HttpEasy.request()
- *                          .baseURI(someUrl)
+ *                          .baseUrl(someUrl)
  *                          .path(viewPath + {@literal "?startkey=\"{startkey}\"&endkey=\"{endkey}\"})
  *                          .urlParameters(startKey[0], endKey[0])
  *                          .get();
@@ -151,7 +151,7 @@ public class HttpEasy {
 
     // These only apply per request
     private String authString = null;
-    private String baseURI = "";
+    private Optional<String> baseUrl = Optional.empty();
     private String path = "";
     private StringBuilder query = new StringBuilder();
     private String startToken = "{";
@@ -163,10 +163,10 @@ public class HttpEasy {
     private MediaType rawDataMediaType = null;
     private Map<String, Object> headers = new LinkedHashMap<String, Object>();
     private List<Field> fields = new ArrayList<Field>();
-    private LogManager logManager = null;
-    private LogWriter logWriter = null;
-    private boolean logRequestDetails = false;
     private Integer timeout = null;
+    private LogManager logManager = null;
+    private Optional<LogWriter> logWriter = Optional.empty();
+    private Optional<Boolean> logRequestDetails = Optional.empty();
     private Optional<Boolean> trustAllEndPoints = Optional.empty();
     private boolean includeEmptyValues = false;
 
@@ -237,13 +237,13 @@ public class HttpEasy {
     }
 
     /**
-     * Set the host and port of the URL for the end-point.  baseURI, path and query are helpers only and any of these can take full URL.
+     * Set the host and port of the URL for the end-point. baseUrl, path and query are helpers only and any of these can take full URL.
      *
-     * @param uri The host and port of the URL
+     * @param url The host and port of the URL
      * @return A self reference
      */
-    public HttpEasy baseURI(String uri) {
-        this.baseURI = uri;
+    public HttpEasy baseUrl(String url) {
+        this.baseUrl = Optional.of(url);
         return this;
     }
 
@@ -259,7 +259,7 @@ public class HttpEasy {
     }
 
     /**
-     * Set the path part of the URL for the end-point. baseURI, path and query are helpers only and any of these can take full URL.
+     * Set the path part of the URL for the end-point. baseUrl, path and query are helpers only and any of these can take full URL.
      *
      * @param path The host and port of the URL
      * @return A self reference
@@ -270,7 +270,7 @@ public class HttpEasy {
     }
 
     /**
-     * Set the query part of the URL for the end-point.  baseURI, path and query are helpers only and any of these can take full URL.
+     * Set the query part of the URL for the end-point. baseUrl, path and query are helpers only and any of these can take full URL.
      *
      * @param query The host and port of the URL
      * @return A self reference
@@ -316,7 +316,7 @@ public class HttpEasy {
      * @return A self reference
      */
     public HttpEasy logRequestDetails() {
-        this.logRequestDetails = true;
+        this.logRequestDetails = Optional.of(true);
         return this;
     }
     
@@ -561,7 +561,7 @@ public class HttpEasy {
      * @return A self reference
      */
     public HttpEasy withLogWriter(LogWriter logWriter) {
-        this.logWriter = logWriter;
+        this.logWriter = Optional.of(logWriter);
         return this;
     }
 
@@ -655,7 +655,7 @@ public class HttpEasy {
             }
         }
 
-        this.logManager = new LogManager(logWriter, logRequestDetails);
+        this.logManager = new LogManager(logWriter.orElse(HttpEasyDefaults.getDefaultLogWriter()), logRequestDetails.orElse(HttpEasyDefaults.getLogRequestDetails()));
 
         logRequest(connection, requestMethod, url);
 
@@ -822,7 +822,7 @@ public class HttpEasy {
         String spec = "";
 
         if (!containsProtol(path) && !containsProtol(query.toString())) {
-            spec = (baseURI == null || baseURI.isEmpty()) ? HttpEasyDefaults.getBaseUrl() : baseURI;
+            spec = baseUrl.orElse(HttpEasyDefaults.getBaseUrl());
         }
 
         spec = appendSegmentToUrl(spec, path, "/");
