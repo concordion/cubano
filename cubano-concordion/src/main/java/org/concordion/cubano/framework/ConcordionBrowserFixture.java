@@ -6,6 +6,7 @@ import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
+import org.concordion.cubano.framework.resource.ResourceScope;
 
 import java.util.*;
 
