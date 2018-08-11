@@ -94,7 +94,7 @@ public class XmlReader implements ResponseReader {
      * 
      * @param expression
      *            search path
-     * @return Node test representing the node
+     * @return Result of evaluating an XPath expression as an Object of returnType.
      * @throws XPathExpressionException
      */
     public Object evaluate(String expression, QName returnType) throws XPathExpressionException {
