@@ -48,7 +48,7 @@ public class TestBug {
                     List<WebElement> results = driver.findElements(By.cssSelector("h3[class=r] > a"));
 
                     for (WebElement result : results) {
-                        if (result.getAttribute("href").equals("http://concordion.org/")) {
+                        if (result.getAttribute("href").equals("https://concordion.org/")) {
                             result.click();
                         }
                     }
