@@ -239,7 +239,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
         return String.class;
     }
 
-    public void cleanup() {
+    public void close() {
         if (driverPath != null) {
             if (WebDriverConfig.getInstance().isCleanupDriver()) {
                 try {

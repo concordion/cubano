@@ -89,7 +89,7 @@ public class HttpEasyReader {
 
     /**
      * 
-     * @param String from the response stream.
+     * @param asString from the response stream.
      * @param contentType from the Http Header.
      * @return A String (as original), a JsonReader or a XMLReader, depending on the content type.
      */
