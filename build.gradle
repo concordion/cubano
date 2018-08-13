@@ -298,7 +298,7 @@ subprojects {
             licenses = ['Apache-2.0']
             issueTrackerUrl = issuesUrl
             vcsUrl = gitVcsUrl
-            websiteUrl = 'http://concordion.org/cubano'
+            websiteUrl = 'https://concordion.org/cubano'
             version {
                 name = project.version
                 released = new Date()
