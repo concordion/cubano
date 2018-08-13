@@ -18,7 +18,7 @@ public class CaselessProperties extends Properties {
     Map<String, String> lookup = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
 
     @Override
-    public Object put(Object key, Object value) {
+    public synchronized Object put(Object key, Object value) {
         lookup.put(((String) key), (String) key);
 
         return super.put(key, value);
