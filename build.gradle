@@ -249,7 +249,7 @@ subprojects {
 
                         name project.name
                         description project.description
-                        url 'http://www.concordion.org/cubano'
+                        url 'https://concordion.org/cubano'
                         packaging 'jar'
                         inceptionYear '2017'
 
@@ -316,7 +316,7 @@ subprojects {
             licenses = ['Apache-2.0']
             issueTrackerUrl = issuesUrl
             vcsUrl = gitVcsUrl
-            websiteUrl = 'http://concordion.org/cubano'
+            websiteUrl = 'https://concordion.org/cubano'
             version {
                 name = project.version
                 released = new Date()
