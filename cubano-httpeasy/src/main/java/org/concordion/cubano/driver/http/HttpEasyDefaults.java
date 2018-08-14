@@ -39,10 +39,12 @@ public class HttpEasyDefaults {
 
 
     /**
-     * Create all-trusting certificate and host name verifier per HTTPS request.
-     * 
+     * Skip validation of any SSL certificates and trust all hostnames.
+     * Only applies to HTTPS connections.
+     *
      * @param trustAllEndPoints Set to true to trust all certificates and hosts, the default is false
      * @return A self reference
+     * @see HttpEasy#trustAllEndPoints(boolean) to override this setting per request
      */
     public HttpEasyDefaults trustAllEndPoints(boolean trustAllEndPoints) {
         HttpEasyDefaults.trustAllEndPoints = trustAllEndPoints;

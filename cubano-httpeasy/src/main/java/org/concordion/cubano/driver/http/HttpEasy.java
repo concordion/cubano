@@ -248,10 +248,12 @@ public class HttpEasy {
     }
 
     /**
-     * Instruct the current request to skip validation of any SSL certificates. Only applies to HTTPS connections.
+     * Instruct the current request to skip validation of any SSL certificates and trust all hostnames.
+     * Only applies to HTTPS connections.
      * 
-     * @param trustAll Set to true to trust all certificates, the default is false
+     * @param trustAll Set to true to trust all certificates and hosts, the default is false
      * @return A self reference
+     * @see HttpEasyDefaults#trustAllEndPoints(boolean) to apply this setting globally
      */
     public HttpEasy trustAllEndPoints(boolean trustAll) {
         this.trustAllEndPoints = Optional.of(trustAll);
