@@ -70,6 +70,7 @@ public class HttpEasyTests {
     @Test
     public void trustAllEndPointsOnRequest_RequestsAfterFollowingRequestAreNotTrusted() throws Exception {
         HttpEasy request = HttpEasy.request().trustAllEndPoints(true);
+        @SuppressWarnings("unused")
         HttpsURLConnection connection = (HttpsURLConnection) getConnection(request, "https://some.where.secure");
 
         HttpEasy request2 = HttpEasy.request();
@@ -94,6 +95,7 @@ public class HttpEasyTests {
     public void trustAllEndPointsGlobalDefault_RequestsAfterFollowingRequestAreTrusted() throws Exception {
         HttpEasy.withDefaults().trustAllEndPoints(true);
         HttpEasy request = HttpEasy.request();
+        @SuppressWarnings("unused")
         HttpsURLConnection connection = (HttpsURLConnection) getConnection(request, "https://some.where.secure");
 
         HttpEasy request2 = HttpEasy.request();
