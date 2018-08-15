@@ -1,6 +1,5 @@
 
 dependencies {
-    compile project(':cubano-http')
-    compile project(':cubano-httpeasy') // TODO - pass as configuration
+    compile project(':cubano-httpeasy')
     compile project(':cubano-webdriver')
 }
