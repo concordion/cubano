@@ -16,6 +16,8 @@ import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -23,12 +25,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
 import com.google.common.net.MediaType;
 
 /**
@@ -53,13 +55,14 @@ import com.google.common.net.MediaType;
  * <p>
  * Note: if your url can contain weird characters you will want to encode it,
  * something like this: myUrl = URLEncoder.encode(myUrl, "UTF-8");
- * </p> 
+ * </p>
  * <p>
  * <b>Example</b>
  * </p>
+ * 
  * <pre>
  * HttpEasyReader r = HttpEasy.request()
- *                          .baseURI(someUrl)
+ *                          .baseUrl(someUrl)
  *                          .path(viewPath + {@literal "?startkey=\"{startkey}\"&endkey=\"{endkey}\"})
  *                          .urlParameters(startKey[0], endKey[0])
  *                          .get();
@@ -77,29 +80,29 @@ import com.google.common.net.MediaType;
  * <p>
  * In order to prevent an exception being thrown for an expected response use
  * one of the following methods:
- * <p>
- * * request().doNotFailOn(Integer... reponseCodes)
- * * request().doNotFailOn(Family... responseFamily)
- * </p>
+ * <ul>
+ * <li>request().doNotFailOn(Integer... reponseCodes)</li>
+ * <li>request().doNotFailOn(Family... responseFamily)</li>
+ * </ul>
  * <p>
  * <b>Authentication</b>
  * </p>
  * <p>
  * Supports two formats
- * <p>
- * * http://username:password@where.ever
- * * request().authorization(username, password)
- * </p>
+ * <ul>
+ * <li>http://username:password@where.ever</li>
+ * <li>request().authorization(username, password)</li>
+ * </ul>
  * <p>
  * <b>Host and Certificate Verification</b>
  * </p>
  * <p>
- * There is no fine grained control, its more of an all or nothing approach:
+ * This will disable SSL and Hostname checking on HTTPS connections:
  * </p>
+ * 
  * <pre>
  * HttpEasy.withDefaults()
- *      .allowAllHosts()
- *      .trustAllCertificates();
+ *         .trustAllEndPoints(true);
  * </pre>
  * <p>
  * <b>Proxy</b>
@@ -108,6 +111,7 @@ import com.google.common.net.MediaType;
  * Only basic authentication is supported, although I believe the domain can be added by included "domain/"
  * in front of the username (not tested)
  * </p>
+ * 
  * <pre>
  * HttpEasy.withDefaults()
  *     .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(user, password))))
@@ -121,6 +125,7 @@ import com.google.common.net.MediaType;
  * Redirects are NOT automatically followed - at least for REST base calls - even though the documentation
  * for HttpURLConnection says that it should...
  * </p>
+ * 
  * <pre>
  * HttpEasyReader response = HttpEasy.request()
  *     .doNotFailOn(Family.REDIRECTION)
@@ -140,15 +145,13 @@ import com.google.common.net.MediaType;
  * </p>
  */
 public class HttpEasy {
-    static final Logger LOGGER = LoggerFactory.getLogger(HttpEasy.class);
-
     // These only apply per request - but are visible to package
     List<Integer> ignoreResponseCodes = new ArrayList<Integer>();
     List<Family> ignoreResponseFamily = new ArrayList<Family>();
 
     // These only apply per request
     private String authString = null;
-    private String baseURI = "";
+    private Optional<String> baseUrl = Optional.empty();
     private String path = "";
     private StringBuilder query = new StringBuilder();
     private String startToken = "{";
@@ -160,13 +163,12 @@ public class HttpEasy {
     private MediaType rawDataMediaType = null;
     private Map<String, Object> headers = new LinkedHashMap<String, Object>();
     private List<Field> fields = new ArrayList<Field>();
-    private LogWriter logWriter = null;
-    private boolean logRequestDetails;
     private Integer timeout = null;
-
-    boolean isLogRequestDetails() {
-        return logRequestDetails;
-    }
+    private LogManager logManager = null;
+    private Optional<LogWriter> logWriter = Optional.empty();
+    private Optional<Boolean> logRequestDetails = Optional.empty();
+    private Optional<Boolean> trustAllEndPoints = Optional.empty();
+    private boolean includeEmptyValues = false;
 
     /**
      * @return Default settings object
@@ -211,7 +213,7 @@ public class HttpEasy {
      * and when reading from Input stream when a connection is established .
      * <p>
      * If the timeout expires a java.net.SocketTimeoutException is raised.
-     * <p>
+     * </p>
      * A timeout of zero is interpreted as an infinite timeout.
      *
      * @param milliseconds Timeout value in milliseconds
@@ -223,18 +225,43 @@ public class HttpEasy {
     }
 
     /**
-     * Set the host and port of the URL for the end-point.  baseURI, path and query are helpers only and any of these can take full URL.
-     *
-     * @param uri The host and port of the URL
+     * By default fields and query parameters are ignored if the field is null, or an empty string,
+     * to override this behaviour then use this method with a value of true.
+     * 
+     * @param includeEmptyValues Set behaviour
      * @return A self reference
      */
-    public HttpEasy baseURI(String uri) {
-        this.baseURI = uri;
+    public HttpEasy includeEmptyValues(boolean includeEmptyValues) {
+        this.includeEmptyValues = includeEmptyValues;
         return this;
     }
 
     /**
-     * Set the path part of the URL for the end-point.  baseURI, path and query are helpers only and any of these can take full URL.
+     * Set the host and port of the URL for the end-point. baseUrl, path and query are helpers only and any of these can take full URL.
+     *
+     * @param url The host and port of the URL
+     * @return A self reference
+     */
+    public HttpEasy baseUrl(String url) {
+        this.baseUrl = Optional.of(url);
+        return this;
+    }
+
+    /**
+     * Instruct the current request to skip validation of any SSL certificates and trust all hostnames.
+     * Only applies to HTTPS connections.
+     * 
+     * @param trustAll Set to true to trust all certificates and hosts, the default is false
+     * @return A self reference
+     * @see HttpEasyDefaults#trustAllEndPoints(boolean) to apply this setting globally
+     */
+    public HttpEasy trustAllEndPoints(boolean trustAll) {
+        this.trustAllEndPoints = Optional.of(trustAll);
+        return this;
+    }
+
+    /**
+     * Set the path part of the URL for the end-point. baseUrl, path and query are helpers only and any of these can take full URL.
      *
      * @param path The host and port of the URL
      * @return A self reference
@@ -245,7 +272,7 @@ public class HttpEasy {
     }
 
     /**
-     * Set the query part of the URL for the end-point.  baseURI, path and query are helpers only and any of these can take full URL.
+     * Set the query part of the URL for the end-point. baseUrl, path and query are helpers only and any of these can take full URL.
      *
      * @param query The host and port of the URL
      * @return A self reference
@@ -268,11 +295,7 @@ public class HttpEasy {
      * @return A self reference
      */
     public HttpEasy queryParam(String name, Object value) {
-        if (name == null || name.isEmpty()) {
-            return this;
-        }
-
-        if (value == null) {
+        if (skipEmptyParameter(name, value)) {
             return this;
         }
 
@@ -295,10 +318,10 @@ public class HttpEasy {
      * @return A self reference
      */
     public HttpEasy logRequestDetails() {
-        this.logRequestDetails = true;
+        this.logRequestDetails = Optional.of(true);
         return this;
     }
-
+    
     /**
      * Override the default parameter start and end tokens.  By default any part of the url containing {...} is treated as a parameter and
      * replaced by the values passed in by {@link #urlParameters(Object...)}.
@@ -450,7 +473,12 @@ public class HttpEasy {
             throw new InvalidParameterException("InputStream must provide filename");
         }
 
+        if (skipEmptyParameter(name, value)) {
+            return this;
+        }
+
         fields.add(new Field(name, value, type, fileName));
+        
         return this;
     }
 
@@ -535,7 +563,7 @@ public class HttpEasy {
      * @return A self reference
      */
     public HttpEasy withLogWriter(LogWriter logWriter) {
-        this.logWriter = logWriter;
+        this.logWriter = Optional.of(logWriter);
         return this;
     }
 
@@ -544,7 +572,7 @@ public class HttpEasy {
      *
      * @return The request response wrapped by {@link HttpEasyReader}
      * @throws HttpResponseException if request failed
-     * @throws IOException           for connection errors
+     * @throws IOException for connection errors
      */
     public HttpEasyReader get() throws HttpResponseException, IOException {
         return new HttpEasyReader(getConnectionMethod("GET"), this);
@@ -595,6 +623,10 @@ public class HttpEasy {
         return new HttpEasyReader(getConnectionMethod("DELETE"), this);
     }
 
+    public LogManager getLogManager() {
+        return logManager;
+    }
+
     private HttpURLConnection getConnectionMethod(String requestMethod) throws IOException {
         int fifteenSeconds = 15 * 1000;
         DataWriter dataWriter = null;
@@ -604,6 +636,7 @@ public class HttpEasy {
         setHeaders(connection);
 
         connection.setRequestMethod(requestMethod);
+        connection.setUseCaches(false);
 
         if (timeout != null) {
             connection.setConnectTimeout(timeout);
@@ -624,6 +657,41 @@ public class HttpEasy {
             }
         }
 
+        this.logManager = new LogManager(logWriter.orElse(HttpEasyDefaults.getDefaultLogWriter()), logRequestDetails.orElse(HttpEasyDefaults.getLogRequestDetails()));
+
+        logRequest(connection, requestMethod, url);
+
+        connection.connect();
+
+        if (dataWriter != null) {
+            dataWriter.write(logManager);
+        }
+
+        return connection;
+    }
+
+    private boolean skipEmptyParameter(String name, Object value) {
+        if (name == null || name.isEmpty()) {
+            return true;
+        }
+
+        if (!includeEmptyValues) {
+            if (value == null) {
+                return true;
+            }
+
+            if (value instanceof String && ((String) value).isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void logRequest(HttpURLConnection connection, String requestMethod, URL url) {
+        String TAB = "\t";
+        String NEW_LINE = System.lineSeparator();
+
         String authUser = "";
         String authMsg = "";
 
@@ -632,25 +700,31 @@ public class HttpEasy {
             authMsg = " as user '" + authUser + "'";
         }
 
-        LOGGER.debug("Sending " + requestMethod + authMsg + " to " + url.toString());
+        String logUrl = url.toString();
 
-        String TAB = "\t";
-        String NEW_LINE = System.getProperty("line.separator");
+        for (String key : HttpEasyDefaults.getSensitiveParameters()) {
+            logUrl = logUrl.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
+        }
 
-        if (logRequestDetails) {
+        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, logUrl);
+
+        if (logManager.isLogRequestDetails()) {
             StringBuilder sb = new StringBuilder();
             sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
             sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
-            sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy()).append(NEW_LINE);
+            sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy(url)).append(NEW_LINE);
+            if (!Strings.isNullOrEmpty(authUser) && !Strings.isNullOrEmpty(HttpEasyDefaults.getAuthUser())) {
+                sb.append("Basic Authorization User:").append(TAB).append(MoreObjects.firstNonNull(authUser, HttpEasyDefaults.getAuthUser())).append(NEW_LINE);
+            }
             sb.append("Query Params:").append(NEW_LINE);
             for (String value : query.toString().split("&")) {
+                for (String key : HttpEasyDefaults.getSensitiveParameters()) {
+                    value = value.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
+                }
                 sb.append(TAB).append(value).append(NEW_LINE);
             }
-            if (!authUser.isEmpty()) {
-                sb.append("Authorization:").append(TAB).append(authUser).append(NEW_LINE);
-            }
-            sb.append("Request Headers:").append(NEW_LINE);
 
+            sb.append("Request Headers:").append(NEW_LINE);
             List<String> headers = new ArrayList<>();
 
             for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
@@ -669,25 +743,7 @@ public class HttpEasy {
                 sb.append(TAB).append(value);
             }
 
-            log(sb.toString(), LogType.REQUEST);
-        }
-
-        connection.connect();
-
-        if (dataWriter != null) {
-            dataWriter.write(logRequestDetails ? LOGGER : null);
-        }
-
-        return connection;
-    }
-
-    public void log(String message, LogType logType) {
-        if (logWriter != null) {
-            logWriter.info(message, logType);
-        } else if (HttpEasyDefaults.getDefaultLogWriter() != null) {
-            HttpEasyDefaults.getDefaultLogWriter().info(message, logType);
-        } else {
-            LOGGER.trace(message);
+            this.logManager.request(sb.toString());
         }
     }
 
@@ -744,14 +800,19 @@ public class HttpEasy {
 
     private HttpURLConnection getConnection(URL url) throws IOException {
         HttpURLConnection connection;
-        Proxy useProxy = HttpEasyDefaults.getProxy();
+        Proxy useProxy = HttpEasyDefaults.getProxy(url);
 
-        if (HttpEasyDefaults.isBypassProxyForLocalAddresses() && isLocalAddress(url)) {
-            useProxy = Proxy.NO_PROXY;
-        }
-
-        if (url.getProtocol().equals("https")) {
+        if (url.getProtocol().equalsIgnoreCase("https")) {
             connection = (HttpsURLConnection) url.openConnection(useProxy);
+
+            if (trustAllEndPoints.orElse(HttpEasyDefaults.isTrustAllEndPoints())) {
+                try {
+                    ((HttpsURLConnection) connection).setHostnameVerifier(SSLUtilities.getTrustAllHostsVerifier());
+                    ((HttpsURLConnection) connection).setSSLSocketFactory(SSLUtilities.getTrustAllCertificatesSocketFactory());
+                } catch (KeyManagementException | NoSuchAlgorithmException e) {
+                    throw new IOException("Unable to trust all certificates", e);
+                }
+            }
         } else {
             connection = (HttpURLConnection) url.openConnection(useProxy);
         }
@@ -759,15 +820,11 @@ public class HttpEasy {
         return connection;
     }
 
-    private boolean isLocalAddress(URL url) {
-        return "localhost, 127.0.0.1".contains(url.getHost());
-    }
-
     private URL getURL() throws MalformedURLException {
         String spec = "";
 
         if (!containsProtol(path) && !containsProtol(query.toString())) {
-            spec = (baseURI == null || baseURI.isEmpty()) ? HttpEasyDefaults.getBaseURI() : baseURI;
+            spec = baseUrl.orElse(HttpEasyDefaults.getBaseUrl());
         }
 
         spec = appendSegmentToUrl(spec, path, "/");

@@ -1,26 +1,28 @@
 package org.concordion.cubano.driver.http;
 
-public class TestLogWriter extends LogWriter {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class LoggerLogWriter extends LogWriter {
+    static final Logger LOGGER = LoggerFactory.getLogger(HttpEasy.class);
+   
     @Override
     public void info(String msg, Object... args) {
-        System.out.println(getFormattedMessage(msg, args));
+        LOGGER.debug(msg, args);
     }
 
     @Override
     public void request(String msg, Object... args) {
-        System.out.println(getFormattedMessage(msg, args));
+        LOGGER.trace(msg, args);
     }
-
+    
     @Override
     public void response(String msg, Object... args) {
-        System.out.println(getFormattedMessage(msg, args));
+        LOGGER.trace(msg, args);
     }
 
     @Override
     public void error(String message, Throwable t) {
-        System.out.println(getFormattedMessage(message));
+        LOGGER.error(message, t);
     }
-
 }
-

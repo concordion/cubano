@@ -11,8 +11,6 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-
 import com.google.common.net.MediaType;
 
 /**
@@ -61,43 +59,31 @@ class RawDataWriter implements DataWriter {
     }
 
     @Override
-    public void write(Logger logger) throws IOException {
-        StringBuilder logBuffer = null;
-
-        if (logger != null) {
-            logBuffer = new StringBuilder();
-        }
+    public void write(LogManager logger) throws IOException {
+        StringBuilder logBuffer = new StringBuilder();
 
         if (uploadFile != null) {
-            if (logBuffer != null) {
-                logBuffer.append("... Content of file ").append(uploadFile.getAbsolutePath()).append(" ...").append(System.lineSeparator());
-            }
+            logBuffer.append("  With content of file: ").append(uploadFile.getAbsolutePath());
 
             try (FileInputStream inputStream = new FileInputStream(uploadFile)) {
                 write(inputStream);
             }
 
         } else if (uploadStream != null) {
-            if (logBuffer != null) {
-                logBuffer.append("... Content of file ").append(uploadFileName).append(" ...").append(System.lineSeparator());
-            }
+            logBuffer.append("  With content of file: ").append(uploadFileName);
 
             long length = write(uploadStream);
             connection.setRequestProperty("Content-Length", Long.toString(length));
 
         } else {
-            if (logBuffer != null) {
-                logBuffer.append(Arrays.toString(postEndcoded));
-            }
+            logBuffer.append("  With content: ").append(Arrays.toString(postEndcoded));
 
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
                 wr.write(postEndcoded);
             }
         }
 
-        if (logger != null) {
-            logger.trace("With Content:{}\t{}", System.lineSeparator(), logBuffer);
-        }
+        logger.info(logBuffer.toString());
     }
 
     private long write(InputStream inputStream) throws IOException {

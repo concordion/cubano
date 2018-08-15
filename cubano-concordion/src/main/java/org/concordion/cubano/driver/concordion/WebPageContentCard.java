@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.concordion.api.Element;
 import org.concordion.api.Resource;
-import org.concordion.cubano.driver.web.pagegrabber.GrabWebPage;
+import org.concordion.cubano.driver.concordion.pagegrabber.GrabWebPage;
 import org.concordion.ext.storyboard.Card;
 import org.concordion.ext.storyboard.CardImage;
 import org.concordion.ext.storyboard.StockCardImage;

@@ -1,4 +1,4 @@
-package org.concordion.cubano.driver.web.pagegrabber;
+package org.concordion.cubano.driver.concordion.pagegrabber;
 
 import java.io.File;
 import java.io.IOException;

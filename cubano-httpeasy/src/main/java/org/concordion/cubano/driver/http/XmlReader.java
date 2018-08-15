@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -88,16 +89,17 @@ public class XmlReader implements ResponseReader {
     }
 
     /**
-	 * Evaluate an XPath expression in the specified context and return the result
-	 * as the specified type..
-	 *
-	 * @param selector
-	 *            search path
-	 * @return Node test representing the node
-	 */
-    private Node evaluate(String selector) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+     * Evaluate an XPath expression in the specified context and return the result
+     * as the specified type.. {@link XPath#evaluate(String, InputSource, QName)}
+     * 
+     * @param expression
+     *            search path
+     * @return Result of evaluating an XPath expression as an Object of returnType.
+     * @throws XPathExpressionException
+     */
+    public Object evaluate(String expression, QName returnType) throws XPathExpressionException {
         XPath xPath = XPathFactory.newInstance().newXPath();
-        return (Node) xPath.evaluate(selector, document, XPathConstants.NODE);
+        return xPath.evaluate(expression, document, returnType);
     }
 
     /**
@@ -124,7 +126,7 @@ public class XmlReader implements ResponseReader {
      * @throws XPathExpressionException XPathExpressionException
      */
     public String textContent(String selector) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
-        Node node = evaluate(selector);
+        Node node = (Node) evaluate(selector, XPathConstants.NODE);
 
         if (node == null) {
             return null;

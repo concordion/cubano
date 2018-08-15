@@ -41,42 +41,16 @@ public class HttpEasyReader {
 
         this.connection = connection;
 
-        Family resposeFamily = getResponseCodeFamily();
+        Family responseFamily = getResponseCodeFamily();
 
-        if (request.isLogRequestDetails()) {
-            StringBuilder sb = new StringBuilder();
-            List<String> headers = new ArrayList<>();
+        logResponse(request);
 
-            sb.append("Response Headers:").append(System.lineSeparator());
-
-            for (Entry<String, List<String>> header : getConnection().getHeaderFields().entrySet()) {
-                for (String value : header.getValue()) {
-                    if (header.getKey() == null || header.getKey().isEmpty()) {
-                        sb.append("\t").append(value).append(System.lineSeparator());
-                    } else {
-                        headers.add(String.format("%s: %s", header.getKey(), value));
-                    }
-                }
-            }
-
-            headers.sort((h1, h2) -> h1.compareTo(h2));
-
-            for (String value : headers) {
-                sb.append("\t").append(value).append(System.lineSeparator());
-            }
-
-            sb.append(String.format("Response:%s%s", System.lineSeparator(),
-                    formatAsReaderUsingContentType(asString(), getConnection().getContentType())));
-
-            request.log(sb.toString(), LogType.RESPONSE);
-        }
-
-        if (resposeFamily != Family.SUCCESSFUL) {
+        if (responseFamily != Family.SUCCESSFUL) {
             if (listContains(request.ignoreResponseCodes, getResponseCode())) {
                 return;
             }
 
-            if (listContains(request.ignoreResponseFamily, resposeFamily)) {
+            if (listContains(request.ignoreResponseFamily, responseFamily)) {
                 return;
             }
 
@@ -84,7 +58,38 @@ public class HttpEasyReader {
                     "Server returned HTTP response code " + connection.getResponseCode() + ": " + connection.getResponseMessage() +
                             "\r\nResponse Content: " + asString());
         }
+    }
 
+    private void logResponse(HttpEasy request) throws IOException {
+        if (!request.getLogManager().isLogRequestDetails()) {
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        List<String> headers = new ArrayList<>();
+
+        sb.append("Response Headers:").append(System.lineSeparator());
+
+        for (Entry<String, List<String>> header : getConnection().getHeaderFields().entrySet()) {
+            for (String value : header.getValue()) {
+                if (header.getKey() == null || header.getKey().isEmpty()) {
+                    sb.append("\t").append(value).append(System.lineSeparator());
+                } else {
+                    headers.add(String.format("%s: %s", header.getKey(), value));
+                }
+            }
+        }
+
+        headers.sort((h1, h2) -> h1.compareTo(h2));
+
+        for (String value : headers) {
+            sb.append("\t").append(value).append(System.lineSeparator());
+        }
+
+        sb.append(String.format("Response:%s%s", System.lineSeparator(),
+                formatAsReaderUsingContentType(getConnection().getContentType())));
+
+        request.getLogManager().response(sb.toString());
     }
 
     /**
@@ -93,26 +98,29 @@ public class HttpEasyReader {
      * @param contentType from the Http Header.
      * @return A String (as original), a JsonReader or a XMLReader, depending on the content type.
      */
-    private String formatAsReaderUsingContentType(String asString, String contentType) {
+    private String formatAsReaderUsingContentType(String contentType) {
 
         if (contentType != null) {
             try {
 
                 if (contentType.contains("json")) {
-                    return new JsonReader(asString).asPrettyString();
+                    return new JsonReader(asString()).asPrettyString();
                 }
 
                 if (contentType.contains("xml")) {
-                    return new XmlReader(asString).asPrettyString();
+                    return new XmlReader(asString()).asPrettyString();
+                }
+
+                if (contentType.contains("text")) {
+                    return asString();
                 }
 
             } catch (Exception e) {
                 LOGGER.error(String.format("Unable to parse response using ContentType '%s', Error Msg '%s'", contentType, e.getMessage()));
-                return asString;
             }
         }
 
-        return asString;
+        return String.format("Unable to display response for content of type '%s'", contentType);
     }
 
     private <T> boolean listContains(List<T> array, T targetValue) {

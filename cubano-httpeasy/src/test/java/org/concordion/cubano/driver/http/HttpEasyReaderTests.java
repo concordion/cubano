@@ -4,34 +4,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 
-import org.concordion.cubano.config.Config;
-import org.concordion.cubano.config.ProxyConfig;
 import org.junit.Test;
 
 public class HttpEasyReaderTests {
 
     @Test
     public void httpEasyRequest() throws HttpResponseException, IOException {
-
-        HttpEasy.withDefaults()
-                .allowAllHosts()
-                .trustAllCertificates();
-
-        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
-
-        if (proxyConfig.isProxyRequired()) {
-            HttpEasy.withDefaults()
-                    .proxy(new Proxy(Proxy.Type.HTTP,
-                            new InetSocketAddress(proxyConfig.getProxyHost(), proxyConfig.getProxyPort())))
-                    .proxyAuth(proxyConfig.getProxyUsername(), proxyConfig.getProxyPassword())
-                    .bypassProxyForLocalAddresses(true);
-        }
+        
+        HttpEasy.withDefaults().proxyConfiguration(ProxyConfiguration.AUTOMATIC);
 
         JsonReader response = HttpEasy.request()
-                .baseURI("http://httpbin.org")
+                .baseUrl("http://httpbin.org")
                 .header("hellow", "world")
                 .path("get")
                 .queryParam("name", "fred")
