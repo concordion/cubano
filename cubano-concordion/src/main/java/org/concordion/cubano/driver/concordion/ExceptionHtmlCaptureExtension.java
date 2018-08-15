@@ -5,7 +5,6 @@ import org.concordion.api.extension.ConcordionExtension;
 import org.concordion.api.listener.ThrowableCaughtEvent;
 import org.concordion.api.listener.ThrowableCaughtListener;
 import org.concordion.cubano.driver.concordion.pagegrabber.GrabWebPage;
-import org.concordion.cubano.driver.http.HttpDownloader;
 import org.concordion.cubano.driver.web.Browser;
 import org.concordion.ext.StoryboardExtension;
 import org.concordion.ext.storyboard.CardResult;
@@ -19,7 +18,6 @@ import org.openqa.selenium.NoSuchElementException;
 public class ExceptionHtmlCaptureExtension implements ConcordionExtension, ThrowableCaughtListener {
     private StoryboardExtension storyboard;
     private Browser browser;
-    private HttpDownloader httpDownloader;
 
     /**
      * Constructor.
@@ -30,7 +28,6 @@ public class ExceptionHtmlCaptureExtension implements ConcordionExtension, Throw
     public ExceptionHtmlCaptureExtension(StoryboardExtension storyboard, Browser browser) {
         this.storyboard = storyboard;
         this.browser = browser;
-        httpDownloader = new HttpEasyDownloader();
     }
 
     @Override
@@ -49,7 +46,7 @@ public class ExceptionHtmlCaptureExtension implements ConcordionExtension, Throw
         do {
             if (cause instanceof NoSuchElementException) {
                 WebPageContentCard card = new WebPageContentCard();
-                card.setPageGrabber(new GrabWebPage(browser.getWrappedDriver(), httpDownloader));
+                card.setPageGrabber(new GrabWebPage(browser.getWrappedDriver()));
                 card.setTitle("NoSuchElement Exception");
                 card.setDescription("Click to see html");
                 card.setResult(CardResult.FAILURE);

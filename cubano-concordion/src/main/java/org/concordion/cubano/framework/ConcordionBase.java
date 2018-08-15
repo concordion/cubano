@@ -13,15 +13,11 @@ import org.concordion.api.option.ConcordionOptions;
 import org.concordion.api.option.MarkdownExtensions;
 import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.cubano.driver.web.Browser;
-import org.concordion.cubano.driver.web.PageHelper;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.integration.junit4.ConcordionRunner;
 import org.concordion.logback.LogbackAdaptor;
 import org.junit.runner.RunWith;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
