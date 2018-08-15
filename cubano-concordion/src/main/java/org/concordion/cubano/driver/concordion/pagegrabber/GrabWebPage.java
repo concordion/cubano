@@ -23,7 +23,6 @@ public class GrabWebPage {
      * Constructor.
      *
      * @param browser Browser driver
-     * @param httpDownloader  File download interface
      */
     public GrabWebPage(WebDriver browser) {
         this.driver = browser;
