@@ -49,7 +49,7 @@ public class HelloWorldJunit {
                         List<WebElement> results = browser.getDriver().findElements(By.cssSelector("h3[class=r] > a"));
 
                         for (WebElement result : results) {
-                            if (result.getAttribute("href").equals("http://concordion.org/")) {
+                            if (result.getAttribute("href").equals("https://concordion.org/")) {
                                 logger.info("NAVIGATE");
                                 result.click();
 
