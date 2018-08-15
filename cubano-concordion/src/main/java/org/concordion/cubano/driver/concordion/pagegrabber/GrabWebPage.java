@@ -3,7 +3,6 @@ package org.concordion.cubano.driver.concordion.pagegrabber;
 import java.io.File;
 import java.io.IOException;
 
-import org.concordion.cubano.driver.http.HttpDownloader;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,17 +18,14 @@ import org.slf4j.LoggerFactory;
 public class GrabWebPage {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrabWebPage.class);
     private WebDriver driver;
-    private HttpDownloader httpDownloader;
 
     /**
      * Constructor.
      *
      * @param browser Browser driver
-     * @param httpDownloader  File download interface
      */
-    public GrabWebPage(WebDriver browser, HttpDownloader httpDownloader) {
+    public GrabWebPage(WebDriver browser) {
         this.driver = browser;
-        this.httpDownloader = httpDownloader;
     }
 
 
@@ -68,7 +64,7 @@ public class GrabWebPage {
             }
 
             LOGGER.debug("Downloading WebPage {}", driver.getCurrentUrl());
-            new GrabUtility(driver, httpDownloader).savePageTo(outputDirPath, fileName);
+            new GrabUtility(driver).savePageTo(outputDirPath, fileName);
 
         } catch (Exception e) {
             LOGGER.error(e.getMessage());

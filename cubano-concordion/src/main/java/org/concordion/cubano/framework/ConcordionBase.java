@@ -1,8 +1,20 @@
 package org.concordion.cubano.framework;
 
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.concordion.api.*;
+import org.concordion.api.AfterExample;
+import org.concordion.api.AfterSpecification;
+import org.concordion.api.AfterSuite;
+import org.concordion.api.BeforeExample;
+import org.concordion.api.BeforeSpecification;
+import org.concordion.api.BeforeSuite;
+import org.concordion.api.ExampleName;
 import org.concordion.api.option.ConcordionOptions;
 import org.concordion.api.option.MarkdownExtensions;
 import org.concordion.cubano.framework.fixture.FixtureListener;
@@ -14,12 +26,6 @@ import org.concordion.integration.junit4.ConcordionRunner;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * Basic Concordion Fixture for inheritance by index fixtures with no tests.
