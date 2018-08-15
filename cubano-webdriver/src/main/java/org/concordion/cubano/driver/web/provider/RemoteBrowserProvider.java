@@ -234,7 +234,8 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
      * @param obj The object to compare
      * @return true if this object is the same as the obj argument; false otherwise
      */
-    public boolean equals(BrowserProvider obj) {
+    @Override
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -304,7 +305,7 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
     }
 
     @Override
-    public void cleanup() {
+    public void close() {
 
     }
 }
