@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.concordion.cubano.driver.http.HttpDownloader;
+import org.concordion.cubano.driver.http.HttpEasy;
 import org.concordion.cubano.driver.web.PageHelper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -42,7 +42,6 @@ class GrabUtility {
     private static final Logger LOGGER = LoggerFactory.getLogger(GrabUtility.class);
 
     private WebDriver driver;
-    private HttpDownloader httpDownloader;
     private List<WebElement> frameTree = new ArrayList<WebElement>();
     private String baseUrl = "";
     private URL fromHTMLPageUrl;
@@ -66,9 +65,8 @@ class GrabUtility {
      * @param driver WebDriver
      * @param httpDownloader http file downloader
      */
-    public GrabUtility(WebDriver driver, HttpDownloader httpDownloader) {
+    public GrabUtility(WebDriver driver) {
         this.driver = driver;
-        this.httpDownloader = httpDownloader;
     }
 
 
@@ -248,7 +246,7 @@ class GrabUtility {
             String fullLink = getFullLink(link);
 
             if (!fullLink.isEmpty()) {
-                String file = new GrabUtility(driver, httpDownloader).saveFrameTo(outputFolder, attribute, frameTree, frame, fullLink);
+                String file = new GrabUtility(driver).saveFrameTo(outputFolder, attribute, frameTree, frame, fullLink);
 
                 iframe.attr("src", file);
             }
@@ -378,11 +376,25 @@ class GrabUtility {
             Set<Cookie> cookieSet = this.driver.manage().getCookies();
             String cookieHeader = mimicCookieState(cookieSet).toString();
             String outputFolder = this.outputFolder;
-            return httpDownloader.downloadFile(url, outputFolder, cookieHeader);
+            return downloadFile(url, outputFolder, cookieHeader);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Download file.
+     */
+    private File downloadFile(String url, String outputFolder, String cookieHeader) throws IOException {
+        return HttpEasy.request().
+                header("Accept-Language", "en-US,en;q=0.8").
+                header("User-Agent", "Java").
+                header("Referer", "google.com").
+                header("Cookie", cookieHeader).
+                path(url).
+                get().
+                downloadFile(outputFolder); 
     }
 
     private String getFileName(String url) throws IOException {
