@@ -27,7 +27,6 @@ public class HttpEasyReaderTests {
                 .header("hellow", "world")
                 .path("get")
                 .queryParam("name", "fred")
-                .withLogWriter(new TestLogWriter())
                 .logRequestDetails()
                 .get()
                 .getJsonReader();

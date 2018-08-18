@@ -36,9 +36,4 @@ public class ProxyVoleLogger implements LogBackEnd {
     private String removePositionalCharacter(String msg) {
         return msg.replaceAll("\\{([0-9]+)\\}", "{}");
     }
-
-    @Override
-    public boolean isLogginEnabled(LogLevel logLevel) {
-        return true;
-    }
 }

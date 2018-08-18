@@ -1,7 +1,7 @@
 dependencies {
     //testCompile project(':cubano-config')
 
-	compile 'com.github.markusbernhardt:proxy-vole:1.0.4'
+	compile 'com.github.markusbernhardt:proxy-vole:1.0.5'
 	compile 'com.github.waffle:waffle-jna:1.9.1'
 	
 	compile 'com.google.code.gson:gson:2.8.5'
