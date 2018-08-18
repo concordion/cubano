@@ -16,7 +16,10 @@ import org.junit.Test;
 public class HttpEasyDefaultsTests {
     @Before
     public void resetDefaults() {
-        new HttpEasyDefaults().proxy(Proxy.NO_PROXY).nonProxyHosts(HttpEasyDefaults.DEFAULT_PROXY_BYPASS_HOSTS);
+        new HttpEasyDefaults()
+                .proxy(Proxy.NO_PROXY)
+                .nonProxyHosts(HttpEasyDefaults.DEFAULT_PROXY_BYPASS_HOSTS)
+                .proxyConfiguration(ProxyConfiguration.MANUAL);
     }
 
     private HttpEasyDefaults withProxy() {
