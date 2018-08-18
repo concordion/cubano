@@ -29,7 +29,7 @@ public class HttpEasyDefaultsTests {
     }
 
     @Test
-    public void BypassProxyForLocalHost() throws MalformedURLException {
+    public void bypassProxyForLocalHost() throws MalformedURLException {
         withProxy();
 
         URL url = new URL("http://localhost:8080/some.path");
@@ -38,7 +38,7 @@ public class HttpEasyDefaultsTests {
     }
 
     @Test
-    public void BypassProxyForLocalHost_CaseInsensitive() throws MalformedURLException {
+    public void bypassProxyForLocalHost_CaseInsensitive() throws MalformedURLException {
         withProxy();
 
         URL url = new URL("http://LOCALHOST:8080/some.path");
@@ -47,7 +47,7 @@ public class HttpEasyDefaultsTests {
     }
 
     @Test
-    public void BypassProxyForRemoteHost() throws MalformedURLException {
+    public void bypassProxyForRemoteHost() throws MalformedURLException {
         URL shortUrl = new URL("http://remotehost:8080/some.path");
         URL fullUrl = new URL("http://remotehost.company.com:8080/some.path");
         URL externalUrl = new URL("http://externalhost.company.com:8080/some.path");
