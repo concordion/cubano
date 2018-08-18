@@ -914,6 +914,10 @@ public class HttpEasy {
     }
 
     private void setProxyAuthorization(HttpURLConnection connection) {
+        UserCredentials creds = new UserCredentials();
+        creds.getCredentials(connection);
+        
+        ////////////// OLD CODE
         if (HttpEasyDefaults.getProxyUser() == null || HttpEasyDefaults.getProxyUser().isEmpty()) {
             return;
         }

@@ -2,6 +2,8 @@ dependencies {
     //testCompile project(':cubano-config')
 
 	compile 'com.github.markusbernhardt:proxy-vole:1.0.4'
+	compile 'com.github.waffle:waffle-jna:1.9.1'
+	
 	compile 'com.google.code.gson:gson:2.8.5'
 	// Breaks plgins in Jenkins if go higher than this.  Only using it to get MediaType so probably not an issue
 	compile 'com.google.guava:guava:19.0'
