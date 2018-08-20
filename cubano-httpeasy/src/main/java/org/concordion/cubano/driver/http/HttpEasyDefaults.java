@@ -253,9 +253,10 @@ public class HttpEasyDefaults {
         return proxy;
     }
 
-    // TODO Not sure that we should be manually doing this. We may just need to ensure system property http(s).nonProxyHosts is set. Ditto for the other http(s) settings.
-    // Only wrinkle is that trying to use the same config setting for both Browser and HttpEasy so not sure how that will work... What did Jimmy to for RestAssured proxy access?
-    // TODO Do we need to cater for IPAdress ranges? http.nonProxyHosts doesn't specify but I believe browsers can cope with this...
+    // Some stuff to think about when we have time...
+    // TODO If system system properties http(s).nonProxyHosts are set do we actually need to do anything, documentation says that it's automatically handled.
+    // TODO Given that trying to use same nonPorxyHosts config setting for both Browser and HttpEasy is there any difference in format?
+    // eg: Do we need to cater for IPAdress ranges? http.nonProxyHosts doesn't specify but I believe browsers can cope with this...
     private static boolean isProxyBypassHost(URL url) {
         String host = url.getHost().toLowerCase();
 
