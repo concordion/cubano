@@ -17,6 +17,8 @@ import com.github.markusbernhardt.proxy.ProxySearch;
  * @author Andrew Sumner
  */
 public class HttpEasyDefaults {
+    public static final String DEFAULT_PROXY_BYPASS_HOSTS = "localhost,127.0.0.1";
+
     private static String baseUrl = "";
     private static boolean trustAllEndPoints = false;
     private static List<String> sensitiveParameters = new ArrayList<>();
@@ -31,6 +33,8 @@ public class HttpEasyDefaults {
     private static Proxy proxy = Proxy.NO_PROXY;
     private static String proxyUser = null;
     private static String proxyPassword = null;
+    private static boolean bypassProxy = false;
+    private static List<String> nonProxyHosts = splitHosts(DEFAULT_PROXY_BYPASS_HOSTS);
 
     // Logging
     private static LogWriter defaultLogWriter = new LoggerLogWriter();
@@ -113,6 +117,43 @@ public class HttpEasyDefaults {
     }
 
     /**
+     * Bypass the proxy, if specified, for addresses in the {@link #nonProxyHosts(String)}.
+     * <p>
+     * Defaults to false
+     * </p>
+     * 
+     * @param bypassProxy Value
+     * @return A self reference
+     */
+    public HttpEasyDefaults bypassProxy(boolean bypassProxy) {
+        HttpEasyDefaults.bypassProxy = bypassProxy;
+        return this;
+    }
+
+    /**
+     * A comma delemeited list of hosts to bypass the proxy for. The items in the list:
+     * <ul>
+     * <li>may use wildcards</li>
+     * <li>must match (case insensitive) the host name of the URL being requested</li>
+     * </ul>
+     * <p>
+     * Defaults to "localhost, 127.0.0.1"
+     * </p>
+     * 
+     * @param proxyBypassHosts
+     * @return
+     */
+    public HttpEasyDefaults nonProxyHosts(String proxyBypassHosts) {
+        HttpEasyDefaults.nonProxyHosts = splitHosts(proxyBypassHosts);
+
+        return this;
+    }
+
+    private static List<String> splitHosts(String hosts) {
+        return Arrays.asList(Arrays.stream(hosts.split(",")).map(String::trim).map(String::toLowerCase).toArray(String[]::new));
+    }
+
+    /**
      * Set the default base url for all HttpEasy requests.
      *
      * @param baseUrl Base URL
@@ -178,6 +219,10 @@ public class HttpEasyDefaults {
 
     public static Proxy getProxy(URL url) {
         if (proxyConfiguration == ProxyConfiguration.MANUAL) {
+            if (bypassProxy && isProxyBypassHost(url)) {
+                return Proxy.NO_PROXY;
+            }
+
             return proxy;
         }
 
@@ -206,6 +251,20 @@ public class HttpEasyDefaults {
         }
 
         return proxy;
+    }
+
+    // Some stuff to think about when we have time...
+    // TODO If system system properties http(s).nonProxyHosts are set do we actually need to do anything, documentation says that it's automatically handled.
+    // TODO Given that trying to use same nonPorxyHosts config setting for both Browser and HttpEasy is there any difference in format?
+    // eg: Do we need to cater for IPAdress ranges? http.nonProxyHosts doesn't specify but I believe browsers can cope with this...
+    private static boolean isProxyBypassHost(URL url) {
+        String host = url.getHost().toLowerCase();
+
+        return nonProxyHosts.stream().anyMatch(pattern -> host.matches(escapePattern(pattern)));
+    }
+
+    private static String escapePattern(String pattern) {
+        return pattern.replace(".", "\\.").replace("*", ".*");
     }
 
     public static String getProxyUser() {

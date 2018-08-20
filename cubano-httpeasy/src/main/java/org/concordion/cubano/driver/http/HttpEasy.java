@@ -114,7 +114,7 @@ import com.google.common.net.MediaType;
  * 
  * <pre>
  * HttpEasy.withDefaults()
- *     .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(user, password))))
+ *     .proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("somehost", 80))))
  *     .proxyAuth(userName, password)
  *     .bypassProxyForLocalAddresses(true);
  * </pre>
