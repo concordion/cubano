@@ -83,6 +83,7 @@ public class HttpEasyDefaults {
         if (configuration == ProxyConfiguration.AUTOMATIC && proxySearch == null) {
             synchronized (HttpEasyDefaults.class) {
                 if (proxySearch == null) {
+                    com.github.markusbernhardt.proxy.util.Logger.setBackend(new ProxyVoleLogger());
                     proxySearch = ProxySearch.getDefaultProxySearch().getProxySelector();
                 }
             }
