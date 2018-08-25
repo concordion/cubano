@@ -1,6 +1,5 @@
 package org.concordion.cubano.framework;
 
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -27,6 +26,8 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.EnumSet;
+import java.util.Optional;
 /**
  * Basic Concordion Fixture for inheritance by index fixtures with no tests.
  * <p>
@@ -35,6 +36,8 @@ import org.slf4j.LoggerFactory;
  * , the resource will automatically be closed at the end of the specified scope.
  * Resources will be closed in the reverse order to which they were registered.
  * </p>
+ * The resource registry is thread-safe for SUITE scoped resources. It is not thread-safe for EXAMPLE and SPECIFICATION
+ * scoped resources which rely on Concordion creating a new instance for each test.
  **/
 @RunWith(ConcordionRunner.class)
 @ConcordionOptions(markdownExtensions = {MarkdownExtensions.HARDWRAPS, MarkdownExtensions.AUTOLINKS})
@@ -63,7 +66,7 @@ public abstract class ConcordionBase implements ResourceRegistry {
     @Override
     public void registerCloseableResource(Closeable resource, ResourceScope scope) {
         logger.debug("Registering {} to {}.", resource, scope);
-        registerPair(scope, new ImmutablePair<>(resource, null));
+        registerResourcePair(new ImmutablePair<>(resource, null), scope);
     }
 
     /**
@@ -76,49 +79,22 @@ public abstract class ConcordionBase implements ResourceRegistry {
     @Override
     public void registerCloseableResource(Closeable resource, ResourceScope scope, CloseListener listener) {
         logger.debug("Registering {} to {}.", resource, scope);
-        registerPair(scope, new ImmutablePair<>(resource, listener));
+        registerResourcePair(new ImmutablePair<>(resource, listener), scope);
     }
 
-    private void registerPair(ResourceScope scope, ImmutablePair<Closeable, CloseListener> pair) {
-        if (pair.left == null) {
-            throw new NullPointerException("Registered Resource must not be null");
-        }
-        switch (scope) {
-            case EXAMPLE:
-                examplePairs.push(pair);
-                break;
-
-            case SPECIFICATION:
-                specificationPairs.push(pair);
-                break;
-
-            case SUITE:
-                suitePairs.push(pair);
-                break;
-        }
+    @Override
+    public boolean isRegistered(Closeable resource, ResourceScope scope) {
+        return getResourcePairFromScope(resource, scope).isPresent();
     }
 
-    protected boolean isRegistered(Closeable resource, ResourceScope scope) {
-        switch (scope) {
-            case EXAMPLE:
-                return containsResource(examplePairs, resource);
-
-            case SPECIFICATION:
-                return containsResource(specificationPairs, resource);
-
-            case SUITE:
-                return containsResource(suitePairs, resource);
-        }
-        return false;
-    }
-
-    private boolean containsResource(Deque<ImmutablePair<Closeable, CloseListener>> pairs, Closeable resource) {
-        for (ImmutablePair<Closeable, CloseListener> pair : pairs) {
-            if (pair.left.equals(resource)) {
-                return true;
+    @Override
+    public void closeResource(Closeable resource) {
+        EnumSet.allOf(ResourceScope.class).forEach(scope -> {
+            Optional<ImmutablePair<Closeable, CloseListener>> optionalPair = getResourcePairFromScope(resource, scope);
+            if (optionalPair.isPresent()) {
+                closeResourcePair(optionalPair.get(), scope);
             }
-        }
-        return false;
+        });
     }
 
     @BeforeExample
@@ -155,7 +131,7 @@ public abstract class ConcordionBase implements ResourceRegistry {
      */
     @AfterExample
     protected void closeExampleResources() {
-        closeResources(examplePairs, ResourceScope.EXAMPLE);
+        closeResourcePairs(examplePairs, ResourceScope.EXAMPLE);
     }
 
     /**
@@ -163,7 +139,7 @@ public abstract class ConcordionBase implements ResourceRegistry {
      */
     @AfterSpecification
     protected void closeSpecificationResources() {
-        closeResources(specificationPairs, ResourceScope.SPECIFICATION);
+        closeResourcePairs(specificationPairs, ResourceScope.SPECIFICATION);
     }
 
     /**
@@ -171,28 +147,76 @@ public abstract class ConcordionBase implements ResourceRegistry {
      */
     @AfterSuite
     protected void closeSuiteResources() {
-        closeResources(suitePairs, ResourceScope.SUITE);
+        closeResourcePairs(suitePairs, ResourceScope.SUITE);
     }
 
-    private void closeResources(Deque<ImmutablePair<Closeable, CloseListener>> pairs, ResourceScope scope) {
+    private Optional<ImmutablePair<Closeable, CloseListener>> getResourcePairFromScope(Closeable resource, ResourceScope scope) {
+        switch (scope) {
+            case EXAMPLE:
+                return getResourcePair(examplePairs, resource);
+
+            case SPECIFICATION:
+                return getResourcePair(specificationPairs, resource);
+
+            case SUITE:
+                return getResourcePair(suitePairs, resource);
+
+            default:
+                throw new IllegalArgumentException("Unknown scope " + scope);
+        }
+    }
+
+    private void registerResourcePair(ImmutablePair<Closeable, CloseListener> pair, ResourceScope scope) {
+        if (pair.left == null) {
+            throw new NullPointerException("Registered Resource must not be null");
+        }
+        switch (scope) {
+            case EXAMPLE:
+                examplePairs.push(pair);
+                break;
+
+            case SPECIFICATION:
+                specificationPairs.push(pair);
+                break;
+
+            case SUITE:
+                suitePairs.push(pair);
+                break;
+        }
+    }
+
+    private Optional<ImmutablePair<Closeable, CloseListener>> getResourcePair(Deque<ImmutablePair<Closeable, CloseListener>> pairs, Closeable resource) {
+        for (ImmutablePair<Closeable, CloseListener> pair : pairs) {
+            if (pair.left.equals(resource)) {
+                return Optional.of(pair);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private void closeResourcePairs(Deque<ImmutablePair<Closeable, CloseListener>> pairs, ResourceScope scope) {
         if (pairs.isEmpty())
             return;
 
         logger.debug("Closing resources for {} scope.", scope);
         pairs.forEach(pair -> {
-            if (pair.right != null) {
-                pair.right.beforeClosing(pair.left);
-            }
-            try {
-                logger.debug("Closing {}.", pair.left);
-                pair.left.close();
-            } catch (IOException e) {
-                logger.warn("IOException when closing resource", e);
-            }
-            if (pair.right != null) {
-                pair.right.afterClosing(pair.left);
-            }
+            closeResourcePair(pair, scope);
         });
         pairs.clear();
+    }
+
+    private void closeResourcePair(ImmutablePair<Closeable, CloseListener> pair, ResourceScope scope) {
+        if (pair.right != null) {
+            pair.right.beforeClosing(pair.left);
+        }
+        try {
+            logger.debug("Closing {} for scope {}.", pair.left, scope);
+            pair.left.close();
+        } catch (IOException e) {
+            logger.warn("IOException when closing resource", e);
+        }
+        if (pair.right != null) {
+            pair.right.afterClosing(pair.left);
+        }
     }
 }

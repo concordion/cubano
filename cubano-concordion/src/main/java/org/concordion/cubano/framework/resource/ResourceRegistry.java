@@ -18,4 +18,11 @@ public interface ResourceRegistry {
      * relevant methods on <code>listener</code> before and after closing the resource.
      */
     void registerCloseableResource(Closeable resource, ResourceScope scope, CloseListener listener);
+
+    /**
+     * Ascertains whether the <code>resource</code> is registered at the specified <code>scope</code>.
+     */
+    boolean isRegistered(Closeable resource, ResourceScope scope);
+
+    void closeResource(Closeable resource);
 }
