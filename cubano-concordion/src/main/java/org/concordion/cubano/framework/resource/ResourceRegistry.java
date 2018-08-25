@@ -24,5 +24,8 @@ public interface ResourceRegistry {
      */
     boolean isRegistered(Closeable resource, ResourceScope scope);
 
+    /**
+     * Close and deregister the specified <code>resource</code> from all scopes.
+     */
     void closeResource(Closeable resource);
 }
