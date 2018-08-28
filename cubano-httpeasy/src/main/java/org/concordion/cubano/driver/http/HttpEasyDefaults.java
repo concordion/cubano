@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.markusbernhardt.proxy.ProxySearch;
+import com.github.markusbernhardt.proxy.util.Logger;
+
 /**
  * Allows setting of default properties used by all subsequent HttpEasy requests.
  *
@@ -105,8 +108,8 @@ public class HttpEasyDefaults {
         if (configuration == ProxyConfiguration.AUTOMATIC && proxySearch == null && isPresent("com.github.markusbernhardt.proxy.ProxySearch")) {
             synchronized (HttpEasyDefaults.class) {
                 if (proxySearch == null) {
-                    com.github.markusbernhardt.proxy.util.Logger.setBackend(null); // new ProxyVoleLogger());
-                    proxySearch = com.github.markusbernhardt.proxy.ProxySearch.getDefaultProxySearch().getProxySelector();
+                    Logger.setBackend(null); // new ProxyVoleLogger());
+                    proxySearch = ProxySearch.getDefaultProxySearch().getProxySelector();
                 }
             }
         }
