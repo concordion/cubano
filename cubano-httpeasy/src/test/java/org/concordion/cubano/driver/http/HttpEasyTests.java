@@ -22,7 +22,7 @@ public class HttpEasyTests {
      */
     @After
     public void resetStaticState() {
-        HttpEasy.withDefaults().trustAllEndPoints(false);
+        HttpEasy.withDefaults().trustAllCertificates(false).trustAllHosts(false);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class HttpEasyTests {
 
     @Test
     public void trustAllEndPointsOnRequest_FollowingRequestIsTrusted() throws Exception {
-        HttpEasy request = HttpEasy.request().trustAllEndPoints(true);
+        HttpEasy request = HttpEasy.request().trustAllCertificates(true).trustAllHosts(true);
 
         HttpsURLConnection connection = (HttpsURLConnection) getConnection(request, "https://some.where.secure");
 
@@ -69,7 +69,7 @@ public class HttpEasyTests {
 
     @Test
     public void trustAllEndPointsOnRequest_RequestsAfterFollowingRequestAreNotTrusted() throws Exception {
-        HttpEasy request = HttpEasy.request().trustAllEndPoints(true);
+        HttpEasy request = HttpEasy.request().trustAllCertificates(true).trustAllHosts(true);
         @SuppressWarnings("unused")
         HttpsURLConnection connection = (HttpsURLConnection) getConnection(request, "https://some.where.secure");
 
@@ -83,7 +83,7 @@ public class HttpEasyTests {
     @Test
     public void trustAllEndPointsGlobalDefault_FollowingRequestIsTrusted() throws Exception {
         HttpEasy request = HttpEasy.request();
-        HttpEasy.withDefaults().trustAllEndPoints(true);
+        HttpEasy.withDefaults().trustAllCertificates(true).trustAllHosts(true);
 
         HttpsURLConnection connection = (HttpsURLConnection) getConnection(request, "https://some.where.secure");
 
@@ -93,7 +93,7 @@ public class HttpEasyTests {
 
     @Test
     public void trustAllEndPointsGlobalDefault_RequestsAfterFollowingRequestAreTrusted() throws Exception {
-        HttpEasy.withDefaults().trustAllEndPoints(true);
+        HttpEasy.withDefaults().trustAllCertificates(true).trustAllHosts(true);
         HttpEasy request = HttpEasy.request();
         @SuppressWarnings("unused")
         HttpsURLConnection connection = (HttpsURLConnection) getConnection(request, "https://some.where.secure");
@@ -107,8 +107,8 @@ public class HttpEasyTests {
 
     @Test
     public void trustAllEndPointsOnRequest_OverridesGlobalDefault() throws Exception {
-        HttpEasy.withDefaults().trustAllEndPoints(true);
-        HttpEasy request = HttpEasy.request().trustAllEndPoints(false);
+        HttpEasy.withDefaults().trustAllCertificates(true).trustAllHosts(true);
+        HttpEasy request = HttpEasy.request().trustAllCertificates(false).trustAllHosts(false);
 
         HttpsURLConnection connection = (HttpsURLConnection) getConnection(request, "https://some.where.secure");
 

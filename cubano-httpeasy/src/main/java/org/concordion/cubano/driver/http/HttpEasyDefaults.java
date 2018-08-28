@@ -20,7 +20,8 @@ public class HttpEasyDefaults {
     public static final String DEFAULT_PROXY_BYPASS_HOSTS = "localhost,127.0.0.1";
 
     private static String baseUrl = "";
-    private static boolean trustAllEndPoints = false;
+    private static boolean trustAllCertificates = false;
+    private static boolean trustAllHosts = false;
     private static List<String> sensitiveParameters = new ArrayList<>();
 
     // Request authorisation
@@ -41,17 +42,30 @@ public class HttpEasyDefaults {
     private static boolean logRequest = true;
     private static boolean logRequestDetails = false;
 
-
     /**
-     * Skip validation of any SSL certificates and trust all hostnames.
+     * Skip validation of any SSL certificates.
      * Only applies to HTTPS connections.
      *
-     * @param trustAllEndPoints Set to true to trust all certificates and hosts, the default is false
+     * @param trustAllCertificates Set to true to trust all certificates, the default is false
      * @return A self reference
-     * @see HttpEasy#trustAllEndPoints(boolean) to override this setting per request
+     * @see HttpEasy#trustAllCertificates(boolean) to override this setting per request
      */
-    public HttpEasyDefaults trustAllEndPoints(boolean trustAllEndPoints) {
-        HttpEasyDefaults.trustAllEndPoints = trustAllEndPoints;
+    public HttpEasyDefaults trustAllCertificates(boolean trustAllCertificates) {
+        HttpEasyDefaults.trustAllCertificates = trustAllCertificates;
+
+        return this;
+    }
+
+    /**
+     * Trust all hosts.
+     * Only applies to HTTPS connections.
+     *
+     * @param trustAllHosts Set to true to trust all hosts, the default is false
+     * @return A self reference
+     * @see HttpEasy#trustAllHosts(boolean) to override this setting per request
+     */
+    public HttpEasyDefaults trustAllHosts(boolean trustAllHosts) {
+        HttpEasyDefaults.trustAllHosts = trustAllHosts;
 
         return this;
     }
@@ -202,8 +216,12 @@ public class HttpEasyDefaults {
         return this;
     }
 
-    public static boolean isTrustAllEndPoints() {
-        return trustAllEndPoints;
+    public static boolean isTrustAllCertificates() {
+        return trustAllCertificates;
+    }
+
+    public static boolean isTrustAllHosts() {
+        return trustAllHosts;
     }
 
     public static List<String> getSensitiveParameters() {

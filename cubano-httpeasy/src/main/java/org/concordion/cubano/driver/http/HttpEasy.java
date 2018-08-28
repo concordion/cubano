@@ -167,7 +167,8 @@ public class HttpEasy {
     private LogManager logManager = null;
     private Optional<LogWriter> logWriter = Optional.empty();
     private Optional<Boolean> logRequestDetails = Optional.empty();
-    private Optional<Boolean> trustAllEndPoints = Optional.empty();
+    private Optional<Boolean> trustAllCertificates = Optional.empty();
+    private Optional<Boolean> trustAllHosts = Optional.empty();
     private boolean includeEmptyValues = false;
 
     /**
@@ -248,15 +249,28 @@ public class HttpEasy {
     }
 
     /**
-     * Instruct the current request to skip validation of any SSL certificates and trust all hostnames.
+     * Instruct the current request to skip validation of any SSL certificates.
      * Only applies to HTTPS connections.
      * 
      * @param trustAll Set to true to trust all certificates and hosts, the default is false
      * @return A self reference
-     * @see HttpEasyDefaults#trustAllEndPoints(boolean) to apply this setting globally
+     * @see HttpEasyDefaults#trustAllCertificates(boolean) to apply this setting globally
      */
-    public HttpEasy trustAllEndPoints(boolean trustAll) {
-        this.trustAllEndPoints = Optional.of(trustAll);
+    public HttpEasy trustAllCertificates(boolean trustAllCertificates) {
+        this.trustAllCertificates = Optional.of(trustAllCertificates);
+        return this;
+    }
+
+    /**
+     * Instruct the current request to trust all hosts.
+     * Only applies to HTTPS connections.
+     * 
+     * @param trustAll Set to true to trust all certificates and hosts, the default is false
+     * @return A self reference
+     * @see HttpEasyDefaults#trustAllHosts(boolean) to apply this setting globally
+     */
+    public HttpEasy trustAllHosts(boolean trustAllHosts) {
+        this.trustAllHosts = Optional.of(trustAllHosts);
         return this;
     }
 
@@ -805,13 +819,16 @@ public class HttpEasy {
         if (url.getProtocol().equalsIgnoreCase("https")) {
             connection = (HttpsURLConnection) url.openConnection(useProxy);
 
-            if (trustAllEndPoints.orElse(HttpEasyDefaults.isTrustAllEndPoints())) {
+            if (trustAllCertificates.orElse(HttpEasyDefaults.isTrustAllCertificates())) {
                 try {
-                    ((HttpsURLConnection) connection).setHostnameVerifier(SSLUtilities.getTrustAllHostsVerifier());
                     ((HttpsURLConnection) connection).setSSLSocketFactory(SSLUtilities.getTrustAllCertificatesSocketFactory());
                 } catch (KeyManagementException | NoSuchAlgorithmException e) {
                     throw new IOException("Unable to trust all certificates", e);
                 }
+            }
+
+            if (trustAllHosts.orElse(HttpEasyDefaults.isTrustAllHosts())) {
+                ((HttpsURLConnection) connection).setHostnameVerifier(SSLUtilities.getTrustAllHostsVerifier());
             }
         } else {
             connection = (HttpURLConnection) url.openConnection(useProxy);
