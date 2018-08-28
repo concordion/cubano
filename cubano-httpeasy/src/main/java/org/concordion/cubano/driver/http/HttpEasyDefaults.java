@@ -71,6 +71,15 @@ public class HttpEasyDefaults {
         return this;
     }
 
+    private static boolean isPresent(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (Throwable ex) {
+            // Class or one of its dependencies is not present...
+            return false;
+        }
+    }
 
     /**
      * Set the proxy configuration type.
@@ -81,7 +90,7 @@ public class HttpEasyDefaults {
     public HttpEasyDefaults proxyConfiguration(ProxyConfiguration configuration) {
         HttpEasyDefaults.proxyConfiguration = configuration;
         
-        if (configuration == ProxyConfiguration.AUTOMATIC && proxySearch == null) {
+        if (configuration == ProxyConfiguration.AUTOMATIC && proxySearch == null && isPresent("com.github.markusbernhardt.proxy.ProxySearch")) {
             synchronized (HttpEasyDefaults.class) {
                 if (proxySearch == null) {
                     Logger.setBackend(new ProxyVoleLogger());
@@ -89,6 +98,7 @@ public class HttpEasyDefaults {
                 }
             }
         }
+
         return this;
     }
 
