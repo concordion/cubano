@@ -105,7 +105,7 @@ public class HttpEasyDefaults {
         if (configuration == ProxyConfiguration.AUTOMATIC && proxySearch == null && isPresent("com.github.markusbernhardt.proxy.ProxySearch")) {
             synchronized (HttpEasyDefaults.class) {
                 if (proxySearch == null) {
-                    com.github.markusbernhardt.proxy.util.Logger.setBackend(new ProxyVoleLogger());
+                    com.github.markusbernhardt.proxy.util.Logger.setBackend(null); // new ProxyVoleLogger());
                     proxySearch = com.github.markusbernhardt.proxy.ProxySearch.getDefaultProxySearch().getProxySelector();
                 }
             }
