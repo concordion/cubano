@@ -252,7 +252,7 @@ public class HttpEasy {
      * Instruct the current request to skip validation of any SSL certificates.
      * Only applies to HTTPS connections.
      * 
-     * @param trustAll Set to true to trust all certificates and hosts, the default is false
+     * @param trustAllCertificates Set to true to trust all certificates and hosts, the default is false
      * @return A self reference
      * @see HttpEasyDefaults#trustAllCertificates(boolean) to apply this setting globally
      */
@@ -265,7 +265,7 @@ public class HttpEasy {
      * Instruct the current request to trust all hosts.
      * Only applies to HTTPS connections.
      * 
-     * @param trustAll Set to true to trust all certificates and hosts, the default is false
+     * @param trustAllHosts Set to true to trust all certificates and hosts, the default is false
      * @return A self reference
      * @see HttpEasyDefaults#trustAllHosts(boolean) to apply this setting globally
      */
