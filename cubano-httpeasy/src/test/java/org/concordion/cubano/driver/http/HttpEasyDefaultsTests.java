@@ -1,6 +1,7 @@
 package org.concordion.cubano.driver.http;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Method;
@@ -82,6 +83,14 @@ public class HttpEasyDefaultsTests {
         assertThat(HttpEasyDefaults.getProxy(shortUrl), is(bypassingProxy()));
         assertThat(HttpEasyDefaults.getProxy(fullUrl), is(bypassingProxy()));
         assertThat(HttpEasyDefaults.getProxy(externalUrl), is(usingProxy()));
+    }
+
+    @Test
+    public void setHttpEasyAuthorisationOnly() throws Exception {
+        HttpEasy request = HttpEasy.request();
+        request.authorization("customUser", "customPassword");
+
+        assertThat(HttpEasyDefaults.getAuthUser(), is(nullValue()));
     }
 
     @Test

@@ -29,7 +29,6 @@ import java.util.Optional;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.net.MediaType;
 
@@ -729,8 +728,8 @@ public class HttpEasy {
             sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
             sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
             sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy(url)).append(NEW_LINE);
-            if (!Strings.isNullOrEmpty(user) && !Strings.isNullOrEmpty(HttpEasyDefaults.getAuthUser())) {
-                sb.append("Basic Authorization User:").append(TAB).append(MoreObjects.firstNonNull(user, HttpEasyDefaults.getAuthUser())).append(NEW_LINE);
+            if (!Strings.isNullOrEmpty(user)) {
+                sb.append("Basic Authorization User:").append(TAB).append(user).append(NEW_LINE);
             }
             sb.append("Query Params:").append(NEW_LINE);
             for (String value : query.toString().split("&")) {
