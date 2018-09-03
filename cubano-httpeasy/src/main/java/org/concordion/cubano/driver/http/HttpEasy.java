@@ -150,7 +150,8 @@ public class HttpEasy {
     List<Family> ignoreResponseFamily = new ArrayList<Family>();
 
     // These only apply per request
-    private String authString = null;
+    private Optional<String> authUser = Optional.empty();
+    private Optional<String> authPassword = Optional.empty();
     private Optional<String> baseUrl = Optional.empty();
     private String path = "";
     private StringBuilder query = new StringBuilder();
@@ -205,7 +206,9 @@ public class HttpEasy {
      * @return A self reference
      */
     public HttpEasy authorization(String username, String password) {
-        authString = username + ":" + password;
+        authUser = Optional.of(username);
+        authPassword = Optional.of(password);
+
         return this;
     }
 
@@ -706,12 +709,11 @@ public class HttpEasy {
         String TAB = "\t";
         String NEW_LINE = System.lineSeparator();
 
-        String authUser = "";
+        String user = authUser.orElse(HttpEasyDefaults.getAuthUser());
         String authMsg = "";
 
-        if (authString != null && !authString.isEmpty()) {
-            authUser = authString.substring(0, authString.indexOf(":"));
-            authMsg = " as user '" + authUser + "'";
+        if (user != null && !user.isEmpty()) {
+            authMsg = " as user '" + user + "'";
         }
 
         String logUrl = url.toString();
@@ -727,8 +729,8 @@ public class HttpEasy {
             sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
             sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
             sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy(url)).append(NEW_LINE);
-            if (!Strings.isNullOrEmpty(authUser) && !Strings.isNullOrEmpty(HttpEasyDefaults.getAuthUser())) {
-                sb.append("Basic Authorization User:").append(TAB).append(MoreObjects.firstNonNull(authUser, HttpEasyDefaults.getAuthUser())).append(NEW_LINE);
+            if (!Strings.isNullOrEmpty(user) && !Strings.isNullOrEmpty(HttpEasyDefaults.getAuthUser())) {
+                sb.append("Basic Authorization User:").append(TAB).append(MoreObjects.firstNonNull(user, HttpEasyDefaults.getAuthUser())).append(NEW_LINE);
             }
             sb.append("Query Params:").append(NEW_LINE);
             for (String value : query.toString().split("&")) {
@@ -851,7 +853,14 @@ public class HttpEasy {
         URL url = new URL(spec);
 
         if (url.getUserInfo() != null) {
-            authString = url.getUserInfo();
+            String authString = url.getUserInfo();
+            int index = authString.indexOf(":");
+
+            if (index > 0) {
+                authUser = Optional.of(authString.substring(0, index));
+                authPassword = Optional.of(authString.substring(index + 1));
+            }
+
             spec = url.toExternalForm().replace(url.getUserInfo() + "@", "");
             url = new URL(spec);
         }
@@ -910,27 +919,34 @@ public class HttpEasy {
     }
 
     private void setHeaders(HttpURLConnection connection) throws UnsupportedEncodingException {
-        setProxyAuthorization(connection);
-        setAuthorization(connection);
+        setProxyAuthorizationHeader(connection);
+        setAuthorizationHeader(connection);
 
         for (Map.Entry<String, Object> header : headers.entrySet()) {
             connection.setRequestProperty(header.getKey(), String.valueOf(header.getValue()));
         }
     }
 
-    private void setAuthorization(HttpURLConnection connection) {
-        if (authString == null || authString.isEmpty()) {
-            return;
+    String getAuthorization() {
+        String user = authUser.orElse(HttpEasyDefaults.getAuthUser());
+        String password = authPassword.orElse(HttpEasyDefaults.getAuthPassword());
+
+        if (user == null || user.isEmpty() || password == null || password.isEmpty()) {
+            return null;
         }
 
-        // For prior to Java 1.8
-        // import org.apache.commons.codec.binary.Base64;
-        // connection.setRequestProperty("Authorization", "Basic " + Base64.encodeBase64String(authString.getBytes(StandardCharsets.UTF_8)));
-        // is in commons-codec-1.10.jar
-        connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString(authString.getBytes(StandardCharsets.UTF_8)));
+        return user + ":" + password;
     }
 
-    private void setProxyAuthorization(HttpURLConnection connection) {
+    private void setAuthorizationHeader(HttpURLConnection connection) {
+        String authString = getAuthorization();
+
+        if (authString != null) {
+            connection.setRequestProperty("Authorization", "Basic " + Base64.getEncoder().encodeToString(authString.getBytes(StandardCharsets.UTF_8)));
+        }
+    }
+
+    private void setProxyAuthorizationHeader(HttpURLConnection connection) {
         if (HttpEasyDefaults.getProxyUser() == null || HttpEasyDefaults.getProxyUser().isEmpty()) {
             return;
         }
