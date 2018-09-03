@@ -1,8 +1,10 @@
 package org.concordion.cubano.driver.http;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
@@ -81,6 +83,35 @@ public class HttpEasyDefaultsTests {
         assertThat(HttpEasyDefaults.getProxy(shortUrl), is(bypassingProxy()));
         assertThat(HttpEasyDefaults.getProxy(fullUrl), is(bypassingProxy()));
         assertThat(HttpEasyDefaults.getProxy(externalUrl), is(usingProxy()));
+    }
+
+    @Test
+    public void setHttpEasyAuthorisationOnly() throws Exception {
+        HttpEasy request = HttpEasy.request();
+        request.authorization("customUser", "customPassword");
+
+        assertThat(HttpEasyDefaults.getAuthUser(), is(nullValue()));
+    }
+
+    @Test
+    public void setEndPointAuthorisation() throws Exception {
+        // Default User
+        HttpEasy.withDefaults().authorization("defaultUser", "defaultPassword");
+        HttpEasy request = HttpEasy.request();
+
+        assertThat(request.getAuthorization(), is("defaultUser:defaultPassword"));
+
+        // Request Specific User
+        request.authorization("customUser", "customPassword");
+        assertThat(request.getAuthorization(), is("customUser:customPassword"));
+
+        // User from URL
+        request.baseUrl("http://requestUser:requestPassword@somewhere.com");
+        Method method = request.getClass().getDeclaredMethod("getURL");
+        method.setAccessible(true);
+        Object r = method.invoke(request);
+
+        assertThat(request.getAuthorization(), is("requestUser:requestPassword"));
     }
 
     @SuppressWarnings("unchecked")
