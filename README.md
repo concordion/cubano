@@ -27,6 +27,15 @@ Cubano provides a [Demo Project](https://github.com/concordion/cubano-demo#cuban
 
 Once you are ready to start writing your own tests, pull down the [Cubano Template Project](https://github.com/concordion/cubano-template) and adapt this base to start automating your project.
 
+## Feedback
+
+We love to receive feedback.
+
+Please report any [issues](https://github.com/concordion/cubano/issues) to this Github project.
+
+Please post other feedback, questions and discussion to the [Concordion Google Group](https://groups.google.com/forum/#!forum/concordion) with "[Cubano]" in the message header.
+
+
 ## Contributing
 
 All contributions are welcome, we do ask however that you follow our coding standards.  This is rather easy as we have checkstyle and code formatter configuration files ready to use.
