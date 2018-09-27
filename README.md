@@ -8,9 +8,11 @@ Cubano is a "ready-made" test framework that provides everything at your fingert
 
 Utilising __Specification by Example__ techniques, the framework implements:
 
-* Web testing (using Selenium WebDriver)
-* REST / SOAP / HTTP testing (using the built-in HttpEasy framework, or plug in your own)
-* Database testing
+* Web browser automation using Selenium WebDriver
+* API automation (REST / SOAP / HTTP)
+* Database automation
+
+Cubano supplies [User Documentation](https://concordion.org/cubano/index), and a [Demo Project](https://github.com/concordion/cubano-demo#cubano-demo-project), to help users get started. 
 
 It encourages collaboration and communication between business people, testers and developers. The rich output presents multiple views of the specification with embedded storyboards and logs containing screenshots, HTML page source, message interactions and text.
 
