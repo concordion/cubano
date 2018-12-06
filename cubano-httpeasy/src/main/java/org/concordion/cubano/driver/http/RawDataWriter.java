@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import com.google.common.net.MediaType;
 
@@ -24,6 +23,8 @@ class RawDataWriter implements DataWriter {
     private File uploadFile = null;
     private InputStream uploadStream = null;
     private String uploadFileName;
+    private static final String NEW_LINE = System.lineSeparator();
+    private static final String TAB = "\t";
 
     /**
      * Constructor.
@@ -49,10 +50,9 @@ class RawDataWriter implements DataWriter {
             connection.setRequestProperty("Content-Type", rawDataMediaType.toString());
         } else {
             // Assume data is encoded correctly
-            //this.postEndcoded = rawData.getBytes(URLEncoder.encode(String.valueOf(data), "UTF-8"));
             this.postEndcoded = String.valueOf(rawData).getBytes(StandardCharsets.UTF_8);
 
-            connection.setRequestProperty("charset", "utf-8");
+            connection.setRequestProperty("charset", StandardCharsets.UTF_8.name());
             connection.setRequestProperty("Content-Type", rawDataMediaType.toString());
             connection.setRequestProperty("Content-Length", Integer.toString(postEndcoded.length));
         }
@@ -63,27 +63,27 @@ class RawDataWriter implements DataWriter {
         StringBuilder logBuffer = new StringBuilder();
 
         if (uploadFile != null) {
-            logBuffer.append("  With content of file: ").append(uploadFile.getAbsolutePath());
+            logBuffer.append("Request Content: ").append(NEW_LINE + TAB).append("File: ").append(uploadFile.getAbsolutePath());
 
             try (FileInputStream inputStream = new FileInputStream(uploadFile)) {
                 write(inputStream);
             }
 
         } else if (uploadStream != null) {
-            logBuffer.append("  With content of file: ").append(uploadFileName);
+            logBuffer.append("Request Content: ").append(NEW_LINE + TAB).append("File: ").append(uploadFileName);
 
             long length = write(uploadStream);
             connection.setRequestProperty("Content-Length", Long.toString(length));
 
         } else {
-            logBuffer.append("  With content: ").append(Arrays.toString(postEndcoded));
+            logBuffer.append("Request Content: ").append(NEW_LINE + TAB).append(new String(postEndcoded, StandardCharsets.UTF_8).replace(NEW_LINE, NEW_LINE + TAB));
 
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
                 wr.write(postEndcoded);
             }
         }
 
-        logger.info(logBuffer.toString());
+        logger.buffer(logBuffer.toString());
     }
 
     private long write(InputStream inputStream) throws IOException {

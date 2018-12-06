@@ -675,12 +675,16 @@ public class HttpEasy {
 
         this.logManager = new LogManager(logWriter.orElse(HttpEasyDefaults.getDefaultLogWriter()), logRequestDetails.orElse(HttpEasyDefaults.getLogRequestDetails()));
 
-        logRequest(connection, requestMethod, url);
+        try {
+            logRequest(connection, requestMethod, url);
 
-        connection.connect();
+            connection.connect();
 
-        if (dataWriter != null) {
-            dataWriter.write(logManager);
+            if (dataWriter != null) {
+                dataWriter.write(logManager);
+            }
+        } finally {
+            this.logManager.flushRequest();
         }
 
         return connection;
@@ -755,10 +759,10 @@ public class HttpEasy {
             headers.sort((h1, h2) -> h1.compareTo(h2));
 
             for (String value : headers) {
-                sb.append(TAB).append(value);
+                sb.append(TAB).append(value).append(NEW_LINE);
             }
 
-            this.logManager.request(sb.toString());
+            this.logManager.buffer(sb.toString());
         }
     }
 
