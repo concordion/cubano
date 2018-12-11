@@ -65,15 +65,15 @@ public class HttpEasyReader {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
+        LogManager logger = request.getLogManager();
         List<String> headers = new ArrayList<>();
 
-        sb.append("Response Headers:").append(System.lineSeparator());
+        logger.bufferLine("Response Headers:");
 
         for (Entry<String, List<String>> header : getConnection().getHeaderFields().entrySet()) {
             for (String value : header.getValue()) {
                 if (header.getKey() == null || header.getKey().isEmpty()) {
-                    sb.append("\t").append(value).append(System.lineSeparator());
+                    logger.bufferIndentedLine(value);
                 } else {
                     headers.add(String.format("%s: %s", header.getKey(), value));
                 }
@@ -83,13 +83,12 @@ public class HttpEasyReader {
         headers.sort((h1, h2) -> h1.compareTo(h2));
 
         for (String value : headers) {
-            sb.append("\t").append(value).append(System.lineSeparator());
+            logger.bufferIndentedLine(value);
         }
 
-        sb.append(String.format("Response:%s%s", System.lineSeparator(),
-                formatAsReaderUsingContentType(getConnection().getContentType())));
-
-        request.getLogManager().response(sb.toString());
+        logger.bufferLine("Response:");
+        logger.buffer(formatAsReaderUsingContentType(getConnection().getContentType()));
+        logger.flushResponse();
     }
 
     /**

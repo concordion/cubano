@@ -22,16 +22,16 @@ public class HttpEasyReaderTests {
         
         HttpEasy.withDefaults().proxyConfiguration(ProxyConfiguration.AUTOMATIC);
 
-        JsonReader response = HttpEasy.request()
+        JsonReader json = HttpEasy.request()
                 .baseUrl("http://httpbin.org")
-                .header("hellow", "world")
+                .header("hello", "world")
                 .path("get")
                 .queryParam("name", "fred")
                 .logRequestDetails()
                 .get()
                 .getJsonReader();
 
-        assertThat(response.getAsString("url"), is("http://httpbin.org/get?name=fred"));
+        assertThat(json.getAsString("url"), is("http://httpbin.org/get?name=fred"));
 
     }
 

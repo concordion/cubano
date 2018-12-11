@@ -16,8 +16,6 @@ import java.util.List;
 class FormUrlEncodedDataWriter implements DataWriter {
     private final HttpURLConnection connection;
     private final byte[] postEndcoded;
-    private static final String NEW_LINE = System.lineSeparator();
-    private static final String TAB = "\t";
 
     /**
      * Constructor.
@@ -57,10 +55,11 @@ class FormUrlEncodedDataWriter implements DataWriter {
         String logparams = new String(postEndcoded, StandardCharsets.UTF_8);
 
         for (String key : HttpEasyDefaults.getSensitiveParameters()) {
-            logparams = logparams.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
+            logparams = logparams.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=*****");
         }
 
-        logger.buffer("Request Content:{}application/x-www-form-urlencoded:{}{}", NEW_LINE + TAB, NEW_LINE + TAB, logparams.replace(NEW_LINE, NEW_LINE + TAB));
+        logger.bufferLine("Request Content (application/x-www-form-urlencoded):");
+        logger.bufferIndentedLine(logparams);
 
         try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
             wr.write(postEndcoded);

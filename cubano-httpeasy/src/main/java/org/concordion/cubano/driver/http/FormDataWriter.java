@@ -26,9 +26,8 @@ class FormDataWriter implements DataWriter {
     private final String boundary = "FormBoundary" + System.currentTimeMillis();
     private OutputStream outputStream;
     private PrintWriter writer = null;
+    private LogManager logger = null;
     private static final String NEW_LINE = System.lineSeparator();
-    private static final String TAB = "\t";
-    private StringBuilder logBuffer = null;
 
     /**
      * Constructor.
@@ -47,11 +46,13 @@ class FormDataWriter implements DataWriter {
 
     @Override
     public void write(LogManager logger) throws IOException {
+        this.logger = logger;
         outputStream = connection.getOutputStream();
-        logBuffer = new StringBuilder();
 
         try {
             writer = new PrintWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), true);
+
+            logger.bufferLine("Request Content (multipart/form-data):");
 
             for (Field field : fields) {
                 if (field.value instanceof File) {
@@ -65,8 +66,6 @@ class FormDataWriter implements DataWriter {
 
             writeFinalBoundary();
         } finally {
-            logger.buffer("Request Content:{}multipart/form-data:{}{}", NEW_LINE + TAB, NEW_LINE + TAB, logBuffer.toString().replace(NEW_LINE, NEW_LINE + TAB));
-
             if (writer != null) {
                 writer.close();
             }
@@ -77,9 +76,7 @@ class FormDataWriter implements DataWriter {
         StringBuilder buf = new StringBuilder();
         buf.append("--").append(boundary).append(NEW_LINE);
 
-        if (logBuffer != null) {
-            logBuffer.append(buf);
-        }
+        logger.bufferIndented(buf.toString());
 
         writer.append(buf);
     }
@@ -88,9 +85,7 @@ class FormDataWriter implements DataWriter {
         StringBuilder buf = new StringBuilder();
         buf.append("--").append(boundary).append("--").append(NEW_LINE);
 
-        if (logBuffer != null) {
-            logBuffer.append(buf);
-        }
+        logger.bufferIndented(buf.toString());
 
         writer.append(buf);
     }
@@ -108,11 +103,15 @@ class FormDataWriter implements DataWriter {
         buf.append("Content-Disposition: form-data; name=\"").append(name).append("\"").append(NEW_LINE);
         // buf.append("Content-Type: text/plain; charset=utf-8").append(NEW_LINE);
         buf.append(NEW_LINE);
-        buf.append(String.valueOf(value)).append(NEW_LINE);
 
-        if (logBuffer != null) {
-            logBuffer.append(buf);
+        logger.bufferIndentedLines(buf.toString());
+        if (HttpEasyDefaults.getSensitiveParameters().contains(name)) {
+            logger.bufferLine("*****");
+        } else {
+            logger.bufferLine(String.valueOf(value));
         }
+
+        buf.append(String.valueOf(value)).append(NEW_LINE);
 
         writer.append(buf);
         writer.flush();
@@ -155,10 +154,8 @@ class FormDataWriter implements DataWriter {
         // buf.append("Content-Transfer-Encoding: binary").append(NEW_LINE);
         buf.append(NEW_LINE);
 
-        if (logBuffer != null) {
-            logBuffer.append(buf);
-            logBuffer.append("... Content of file ").append(fileName).append(" ...").append(NEW_LINE);
-        }
+        logger.bufferIndentedLines(buf.toString());
+        logger.bufferLine("... Content of file ").buffer(fileName).bufferLine(" ...");
 
         writer.append(buf);
         writer.flush();

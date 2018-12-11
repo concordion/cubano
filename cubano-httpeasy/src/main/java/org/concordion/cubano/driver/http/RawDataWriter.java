@@ -19,12 +19,11 @@ import com.google.common.net.MediaType;
  */
 class RawDataWriter implements DataWriter {
     private HttpURLConnection connection;
+    private String mediaType;
     private byte[] postEndcoded = null;
     private File uploadFile = null;
     private InputStream uploadStream = null;
     private String uploadFileName;
-    private static final String NEW_LINE = System.lineSeparator();
-    private static final String TAB = "\t";
 
     /**
      * Constructor.
@@ -37,6 +36,7 @@ class RawDataWriter implements DataWriter {
      */
     public RawDataWriter(HttpURLConnection connection, Object rawData, MediaType rawDataMediaType, String fileName) {
         this.connection = connection;
+        this.mediaType = rawDataMediaType.toString();
 
         if (rawData instanceof File) {
             uploadFile = (File) rawData;
@@ -60,30 +60,28 @@ class RawDataWriter implements DataWriter {
 
     @Override
     public void write(LogManager logger) throws IOException {
-        StringBuilder logBuffer = new StringBuilder();
+        logger.bufferLine("Request Content (" + mediaType + "):");
 
         if (uploadFile != null) {
-            logBuffer.append("Request Content: ").append(NEW_LINE + TAB).append("File: ").append(uploadFile.getAbsolutePath());
+            logger.bufferIndented("File: ").bufferLine(uploadFile.getAbsolutePath());
 
             try (FileInputStream inputStream = new FileInputStream(uploadFile)) {
                 write(inputStream);
             }
 
         } else if (uploadStream != null) {
-            logBuffer.append("Request Content: ").append(NEW_LINE + TAB).append("File: ").append(uploadFileName);
+            logger.bufferIndented("File: ").bufferLine(uploadFileName);
 
             long length = write(uploadStream);
             connection.setRequestProperty("Content-Length", Long.toString(length));
 
         } else {
-            logBuffer.append("Request Content: ").append(NEW_LINE + TAB).append(new String(postEndcoded, StandardCharsets.UTF_8).replace(NEW_LINE, NEW_LINE + TAB));
+            logger.bufferIndentedLines(new String(postEndcoded, StandardCharsets.UTF_8));
 
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
                 wr.write(postEndcoded);
             }
         }
-
-        logger.buffer(logBuffer.toString());
     }
 
     private long write(InputStream inputStream) throws IOException {
