@@ -675,12 +675,16 @@ public class HttpEasy {
 
         this.logManager = new LogManager(logWriter.orElse(HttpEasyDefaults.getDefaultLogWriter()), logRequestDetails.orElse(HttpEasyDefaults.getLogRequestDetails()));
 
-        logRequest(connection, requestMethod, url);
+        try {
+            logRequest(connection, requestMethod, url);
 
-        connection.connect();
+            connection.connect();
 
-        if (dataWriter != null) {
-            dataWriter.write(logManager);
+            if (dataWriter != null) {
+                dataWriter.write(logManager);
+            }
+        } finally {
+            this.logManager.flushRequest();
         }
 
         return connection;
@@ -705,9 +709,6 @@ public class HttpEasy {
     }
 
     private void logRequest(HttpURLConnection connection, String requestMethod, URL url) {
-        String TAB = "\t";
-        String NEW_LINE = System.lineSeparator();
-
         String user = authUser.orElse(HttpEasyDefaults.getAuthUser());
         String authMsg = "";
 
@@ -718,34 +719,36 @@ public class HttpEasy {
         String logUrl = url.toString();
 
         for (String key : HttpEasyDefaults.getSensitiveParameters()) {
-            logUrl = logUrl.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
+            logUrl = logUrl.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=*****");
         }
 
         this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, logUrl);
 
         if (logManager.isLogRequestDetails()) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Request Method:").append(TAB).append(connection.getRequestMethod()).append(NEW_LINE);
-            sb.append("Request URI:").append(TAB).append(connection.getURL()).append(NEW_LINE);
-            sb.append("Proxy:").append(TAB).append(HttpEasyDefaults.getProxy(url)).append(NEW_LINE);
+            logManager.buffer("Request Method: ").bufferLine(connection.getRequestMethod());
+            logManager.buffer("Request URI: ").bufferLine(connection.getURL().toString());
+            logManager.buffer("Proxy: ").bufferLine(HttpEasyDefaults.getProxy(url).toString());
             if (!Strings.isNullOrEmpty(user)) {
-                sb.append("Basic Authorization User:").append(TAB).append(user).append(NEW_LINE);
-            }
-            sb.append("Query Params:").append(NEW_LINE);
-            for (String value : query.toString().split("&")) {
-                for (String key : HttpEasyDefaults.getSensitiveParameters()) {
-                    value = value.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
-                }
-                sb.append(TAB).append(value).append(NEW_LINE);
+                logManager.buffer("Basic Authorization User: ").bufferLine(user);
             }
 
-            sb.append("Request Headers:").append(NEW_LINE);
+            if (query.length() > 0) {
+                logManager.bufferLine("Query Params:");
+                for (String value : query.toString().split("&")) {
+                    for (String key : HttpEasyDefaults.getSensitiveParameters()) {
+                        value = value.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=*****");
+                    }
+                    logManager.bufferIndentedLine(value);
+                }
+            }
+
+            logManager.bufferLine("Request Headers:");
             List<String> headers = new ArrayList<>();
 
             for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
                 for (String value : header.getValue()) {
                     if (header.getKey() == null || header.getKey().isEmpty()) {
-                        sb.append(TAB).append(value).append(NEW_LINE);
+                        logManager.bufferIndentedLine(value);
                     } else {
                         headers.add(String.format("%s: %s", header.getKey(), value));
                     }
@@ -755,10 +758,8 @@ public class HttpEasy {
             headers.sort((h1, h2) -> h1.compareTo(h2));
 
             for (String value : headers) {
-                sb.append(TAB).append(value);
+                logManager.bufferIndentedLine(value);
             }
-
-            this.logManager.request(sb.toString());
         }
     }
 

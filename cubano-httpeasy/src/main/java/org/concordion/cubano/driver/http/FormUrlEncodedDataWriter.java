@@ -40,25 +40,26 @@ class FormUrlEncodedDataWriter implements DataWriter {
             }
             postData.append(field.name);
             postData.append('=');
-            postData.append(URLEncoder.encode(String.valueOf(field.value), "UTF-8"));
+            postData.append(URLEncoder.encode(String.valueOf(field.value), StandardCharsets.UTF_8.name()));
         }
 
         postEndcoded = postData.toString().getBytes(StandardCharsets.UTF_8);
 
-        connection.setRequestProperty("charset", "utf-8");
+        connection.setRequestProperty("charset", StandardCharsets.UTF_8.name());
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         connection.setRequestProperty("Content-Length", Integer.toString(postEndcoded.length));
     }
 
     @Override
     public void write(LogManager logger) throws IOException {
-        String logparams = new String(postEndcoded, "UTF-8");
+        String logparams = new String(postEndcoded, StandardCharsets.UTF_8);
 
         for (String key : HttpEasyDefaults.getSensitiveParameters()) {
-            logparams = logparams.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=xxx");
+            logparams = logparams.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=*****");
         }
 
-        logger.info("  With application/x-www-form-urlencoded content:{}    {}", System.lineSeparator(), logparams);
+        logger.bufferLine("Request Content (application/x-www-form-urlencoded):");
+        logger.bufferIndentedLine(logparams);
 
         try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
             wr.write(postEndcoded);
