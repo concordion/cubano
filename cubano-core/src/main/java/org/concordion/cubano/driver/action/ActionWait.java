@@ -299,10 +299,10 @@ public class ActionWait {
 
     private String getMessage() {
         if (message != null && !message.isEmpty()) {
-            return "action to complete successfully";
+            return message;
         }
 
-        return message;
+        return "action to complete successfully";
     }
 
     private Throwable propagateIfNotIngored(Throwable e) {
