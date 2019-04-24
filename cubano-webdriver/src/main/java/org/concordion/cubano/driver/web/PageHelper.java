@@ -249,13 +249,14 @@ public class PageHelper {
      *
      * @param <P> The type of the desired page object
      * @param element Element to click
+     * @param timeoutSeconds Timeout in Seconds
      * @param description Description of the action being taken
      * @param expectedPage Class of page that should be returned
      * @param params Optional list of parameters that can be passed in to the constructor
      * @return new PageObject of type expectedPage
      */
     public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, int timeoutSeconds, String description, Class<P> expectedPage, Object... params) {
-        waitForElementToBeAvailable(element, timeoutSeconds);
+        waitForElementToClickable(element, timeoutSeconds);
 
         capturePage(element, description);
 
@@ -269,11 +270,13 @@ public class PageHelper {
     }
 
     /**
-     * Wait for the element to be clickable. Most exceptions thrown from the browser inherit from WebDriverException.
+     * Wait for the element to be clickable.
      * 
      * @param webElement The element to check is clickable.
+     * @param timeoutSeconds Timeout in Seconds.
+     * 
      */
-    private void waitForElementToBeAvailable(WebElement webElement, int timeOutInSeconds) {
+    public void waitForElementToClickable(WebElement webElement, int timeOutInSeconds) {
 
         new WebDriverWait(this.pageObject.getBrowser().getDriver(), timeOutInSeconds).ignoring(WebDriverException.class)
                 .until((WebDriver d) -> {
@@ -291,8 +294,9 @@ public class PageHelper {
      * Requires that the expectedPage extends from PageObject and has a public constructor with a single
      * parameter of TestDriveable.
      *
-     * @param <P>          The type of the desired page object
+     * @param <P> The type of the desired page object
      * @param expectedPage Page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
      * @return New instance of supplied page object
      */
     public <P extends BasePageObject<P>> P newInstance(Class<P> expectedPage, Object... params) {

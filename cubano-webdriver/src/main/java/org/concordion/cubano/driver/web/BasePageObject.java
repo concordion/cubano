@@ -240,22 +240,39 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
      * @param expectedPage Class of page that should be returned
      * @return new PageObject of type expectedPage
      */
-    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, Class<P> expectedPage) {
-        return pageHelper.capturePageAndClick(element, expectedPage);
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, Class<P> expectedPage, Object... params) {
+        return pageHelper.capturePageAndClick(element, expectedPage, params);
     }
 
     /**
      * Notify listener that it should take a screenshot of the current page and then click the supplied element
      * and return a new instance of the expected page.
      *
-     * @param <P>          The type of the desired page object
-     * @param element      Element to click
-     * @param description  Description of the action being taken
+     * @param <P> The type of the desired page object
+     * @param element Element to click
+     * @param description Description of the action being taken
      * @param expectedPage Class of page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
      * @return new PageObject of type expectedPage
      */
-    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, String description, Class<P> expectedPage) {
-        return pageHelper.capturePageAndClick(element, description, expectedPage);
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, String description, Class<P> expectedPage, Object... params) {
+        return pageHelper.capturePageAndClick(element, description, expectedPage, params);
+    }
+
+    /**
+     * Notify listener that it should take a screenshot of the current page and then click the supplied element
+     * and return a new instance of the expected page.
+     *
+     * @param <P> The type of the desired page object
+     * @param element Element to click
+     * @param timeoutSeconds Timeout in Seconds
+     * @param description Description of the action being taken
+     * @param expectedPage Class of page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
+     * @return new PageObject of type expectedPage
+     */
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, int timeoutSeconds, String description, Class<P> expectedPage, Object... params) {
+        return pageHelper.capturePageAndClick(element, timeoutSeconds, description, expectedPage, params);
     }
 
     /**
@@ -264,12 +281,24 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
      * Requires that the expectedPage extends from PageObject and has a public constructor with a single
      * parameter of TestDriveable.
      *
-     * @param <P>          The type of the desired page object
+     * @param <P> The type of the desired page object
      * @param expectedPage Page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
      * @return New instance of supplied page object
      */
-    public <P extends BasePageObject<P>> P newInstance(Class<P> expectedPage) {
-        return pageHelper.newInstance(expectedPage);
+    public <P extends BasePageObject<P>> P newInstance(Class<P> expectedPage, Object... params) {
+        return pageHelper.newInstance(expectedPage, params);
+    }
+
+    /**
+     * Wait for the element to be clickable.
+     * 
+     * @param webElement The element to check is clickable.
+     * @param timeoutSeconds Timeout in Seconds.
+     * 
+     */
+    public void waitForElementToClickable(WebElement webElement, int timeOutInSeconds) {
+        pageHelper.waitForElementToClickable(webElement, timeOutInSeconds);
     }
 
     /**
