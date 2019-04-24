@@ -17,6 +17,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.TargetLocator;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -223,21 +224,39 @@ public class PageHelper {
      * @param expectedPage Class of page that should be returned
      * @return new PageObject of type expectedPage
      */
-    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, Class<P> expectedPage) {
-        return capturePageAndClick(element, getClickMessage(element), expectedPage);
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, Class<P> expectedPage, Object... params) {
+        return capturePageAndClick(element, getClickMessage(element), expectedPage, params);
+    }
+
+    /**
+     * Capture a screenshot of the current page and add it to the log and story board and then click the supplied element
+     * and return a new instance of the expected page.
+     * 
+     * @param <P> The type of the desired page object
+     * @param element Element to click
+     * @param description Description of the action being taken
+     * @param expectedPage Class of page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
+     * @return new PageObject of type expectedPage
+     */
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, String description, Class<P> expectedPage, Object... params) {
+        return capturePageAndClick(element, 10, description, expectedPage, params);
     }
 
     /**
      * Capture a screenshot of the current page and add it to the log and story board and then click the supplied element
      * and return a new instance of the expected page.
      *
-     * @param <P>          The type of the desired page object
-     * @param element      Element to click
-     * @param description  Description of the action being taken
+     * @param <P> The type of the desired page object
+     * @param element Element to click
+     * @param description Description of the action being taken
      * @param expectedPage Class of page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
      * @return new PageObject of type expectedPage
      */
-    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, String description, Class<P> expectedPage) {
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, int timeoutSeconds, String description, Class<P> expectedPage, Object... params) {
+        waitForElementToBeAvailable(element, timeoutSeconds);
+
         capturePage(element, description);
 
         element.click();
@@ -246,8 +265,25 @@ public class PageHelper {
             return null;
         }
 
-        return newInstance(expectedPage);
+        return newInstance(expectedPage, params);
     }
+
+    /**
+     * Wait for the element to be clickable. Most exceptions thrown from the browser inherit from WebDriverException.
+     * 
+     * @param webElement The element to check is clickable.
+     */
+    private void waitForElementToBeAvailable(WebElement webElement, int timeOutInSeconds) {
+
+        new WebDriverWait(this.pageObject.getBrowser().getDriver(), timeOutInSeconds).ignoring(WebDriverException.class)
+                .until((WebDriver d) -> {
+
+                    ExpectedConditions.elementToBeClickable(webElement);
+                    return true;
+
+                });
+    }
+
 
     /**
      * Helper method for creating new page objects from an expected class.
@@ -259,9 +295,9 @@ public class PageHelper {
      * @param expectedPage Page that should be returned
      * @return New instance of supplied page object
      */
-    public <P extends BasePageObject<P>> P newInstance(Class<P> expectedPage) {
+    public <P extends BasePageObject<P>> P newInstance(Class<P> expectedPage, Object... params) {
         try {
-            return expectedPage.getDeclaredConstructor(BrowserBasedTest.class).newInstance(getTest());
+            return expectedPage.getDeclaredConstructor(BrowserBasedTest.class).newInstance(getTest(), params);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             if (e.getMessage() == null && e.getCause() != null) {
                 throw new RuntimeException(e.getCause());
