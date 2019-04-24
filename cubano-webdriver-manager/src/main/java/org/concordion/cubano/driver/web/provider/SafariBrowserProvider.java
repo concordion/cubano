@@ -32,8 +32,7 @@ public class SafariBrowserProvider extends LocalBrowserProvider {
         addProxyCapabilities(options);
 
         options.setUseTechnologyPreview(getPropertyAsBoolean("option.useTechnologyPreview", "false"));
-        options.useCleanSession(getPropertyAsBoolean("option.useCleanSession", "false"));
-        
+
         WebDriver driver = new SafariDriver(options);
 
         setBrowserSizeAndLocation(driver);

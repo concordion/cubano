@@ -1,5 +1,7 @@
 package org.concordion.cubano.driver.web;
 
+import java.io.Closeable;
+
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.pagefactory.PageObjectAwareHtmlElementsLoader;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
@@ -11,8 +13,6 @@ import org.openqa.selenium.remote.SessionId;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Closeable;
 
 /**
  * A wrapper around Selenium WebDriver to make it easier to open and close a

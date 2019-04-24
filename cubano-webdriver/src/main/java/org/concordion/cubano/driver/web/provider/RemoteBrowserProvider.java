@@ -1,34 +1,12 @@
 package org.concordion.cubano.driver.web.provider;
 
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.StringTokenizer;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.NTCredentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.config.AuthSchemes;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.concordion.cubano.config.Config;
-import org.concordion.cubano.config.ProxyConfig;
-import org.concordion.cubano.driver.web.RemoteHttpClientFactory;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.CommandInfo;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.HttpCommandExecutor;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.remote.http.HttpClient.Factory;
 
 /**
  * Provides everything required to start up a remote browser (desktop or device) - apart from the where to connect.
@@ -92,141 +70,142 @@ public abstract class RemoteBrowserProvider implements BrowserProvider {
             throw new RuntimeException(e.getMessage(), e);
         }
 
-        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
-
-        if (proxyConfig.isProxyRequired()) {
-            HttpClientBuilder builder = HttpClientBuilder.create();
-            
-            URL proxyURL = getProxyUrl();
-                        
-            HttpHost proxy = new HttpHost(proxyURL.getHost(), proxyURL.getPort());
-            
-            builder.setProxy(proxy);
-            builder.setDefaultCredentialsProvider(createBasicCredentialsProvider(proxyURL));
-
-            Factory factory = new RemoteHttpClientFactory(builder);
-
-            HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, factory);
-
-            return new RemoteWebDriver(executor, getCapabilites());
-        } else {
+        // TODO This has all changed, not sure how to set proxy anymore with OkHttpClient
+        // ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
+        //
+        // if (proxyConfig.isProxyRequired()) {
+        // HttpClientBuilder builder = HttpClientBuilder.create();
+        //
+        // URL proxyURL = getProxyUrl();
+        //
+        // HttpHost proxy = new HttpHost(proxyURL.getHost(), proxyURL.getPort());
+        //
+        // builder.setProxy(proxy);
+        // builder.setDefaultCredentialsProvider(createBasicCredentialsProvider(proxyURL));
+        //
+        // Factory factory = new RemoteHttpClientFactory(builder);
+        //
+        // HttpCommandExecutor executor = new HttpCommandExecutor(new HashMap<String, CommandInfo>(), url, factory);
+        //
+        // return new RemoteWebDriver(executor, getCapabilites());
+        // } else {
             return new RemoteWebDriver(url, getCapabilites());
-        }
+        // }
     }
 
-    private boolean isNullOrEmpty(String string) {
-        return string == null || string.isEmpty();
-    }
+    // private boolean isNullOrEmpty(String string) {
+    // return string == null || string.isEmpty();
+    // }
     
-    private URL getProxyUrl() {
-        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
+    // private URL getProxyUrl() {
+    // ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
+    //
+    // String proxyInput = isNullOrEmpty(proxyConfig.getProxyAddress()) ? System.getenv("HTTPS_PROXY") : proxyConfig.getProxyAddress();
+    // if (isNullOrEmpty(proxyInput)) {
+    // return null;
+    // }
+    // try {
+    // return new URL(proxyInput.matches("^http[s]?://.*$") ? proxyInput : "http://" + proxyInput);
+    // } catch (MalformedURLException e) {
+    // // TODO
+    //// log.error("Invalid proxy url {}", proxyInput, e);
+    // return null;
+    // }
+    // }
 
-        String proxyInput = isNullOrEmpty(proxyConfig.getProxyAddress()) ? System.getenv("HTTPS_PROXY") : proxyConfig.getProxyAddress();
-        if (isNullOrEmpty(proxyInput)) {
-            return null;
-        }
-        try {
-            return new URL(proxyInput.matches("^http[s]?://.*$") ? proxyInput : "http://" + proxyInput);
-        } catch (MalformedURLException e) {
-        	// TODO
-//            log.error("Invalid proxy url {}", proxyInput, e);
-            return null;
-        }
-    }
-
-    private final BasicCredentialsProvider createBasicCredentialsProvider(URL proxyURL) {
-    	if (proxyURL == null) {
-            return null;
-        }
-
-        ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
-
-// TODO Some research into standards would be advised here.  Seems to be a bit of a free for all around standards.
-// A quick search came up with these usages:
-//              http_proxy='http://username:password@abc.com:port/'
-//              https_proxy='https://username:password@xyz.com:port/'
-//                 
-//         		http_proxy = https://user_id:password@your_proxy:your_port
-//     			http_proxy_user = user_id:password
-//     			https_proxy = https:// user_id:password0@your_proxy:your_port
-//     			https_proxy_user = user_id:password
-//     			ftp_proxy = user_id:password@your_proxy:your_port
-//                 		
-//              -Dhttp.proxyUser=atlaspirate 
-//         		-Dhttp.proxyPassword=yarrrrr 
-//         		-Dhttps.proxyUser=atlaspirate 
-//         		-Dhttps.proxyPassword=yarrrrr
-
-        try {
-            String username = null;
-            String password = null;
-
-            // apply env value
-            String userInfo = proxyURL.getUserInfo();
-            if (userInfo != null) {
-                StringTokenizer st = new StringTokenizer(userInfo, ":");
-                username = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
-                password = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
-            }
-    		
-            String envProxyUser = System.getenv("HTTPS_PROXY_USER");
-            String envProxyPass = System.getenv("HTTPS_PROXY_PASS");
-            username = (envProxyUser != null) ? envProxyUser : username;
-            password = (envProxyPass != null) ? envProxyPass : password;
-
-            // apply option value
-            username = (proxyConfig.getProxyUsername() != null) ? proxyConfig.getProxyUsername() : username;
-            password = (proxyConfig.getProxyPassword() != null) ? proxyConfig.getProxyPassword() : password;
-
-            if (username == null) {
-                return null;
-            }
-
-            String ntlmUsername = username;
-            String ntlmDomain = null;
-            
-            int index = username.indexOf("\\");
-            if (index > 0) {
-                ntlmDomain = username.substring(0, index);
-                ntlmUsername = username.substring(index + 1);                
-            }
-            
-            BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-            Credentials creds;
-            AuthScope authScope;
-            
-            authScope = new AuthScope(proxyURL.getHost(), proxyURL.getPort(),  AuthScope.ANY_REALM, AuthSchemes.NTLM);
-            creds = new NTCredentials(ntlmUsername, password, getWorkstation(), ntlmDomain);            
-            credentialsProvider.setCredentials(authScope, creds);
-            
-            authScope = new AuthScope(proxyURL.getHost(), proxyURL.getPort());
-            creds = new UsernamePasswordCredentials(username, password);
-            credentialsProvider.setCredentials(authScope, creds);
-
-            return credentialsProvider;
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Invalid encoding.", e);
-        }
-    }
-
-    private String getWorkstation() {
-        Map<String, String> env = System.getenv();
-
-        if (env.containsKey("COMPUTERNAME")) {
-            // Windows
-            return env.get("COMPUTERNAME");
-        } else if (env.containsKey("HOSTNAME")) {
-            // Unix/Linux/MacOS
-            return env.get("HOSTNAME");
-        } else {
-            // From DNS
-            try {
-                return InetAddress.getLocalHost().getHostName();
-            } catch (UnknownHostException ex) {
-                return null;
-            }
-        }
-    }
+    // private final BasicCredentialsProvider createBasicCredentialsProvider(URL proxyURL) {
+    // if (proxyURL == null) {
+    // return null;
+    // }
+    //
+    // ProxyConfig proxyConfig = Config.getInstance().getProxyConfig();
+    //
+    //// TODO Some research into standards would be advised here. Seems to be a bit of a free for all around standards.
+    //// A quick search came up with these usages:
+    //// http_proxy='http://username:password@abc.com:port/'
+    //// https_proxy='https://username:password@xyz.com:port/'
+    ////
+    //// http_proxy = https://user_id:password@your_proxy:your_port
+    //// http_proxy_user = user_id:password
+    //// https_proxy = https:// user_id:password0@your_proxy:your_port
+    //// https_proxy_user = user_id:password
+    //// ftp_proxy = user_id:password@your_proxy:your_port
+    ////
+    //// -Dhttp.proxyUser=atlaspirate 
+    //// -Dhttp.proxyPassword=yarrrrr 
+    //// -Dhttps.proxyUser=atlaspirate 
+    //// -Dhttps.proxyPassword=yarrrrr
+    //
+    // try {
+    // String username = null;
+    // String password = null;
+    //
+    // // apply env value
+    // String userInfo = proxyURL.getUserInfo();
+    // if (userInfo != null) {
+    // StringTokenizer st = new StringTokenizer(userInfo, ":");
+    // username = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
+    // password = st.hasMoreTokens() ? URLDecoder.decode(st.nextToken(), StandardCharsets.UTF_8.name()) : null;
+    // }
+    //
+    // String envProxyUser = System.getenv("HTTPS_PROXY_USER");
+    // String envProxyPass = System.getenv("HTTPS_PROXY_PASS");
+    // username = (envProxyUser != null) ? envProxyUser : username;
+    // password = (envProxyPass != null) ? envProxyPass : password;
+    //
+    // // apply option value
+    // username = (proxyConfig.getProxyUsername() != null) ? proxyConfig.getProxyUsername() : username;
+    // password = (proxyConfig.getProxyPassword() != null) ? proxyConfig.getProxyPassword() : password;
+    //
+    // if (username == null) {
+    // return null;
+    // }
+    //
+    // String ntlmUsername = username;
+    // String ntlmDomain = null;
+    //
+    // int index = username.indexOf("\\");
+    // if (index > 0) {
+    // ntlmDomain = username.substring(0, index);
+    // ntlmUsername = username.substring(index + 1);
+    // }
+    //
+    // BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+    // Credentials creds;
+    // AuthScope authScope;
+    //
+    // authScope = new AuthScope(proxyURL.getHost(), proxyURL.getPort(), AuthScope.ANY_REALM, AuthSchemes.NTLM);
+    // creds = new NTCredentials(ntlmUsername, password, getWorkstation(), ntlmDomain);
+    // credentialsProvider.setCredentials(authScope, creds);
+    //
+    // authScope = new AuthScope(proxyURL.getHost(), proxyURL.getPort());
+    // creds = new UsernamePasswordCredentials(username, password);
+    // credentialsProvider.setCredentials(authScope, creds);
+    //
+    // return credentialsProvider;
+    // } catch (UnsupportedEncodingException e) {
+    // throw new RuntimeException("Invalid encoding.", e);
+    // }
+    // }
+    //
+    // private String getWorkstation() {
+    // Map<String, String> env = System.getenv();
+    //
+    // if (env.containsKey("COMPUTERNAME")) {
+    // // Windows
+    // return env.get("COMPUTERNAME");
+    // } else if (env.containsKey("HOSTNAME")) {
+    // // Unix/Linux/MacOS
+    // return env.get("HOSTNAME");
+    // } else {
+    // // From DNS
+    // try {
+    // return InetAddress.getLocalHost().getHostName();
+    // } catch (UnknownHostException ex) {
+    // return null;
+    // }
+    // }
+    // }
     
     /**
      * Indicates whether some other object is "equal to" this one.
