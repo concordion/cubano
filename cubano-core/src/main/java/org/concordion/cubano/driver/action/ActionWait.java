@@ -126,7 +126,7 @@ public class ActionWait {
      * Sets how long to wait for the evaluated condition to be true.
      * Either MaxAttempts or Timeout must be set, but they cannot be used together.
      *
-     * @param duration The timeout duration.
+     * @param timeout The timeout duration.
      * @return A self reference.
      */
     public ActionWait withTimeout(Duration timeout) {
