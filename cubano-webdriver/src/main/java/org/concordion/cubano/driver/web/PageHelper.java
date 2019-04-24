@@ -219,9 +219,10 @@ public class PageHelper {
      * A default description is constructed in the format: {@literal Clicking '<element text>'}
      * </p>
      *
-     * @param <P>          The type of the desired page object
-     * @param element      Element to click
+     * @param <P> The type of the desired page object
+     * @param element Element to click
      * @param expectedPage Class of page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
      * @return new PageObject of type expectedPage
      */
     public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, Class<P> expectedPage, Object... params) {
@@ -273,7 +274,7 @@ public class PageHelper {
      * Wait for the element to be clickable.
      * 
      * @param webElement The element to check is clickable.
-     * @param timeoutSeconds Timeout in Seconds.
+     * @param timeOutInSeconds Timeout in Seconds.
      * 
      */
     public void waitForElementToClickable(WebElement webElement, int timeOutInSeconds) {

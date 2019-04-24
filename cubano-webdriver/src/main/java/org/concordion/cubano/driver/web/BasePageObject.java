@@ -294,7 +294,7 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
      * Wait for the element to be clickable.
      * 
      * @param webElement The element to check is clickable.
-     * @param timeoutSeconds Timeout in Seconds.
+     * @param timeOutInSeconds Timeout in Seconds.
      * 
      */
     public void waitForElementToClickable(WebElement webElement, int timeOutInSeconds) {
