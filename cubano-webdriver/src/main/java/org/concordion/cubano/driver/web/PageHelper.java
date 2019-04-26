@@ -302,7 +302,13 @@ public class PageHelper {
      */
     public <P extends BasePageObject<P>> P newInstance(Class<P> expectedPage, Object... params) {
         try {
-            return expectedPage.getDeclaredConstructor(BrowserBasedTest.class).newInstance(getTest(), params);
+
+            Class[] constructorArguments = new Class[2];
+            constructorArguments[0] = BrowserBasedTest.class;
+            constructorArguments[1] = Object[].class;
+
+            return expectedPage.getDeclaredConstructor(constructorArguments).newInstance(getTest(), params);
+
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             if (e.getMessage() == null && e.getCause() != null) {
                 throw new RuntimeException(e.getCause());
