@@ -3,6 +3,7 @@ package org.concordion.cubano.driver.web;
 import org.concordion.cubano.driver.BrowserBasedTest;
 
 public class TestPageObject extends BasePageObject<TestPageObject>{
+
     protected TestPageObject(BrowserBasedTest test, int timeoutWaitInSeconds, Object[] params) {
         super(test, timeoutWaitInSeconds, params);
 

@@ -35,6 +35,19 @@ public class PageHelperTest {
 
     }
 
+    @Test
+    public void canCreateClassWithBrowserBasedTestConstructorOnly() {
+
+        PageHelper tpo = setUpMocks();
+
+        TestPageObjectNoParams testPageObjectNoParams = tpo.newInstance(TestPageObjectNoParams.class, "BrowserBasedTestConstructorOnly");
+
+        assertNotNull("Should not be null when constructing instance of "
+                + BasePageObject.class.getName() + " and class has Browser Based Test Constructor Only",
+                testPageObjectNoParams);
+
+    }
+
     private PageHelper setUpMocks() {
         WebDriver webDriverMock = mock(WebDriver.class);
         Browser browserMock = mock(Browser.class);
