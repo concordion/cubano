@@ -304,14 +304,15 @@ public class PageHelper {
 
             // Account for PageObjects that only have a BrowserBasedTest constructor.
             if (params.length > 0) {
-                return expectedPage.getDeclaredConstructor(BrowserBasedTest.class).newInstance(getTest());
-            } else {
                 @SuppressWarnings("rawtypes")
                 Class[] constructorArguments = new Class[2];
                 constructorArguments[0] = BrowserBasedTest.class;
                 constructorArguments[1] = Object[].class;
 
                 return expectedPage.getDeclaredConstructor(constructorArguments).newInstance(getTest(), params);
+
+            } else {
+                return expectedPage.getDeclaredConstructor(BrowserBasedTest.class).newInstance(getTest());
             }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             if (e.getMessage() == null && e.getCause() != null) {
