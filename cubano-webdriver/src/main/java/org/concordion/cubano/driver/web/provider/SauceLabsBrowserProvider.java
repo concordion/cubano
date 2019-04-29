@@ -104,7 +104,7 @@ public class SauceLabsBrowserProvider extends RemoteBrowserProvider {
      * @param browserVersion Version of the browser
      */
     protected void desktop(DesiredCapabilities caps, String browserName, String browserVersion) {
-        String platform = caps.getCapability(CapabilityType.PLATFORM).toString();
+        String platform = caps.getCapability(CapabilityType.PLATFORM_NAME).toString();
 
         caps.setCapability("version", browserVersion);
         caps.setCapability("screenResolution", DEFAULT_DESKTOP_SCREENSIZE);

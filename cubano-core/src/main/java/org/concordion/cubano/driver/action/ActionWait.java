@@ -1,13 +1,14 @@
 package org.concordion.cubano.driver.action;
 
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.openqa.selenium.support.ui.Clock;
-import org.openqa.selenium.support.ui.Duration;
 import org.openqa.selenium.support.ui.Sleeper;
-import org.openqa.selenium.support.ui.SystemClock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +85,11 @@ public class ActionWait {
     private int attempts;
     private int warnings;
 
+    public ActionWait() {
+        clock = Clock.systemDefaultZone();
+        sleeper = Sleeper.SYSTEM_SLEEPER;
+    }
+
     /**
      * An interface the caller can implement to check that an action is complete.
      *
@@ -113,7 +119,18 @@ public class ActionWait {
             throw new IllegalArgumentException("Timeout and MaxAttempts cannot be used together");
         }
 
-        this.timeout = new Duration(duration, unit);
+        return withTimeout(Duration.of(duration, toChronoUnit(unit)));
+    }
+
+    /**
+     * Sets how long to wait for the evaluated condition to be true.
+     * Either MaxAttempts or Timeout must be set, but they cannot be used together.
+     *
+     * @param timeout The timeout duration.
+     * @return A self reference.
+     */
+    public ActionWait withTimeout(Duration timeout) {
+        this.timeout = timeout;
         return this;
     }
 
@@ -222,26 +239,25 @@ public class ActionWait {
     public <V> V until(IsComplete<V> isTrue) {
         Throwable lastException = null;
         V value = null;
-        clock = new SystemClock();
-        sleeper = Sleeper.SYSTEM_SLEEPER;
+
         attempts = 0;
 
-        long start = clock.now();
-        long end = 0; 
+        Instant start = clock.instant();
+        Instant end = null;
 
         if (isWaitStyleTimeout()) {
-            end = clock.laterBy(timeout.in(TimeUnit.MILLISECONDS));
+            end = clock.instant().plus(timeout);
         }
 
         LOGGER.debug("Trying for up to {} for {}", getWaitStyle(), getMessage());
 
-        while (hasMoreAttempts() || hasMoreTime(clock, end)) {
-            int interval = getNextPollingInterval(clock, end);
+        while (hasMoreAttempts() || hasMoreTime(end)) {
+            int interval = getNextPollingInterval(end);
 
             if (interval > 0) {
                 try {
                     LOGGER.debug("Pausing for {} {} before check for {}", interval, pollingTimeUnit.toString().toLowerCase(), getMessage());
-                    sleeper.sleep(new Duration(interval, pollingTimeUnit));
+                    sleeper.sleep(Duration.of(interval, toChronoUnit(pollingTimeUnit)));
                 } catch (InterruptedException e) {
                     throw new TimeoutException("Sleep failed", e);
                 }
@@ -322,15 +338,16 @@ public class ActionWait {
         return attempts < maxAttempts;
     }
 
-    private boolean hasMoreTime(Clock clock, long end) {
+    private boolean hasMoreTime(Instant end) {
         if (timeout == null) {
             return false;
         }
 
-        return clock.isNowBefore(end);
+        return clock.instant().isBefore(end);
     }
 
-    private int getNextPollingInterval(Clock clock, long end) {
+    private int getNextPollingInterval(Instant end) {
+
         long interval;
 
         if (attempts > pollingIntervals.size() - 1) {
@@ -339,20 +356,21 @@ public class ActionWait {
             interval = pollingIntervals.get(attempts);
         }
 
-        long currentTime = clock.now();
+        long endTime = end.toEpochMilli();
+        long currentTime = clock.instant().toEpochMilli();
         long waitTime = currentTime + TimeUnit.MILLISECONDS.convert(interval, pollingTimeUnit);
         long stretchTime = waitTime + TimeUnit.MILLISECONDS.convert(interval / 2, pollingTimeUnit);
 
         // If going above timeout limit bring it back to that limit
         // If closer than half current interval stretch it out
-        if (waitTime > end || stretchTime > end) {
-            interval = pollingTimeUnit.convert(end - currentTime, TimeUnit.MILLISECONDS) + 1;
+        if (waitTime > endTime || stretchTime > endTime) {
+            interval = pollingTimeUnit.convert(endTime - currentTime, TimeUnit.MILLISECONDS) + 1;
         }
 
         return (int) interval;
     }
 
-    private void logWarningMessageIfRequired(long startTimeInMillis) {
+    private void logWarningMessageIfRequired(Instant start) {
         int interval;
 
         if (warnings > warningIntervals.size() - 1) {
@@ -361,9 +379,9 @@ public class ActionWait {
 
         interval = warningIntervals.get(warnings);
 
-        long nextWarnTime = startTimeInMillis + TimeUnit.MILLISECONDS.convert(interval, warningTimeUnit);
+        Instant nextWarnTime = start.plus(interval, toChronoUnit(warningTimeUnit));
 
-        if (clock.now() >= nextWarnTime) {
+        if (clock.instant().equals(nextWarnTime) || clock.instant().isAfter(nextWarnTime)) {
             LOGGER.warn("Have been in waiting for over {} for {}", interval, warningTimeUnit.toString(), getMessage());
 
             warnings++;
@@ -381,6 +399,27 @@ public class ActionWait {
             Thread.sleep(timeUnit.toMillis(duration));
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private ChronoUnit toChronoUnit(TimeUnit timeUnit) {
+        switch (timeUnit) {
+        case NANOSECONDS:
+            return ChronoUnit.NANOS;
+        case MICROSECONDS:
+            return ChronoUnit.MICROS;
+        case MILLISECONDS:
+            return ChronoUnit.MILLIS;
+        case SECONDS:
+            return ChronoUnit.SECONDS;
+        case MINUTES:
+            return ChronoUnit.MINUTES;
+        case HOURS:
+            return ChronoUnit.HOURS;
+        case DAYS:
+            return ChronoUnit.DAYS;
+        default:
+            throw new IllegalArgumentException("No ChronoUnit equivalent for " + timeUnit);
         }
     }
 }
