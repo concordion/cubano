@@ -17,6 +17,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.TargetLocator;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -46,7 +47,7 @@ public class PageHelper {
     /**
      * Constructor.
      *
-     * @param pageObject  PageObject this class belongs to
+     * @param pageObject PageObject this class belongs to
      * @param logLocation To help with location aware logging
      */
     public PageHelper(BasePageObject<?> pageObject, Class<?> logLocation) {
@@ -58,7 +59,7 @@ public class PageHelper {
      * Notify and attached listeners that the current page should perform a visual regression check.
      *
      * @param triggerElement Element to check, or null to check the entire window
-     * @param tag            An optional tag to be associated with the snapshot
+     * @param tag An optional tag to be associated with the snapshot
      */
     public void triggerCheckPage(WebElement triggerElement, String tag) {
         throw new UnsupportedOperationException();
@@ -81,7 +82,7 @@ public class PageHelper {
      * Perform a visual comparison of the window with a baseline image.
      *
      * @param region Region of page to check
-     * @param tag    An optional tag to be associated with the snapshot
+     * @param tag An optional tag to be associated with the snapshot
      */
     public void checkRegion(WebElement region, String tag) {
         triggerCheckPage(region, tag);
@@ -120,7 +121,7 @@ public class PageHelper {
      * Check to see if the element is present, but not necessarily visible.
      *
      * @param driver Reference to WebDriver
-     * @param by     How to find the element
+     * @param by How to find the element
      * @return Is the element on the page
      */
     public static boolean isElementPresent(WebDriver driver, By by) {
@@ -136,7 +137,7 @@ public class PageHelper {
      * Check to see if the element is visible or not.
      *
      * @param driver Reference to WebDriver
-     * @param by     How to find the element
+     * @param by How to find the element
      * @return Is the element on the page
      */
     public static boolean isElementVisible(WebDriver driver, By by) {
@@ -164,7 +165,7 @@ public class PageHelper {
     /**
      * Capture a screenshot of the current page and add it to the log and story board.
      *
-     * @param element     Element to highlight, or null if not applicable
+     * @param element Element to highlight, or null if not applicable
      * @param description Description to include with screenshot
      */
     public void capturePage(WebElement element, String description) {
@@ -175,7 +176,7 @@ public class PageHelper {
      * Capture a screenshot of the current page and add it to the log and story board.
      *
      * @param screenshotTaker A custom screenshot taker
-     * @param description     Description to include with screenshot
+     * @param description Description to include with screenshot
      */
     public void capturePage(ScreenshotTaker screenshotTaker, String description) {
         FluentLogger flogger = pageObject.getLogger().with()
@@ -193,9 +194,9 @@ public class PageHelper {
     /**
      * Capture a screenshot of the current page and add it to the log and story board.
      *
-     * @param element     Element to highlight, or null if not applicable
+     * @param element Element to highlight, or null if not applicable
      * @param description Description to include with screenshot
-     * @param result      Status
+     * @param result Status
      */
     public void capturePage(WebElement element, String description, CardResult result) {
         FluentLogger flogger = pageObject.getLogger().with()
@@ -218,26 +219,46 @@ public class PageHelper {
      * A default description is constructed in the format: {@literal Clicking '<element text>'}
      * </p>
      *
-     * @param <P>          The type of the desired page object
-     * @param element      Element to click
+     * @param <P> The type of the desired page object
+     * @param element Element to click
      * @param expectedPage Class of page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
      * @return new PageObject of type expectedPage
      */
-    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, Class<P> expectedPage) {
-        return capturePageAndClick(element, getClickMessage(element), expectedPage);
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, Class<P> expectedPage, Object... params) {
+        return capturePageAndClick(element, getClickMessage(element), expectedPage, params);
+    }
+
+    /**
+     * Capture a screenshot of the current page and add it to the log and story board and then click the supplied element
+     * and return a new instance of the expected page.
+     * 
+     * @param <P> The type of the desired page object
+     * @param element Element to click
+     * @param description Description of the action being taken
+     * @param expectedPage Class of page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
+     * @return new PageObject of type expectedPage
+     */
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, String description, Class<P> expectedPage, Object... params) {
+        return capturePageAndClick(element, 10, description, expectedPage, params);
     }
 
     /**
      * Capture a screenshot of the current page and add it to the log and story board and then click the supplied element
      * and return a new instance of the expected page.
      *
-     * @param <P>          The type of the desired page object
-     * @param element      Element to click
-     * @param description  Description of the action being taken
+     * @param <P> The type of the desired page object
+     * @param element Element to click
+     * @param timeoutSeconds Timeout in Seconds
+     * @param description Description of the action being taken
      * @param expectedPage Class of page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
      * @return new PageObject of type expectedPage
      */
-    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, String description, Class<P> expectedPage) {
+    public <P extends BasePageObject<P>> P capturePageAndClick(WebElement element, int timeoutSeconds, String description, Class<P> expectedPage, Object... params) {
+        waitForElementToClickable(element, timeoutSeconds);
+
         capturePage(element, description);
 
         element.click();
@@ -246,7 +267,25 @@ public class PageHelper {
             return null;
         }
 
-        return newInstance(expectedPage);
+        return newInstance(expectedPage, params);
+    }
+
+    /**
+     * Wait for the element to be clickable.
+     * 
+     * @param webElement The element to check is clickable.
+     * @param timeOutInSeconds Timeout in Seconds.
+     * 
+     */
+    public void waitForElementToClickable(WebElement webElement, int timeOutInSeconds) {
+
+        new WebDriverWait(this.pageObject.getBrowser().getDriver(), timeOutInSeconds).ignoring(WebDriverException.class)
+                .until((WebDriver d) -> {
+
+                    ExpectedConditions.elementToBeClickable(webElement);
+                    return true;
+
+                });
     }
 
     /**
@@ -255,13 +294,26 @@ public class PageHelper {
      * Requires that the expectedPage extends from PageObject and has a public constructor with a single
      * parameter of TestDriveable.
      *
-     * @param <P>          The type of the desired page object
+     * @param <P> The type of the desired page object
      * @param expectedPage Page that should be returned
+     * @param params Optional list of parameters that can be passed in to the constructor
      * @return New instance of supplied page object
      */
-    public <P extends BasePageObject<P>> P newInstance(Class<P> expectedPage) {
+    public <P extends BasePageObject<P>> P newInstance(Class<P> expectedPage, Object... params) {
         try {
-            return expectedPage.getDeclaredConstructor(BrowserBasedTest.class).newInstance(getTest());
+
+            // Account for PageObjects that only have a BrowserBasedTest constructor.
+            if (params.length > 0) {
+                @SuppressWarnings("rawtypes")
+                Class[] constructorArguments = new Class[2];
+                constructorArguments[0] = BrowserBasedTest.class;
+                constructorArguments[1] = Object[].class;
+
+                return expectedPage.getDeclaredConstructor(constructorArguments).newInstance(getTest(), params);
+
+            } else {
+                return expectedPage.getDeclaredConstructor(BrowserBasedTest.class).newInstance(getTest());
+            }
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
             if (e.getMessage() == null && e.getCause() != null) {
                 throw new RuntimeException(e.getCause());
@@ -300,7 +352,7 @@ public class PageHelper {
      * Get the current frame's name or id property.
      *
      * @return Empty string if main document selected otherwise will return name property if set, id property if set, else 'UNKNOWN FRAME'
-     * for selected iframe.
+     *         for selected iframe.
      */
     public String getCurrentFrameNameOrId() {
         return getCurrentFrameNameOrId(pageObject.getBrowser().getDriver());
@@ -311,7 +363,7 @@ public class PageHelper {
      *
      * @param driver WebDriver
      * @return Empty string if main document selected otherwise will return name property if set, id property if set, else 'UNKNOWN FRAME'
-     * for selected iframe.
+     *         for selected iframe.
      */
     public static String getCurrentFrameNameOrId(WebDriver driver) {
         String script = "var frame = window.frameElement;" +
@@ -353,7 +405,7 @@ public class PageHelper {
         for (int i = 0; i < 10; i++) {
             try {
                 String currentFrame = getCurrentFrameNameOrId(driver);
-                
+
                 if (currentFrame.isEmpty()) {
                     break;
                 }
@@ -403,8 +455,8 @@ public class PageHelper {
     /**
      * A helper method for using WebDriver explicit wait.
      *
-     * @param driver           WebDriver
-     * @param condition        Condition to check for
+     * @param driver WebDriver
+     * @param condition Condition to check for
      * @param timeOutInSeconds Timeout value
      */
     public static void waitUntil(WebDriver driver, ExpectedCondition<?> condition, int timeOutInSeconds) {
