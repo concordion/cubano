@@ -10,6 +10,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.DriverManagerType;
 
 /**
  * Automatically download, configure and start the WebDriver Manager and browser for Chrome.
@@ -32,7 +33,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(ChromeDriverManager.getInstance());
+        setupBrowserManager(ChromeDriverManager.getInstance(DriverManagerType.CHROME));
 
         ChromeOptions options = new ChromeOptions();
 

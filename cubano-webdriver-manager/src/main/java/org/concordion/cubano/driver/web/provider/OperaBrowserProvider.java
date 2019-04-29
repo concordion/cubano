@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.opera.OperaOptions;
 
+import io.github.bonigarcia.wdm.DriverManagerType;
 import io.github.bonigarcia.wdm.OperaDriverManager;
 
 /**
@@ -29,7 +30,7 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(OperaDriverManager.getInstance());
+        setupBrowserManager(OperaDriverManager.getInstance(DriverManagerType.OPERA));
 
         OperaOptions options = new OperaOptions();
 

@@ -7,6 +7,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.CapabilityType;
 
+import io.github.bonigarcia.wdm.DriverManagerType;
 import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
 
 /**
@@ -30,7 +31,7 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(InternetExplorerDriverManager.getInstance());
+        setupBrowserManager(InternetExplorerDriverManager.getInstance(DriverManagerType.IEXPLORER));
 
         InternetExplorerOptions options = new InternetExplorerOptions();
 

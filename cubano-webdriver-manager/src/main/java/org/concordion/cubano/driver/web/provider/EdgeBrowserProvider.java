@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 
+import io.github.bonigarcia.wdm.DriverManagerType;
 import io.github.bonigarcia.wdm.EdgeDriverManager;
 
 /**
@@ -29,7 +30,7 @@ public class EdgeBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(EdgeDriverManager.getInstance());
+        setupBrowserManager(EdgeDriverManager.getInstance(DriverManagerType.EDGE));
 
         EdgeOptions options = new EdgeOptions();
 

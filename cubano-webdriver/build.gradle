@@ -6,7 +6,7 @@ dependencies {
     compile "org.seleniumhq.selenium:selenium-java:3.141.59"
     
     // Html Elements
-    compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.19') {
+    compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.20.0') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
     
