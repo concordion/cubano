@@ -5,6 +5,7 @@ import org.concordion.api.extension.ConcordionExtender;
 import org.concordion.api.extension.ConcordionExtension;
 import org.concordion.api.listener.ExampleEvent;
 import org.concordion.api.listener.ExampleListener;
+import org.concordion.ext.statusinfo.StatusInfoExtension;
 
 /**
  * Displays the Note and a Reason in the corresponding specification/markdown,
@@ -13,12 +14,13 @@ import org.concordion.api.listener.ExampleListener;
  * <p>
  * Sample usage:
  * </p>
+ * 
  * <pre>
  * In a Fixture add:
  * org.concordion.api.extension.Extensions({ ExpectedToFailInfoExtension.class })
  * 
  * To a specification add:
- * ## [My Specification Name](- "Reason my specification is failing c:status=expectedToFail") 
+ * ## [My Specification Name](- "Reason my specification is failing c:status=expectedToFail")
  * </pre>
  * 
  * In the completed specification:
@@ -26,9 +28,13 @@ import org.concordion.api.listener.ExampleListener;
  * <li>Note: resolves to 'This example has been marked as EXPECTED_TO_FAIL'</li>
  * <li>Reason: Based on the sample usage above, would resolve to 'Reason my specification is failing'</li>
  * </ul>
+ * 
  * @author Luke Pearson
+ * 
+ * @deprecated use {@link StatusInfoExtension} instead.
  *
  */
+@Deprecated
 public class ExpectedToFailInfoExtension implements ConcordionExtension, ExampleListener {
 	
 	private final String STYLE = "font-weight: normal; text-decoration: none; color: #bb5050;";
