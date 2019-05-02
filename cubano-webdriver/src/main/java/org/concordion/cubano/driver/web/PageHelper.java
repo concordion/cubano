@@ -1,7 +1,6 @@
 package org.concordion.cubano.driver.web;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.concordion.cubano.driver.BrowserBasedTest;
@@ -201,8 +200,6 @@ public class PageHelper {
 
     private void capture(ScreenshotTaker screenshotTaker, String description, StoryboardMarker storyboardMarker) {
 
-        List<WebElement> frames = cycleThroughFramesToTheParent();
-
         FluentLogger flogger = pageObject.getLogger().with()
                 .message(description)
                 .screenshot(screenshotTaker)
@@ -213,36 +210,6 @@ public class PageHelper {
         }
 
         flogger.debug();
-
-        cycleThroughFramesToTheChild(frames);
-    }
-
-    private List<WebElement> cycleThroughFramesToTheParent() {
-
-        List<WebElement> frames = new ArrayList<WebElement>();
-
-        do {
-
-            WebElement frame = (WebElement) ((JavascriptExecutor) this.getTest().getBrowser().getDriver()).executeScript("return window.frameElement");
-            // String currentFrame = getCurrentFrameNameOrId();
-
-            if (frame == null) {
-                break;
-            } else {
-                frames.add(frame);
-            }
-
-            this.getTest().getBrowser().getDriver().switchTo().parentFrame();
-
-        } while (true);
-
-        return frames;
-    }
-
-    private void cycleThroughFramesToTheChild(List<WebElement> frames) {
-        for (WebElement frame : frames) {
-            this.getTest().getBrowser().getDriver().switchTo().frame(frame);
-        }
     }
 
     /**

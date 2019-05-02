@@ -5,7 +5,9 @@ import java.awt.Dimension;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -100,7 +102,15 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
 
         byte[] screenshot;
         try {
+
+            // Go out
+            List<WebElement> frames = cycleThroughFramesToTheParent();
+
             screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+
+            // Go back in
+            cycleThroughFramesToTheChild(frames);
+
         } catch (ClassCastException e) {
             throw new ScreenshotUnavailableException("driver does not implement TakesScreenshot");
         }
@@ -124,6 +134,34 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
         //
         // return new Dimension(dest.getWidth(), dest.getHeight());
         // }
+    }
+
+    private List<WebElement> cycleThroughFramesToTheParent() {
+
+        List<WebElement> frames = new ArrayList<WebElement>();
+
+        do {
+
+            WebElement frame = (WebElement) ((JavascriptExecutor) driver).executeScript("return window.frameElement");
+            // String currentFrame = getCurrentFrameNameOrId();
+
+            if (frame == null) {
+                break;
+            } else {
+                frames.add(frame);
+            }
+
+            this.driver.switchTo().parentFrame();
+
+        } while (true);
+
+        return frames;
+    }
+
+    private void cycleThroughFramesToTheChild(List<WebElement> frames) {
+        for (WebElement frame : frames) {
+            driver.switchTo().frame(frame);
+        }
     }
 
     private Dimension getImageDimension(byte[] screenshot) throws IOException {
