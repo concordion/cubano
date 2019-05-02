@@ -1,10 +1,12 @@
 package org.concordion.cubano.driver.web;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.concordion.cubano.driver.BrowserBasedTest;
 import org.concordion.ext.ScreenshotTaker;
+import org.concordion.ext.StoryboardMarker;
 import org.concordion.ext.StoryboardMarkerFactory;
 import org.concordion.ext.storyboard.CardResult;
 import org.concordion.slf4j.ext.FluentLogger;
@@ -179,16 +181,8 @@ public class PageHelper {
      * @param description Description to include with screenshot
      */
     public void capturePage(ScreenshotTaker screenshotTaker, String description) {
-        FluentLogger flogger = pageObject.getLogger().with()
-                .message(description)
-                .screenshot(screenshotTaker)
-                .marker(StoryboardMarkerFactory.addCard(pageObject.getSimpleName()));
 
-        if (logLocation != null) {
-            flogger.locationAwareParent(logLocation);
-        }
-
-        flogger.debug();
+        capture(screenshotTaker, description, StoryboardMarkerFactory.addCard(pageObject.getSimpleName()));
     }
 
     /**
@@ -199,16 +193,54 @@ public class PageHelper {
      * @param result Status
      */
     public void capturePage(WebElement element, String description, CardResult result) {
+
+        capture(new SeleniumScreenshotTaker(pageObject.getBrowser().getDriver(), element),
+                description,
+                StoryboardMarkerFactory.addCard(pageObject.getSimpleName(), null, result));
+    }
+
+    private void capture(ScreenshotTaker screenshotTaker, String description, StoryboardMarker storyboardMarker) {
+
+        List<String> frames = cycleThroughFramesToTheParent();
+
         FluentLogger flogger = pageObject.getLogger().with()
                 .message(description)
-                .screenshot(new SeleniumScreenshotTaker(pageObject.getBrowser().getDriver(), element))
-                .marker(StoryboardMarkerFactory.addCard(pageObject.getSimpleName(), null, result));
+                .screenshot(screenshotTaker)
+                .marker(storyboardMarker);
 
         if (logLocation != null) {
             flogger.locationAwareParent(logLocation);
         }
 
         flogger.debug();
+
+        cycleThroughFramesToTheChild(frames);
+    }
+
+    private List<String> cycleThroughFramesToTheParent() {
+
+        List<String> frames = new ArrayList<String>();
+
+        do {
+            String currentFrame = getCurrentFrameNameOrId();
+
+            if (currentFrame.isEmpty()) {
+                break;
+            } else {
+                frames.add(currentFrame);
+            }
+
+            this.getTest().getBrowser().getDriver().switchTo().parentFrame();
+
+        } while (true);
+
+        return frames;
+    }
+
+    private void cycleThroughFramesToTheChild(List<String> frames) {
+        for (String frame : frames) {
+            this.getTest().getBrowser().getDriver().switchTo().frame(frame);
+        }
     }
 
     /**
