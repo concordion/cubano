@@ -223,7 +223,7 @@ public class PageHelper {
 
         do {
 
-            WebElement frame = (WebElement) ((JavascriptExecutor) this.getTest()).executeScript("return window.frameElement");
+            WebElement frame = (WebElement) ((JavascriptExecutor) this.getTest().getBrowser().getDriver()).executeScript("return window.frameElement");
             // String currentFrame = getCurrentFrameNameOrId();
 
             if (frame == null) {
