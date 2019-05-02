@@ -201,7 +201,7 @@ public class PageHelper {
 
     private void capture(ScreenshotTaker screenshotTaker, String description, StoryboardMarker storyboardMarker) {
 
-        List<String> frames = cycleThroughFramesToTheParent();
+        List<WebElement> frames = cycleThroughFramesToTheParent();
 
         FluentLogger flogger = pageObject.getLogger().with()
                 .message(description)
@@ -217,17 +217,19 @@ public class PageHelper {
         cycleThroughFramesToTheChild(frames);
     }
 
-    private List<String> cycleThroughFramesToTheParent() {
+    private List<WebElement> cycleThroughFramesToTheParent() {
 
-        List<String> frames = new ArrayList<String>();
+        List<WebElement> frames = new ArrayList<WebElement>();
 
         do {
-            String currentFrame = getCurrentFrameNameOrId();
 
-            if (currentFrame.isEmpty()) {
+            WebElement frame = (WebElement) ((JavascriptExecutor) this.getTest()).executeScript("return window.frameElement");
+            // String currentFrame = getCurrentFrameNameOrId();
+
+            if (frame == null) {
                 break;
             } else {
-                frames.add(currentFrame);
+                frames.add(frame);
             }
 
             this.getTest().getBrowser().getDriver().switchTo().parentFrame();
@@ -237,8 +239,8 @@ public class PageHelper {
         return frames;
     }
 
-    private void cycleThroughFramesToTheChild(List<String> frames) {
-        for (String frame : frames) {
+    private void cycleThroughFramesToTheChild(List<WebElement> frames) {
+        for (WebElement frame : frames) {
             this.getTest().getBrowser().getDriver().switchTo().frame(frame);
         }
     }
