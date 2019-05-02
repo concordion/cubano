@@ -5,9 +5,8 @@ import java.awt.Dimension;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Stack;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -103,12 +102,13 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
         byte[] screenshot;
         try {
 
-            // Go out
-            List<WebElement> frames = cycleThroughFramesToTheParent();
+            // Selenium now takes screenshot only of the current frame, we need to go to the main document...
+            Stack<WebElement> frames = cycleThroughFramesToTheParent();
 
+            // take the screenshot...
             screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
 
-            // Go back in
+            // and end up back where we started
             cycleThroughFramesToTheChild(frames);
 
         } catch (ClassCastException e) {
@@ -136,14 +136,12 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
         // }
     }
 
-    private List<WebElement> cycleThroughFramesToTheParent() {
-
-        List<WebElement> frames = new ArrayList<WebElement>();
+    private Stack<WebElement> cycleThroughFramesToTheParent() {
+        Stack<WebElement> frames = new Stack<WebElement>();
 
         do {
 
             WebElement frame = (WebElement) ((JavascriptExecutor) driver).executeScript("return window.frameElement");
-            // String currentFrame = getCurrentFrameNameOrId();
 
             if (frame == null) {
                 break;
@@ -158,9 +156,9 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
         return frames;
     }
 
-    private void cycleThroughFramesToTheChild(List<WebElement> frames) {
-        for (WebElement frame : frames) {
-            driver.switchTo().frame(frame);
+    private void cycleThroughFramesToTheChild(Stack<WebElement> frames) {
+        while (frames.size() > 0) {
+            driver.switchTo().frame(frames.pop());
         }
     }
 

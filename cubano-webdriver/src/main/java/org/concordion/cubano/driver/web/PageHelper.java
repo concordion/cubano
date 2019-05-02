@@ -383,6 +383,16 @@ public class PageHelper {
     }
 
     /**
+     * Get the current frame.
+     *
+     * @param driver WebDriver
+     * @return Null if main document selected otherwise frame WebElement.
+     */
+    public static WebElement getCurrentFrame(WebDriver driver) {
+        return (WebElement) ((JavascriptExecutor) driver).executeScript("return window.frameElement");
+    }
+
+    /**
      * Similar to WebDriver's switchTo().{@link TargetLocator#defaultContent()} but will always select the main document when a page contains iframes.
      */
     public void switchToMainDocument() {
