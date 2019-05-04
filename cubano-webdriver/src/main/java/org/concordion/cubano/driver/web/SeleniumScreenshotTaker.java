@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.Stack;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -30,10 +31,10 @@ import org.slf4j.LoggerFactory;
  */
 public class SeleniumScreenshotTaker implements ScreenshotTaker {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SeleniumScreenshotTaker.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(SeleniumScreenshotTaker.class);
 
-    private final WebDriver driver;
-    private final WebElement element;
+    protected final WebDriver driver;
+    protected final WebElement element;
 
     /**
      * Constructor.
@@ -68,62 +69,57 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
 
     @Override
     public Dimension writeScreenshotTo(OutputStream outputStream) throws IOException {
-        // TODO Support screenshot of element rather than full page
-
-        // Unfortunately both Ashot and webdriver approaches are not taking iframes into account and are coming up with the
-        // wrong location. I'd also be interested in getting a new AShot ShootingStrategy similar to ViewportPastingDecorator that
-        // works on scrolling web elements and take a 'full' element screenshot by stitching images together
-
-        // Screenshot screenshot;
-        //
-        // try {
-        // if (element == null) {
-        // screenshot = new AShot()
-        // .shootingStrategy(ShootingStrategies.viewportPasting(100))
-        // .takeScreenshot(driver);
-        // } else {
-        // // set custom cropper with indentation and blur filter for indented areas
-        // screenshot = new AShot()
-        // .coordsProvider(new WebDriverCoordsProvider())
-        // .imageCropper(new IndentCropper().addIndentFilter(new BlurFilter()))
-        // .takeScreenshot(driver, element);
-        // }
-        //
-        // ImageIO.write(screenshot.getImage(), "png", outputStream);
-        //
-        // return new Dimension(screenshot.getImage().getWidth(), screenshot.getImage().getHeight());
-        // } catch (Exception e) {
-        // return new Dimension(0, 0);
-        // }
-
         String originalStyle = drawBorderAroundElement();
 
-        byte[] screenshot;
-        try {
-            screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
-        } catch (ClassCastException e) {
-            throw new ScreenshotUnavailableException("driver does not implement TakesScreenshot");
-        }
+        // Selenium now takes screenshot only of the current frame, we need to go to the main document...
+        Stack<WebElement> frames = cycleThroughFramesToTheParent();
 
-        // if (element == null) {
+        // take the screenshot...
+        byte[] screenshot = takeScreenshot();
+
+        // and end up back where we started
+        cycleThroughFramesToTheChild(frames);
+
         outputStream.write(screenshot);
 
         removeBorderFromElement(originalStyle);
 
         return getImageDimension(screenshot);
-        // } else {
-        // int imageWidth = element.getSize().getWidth();
-        // int imageHeight = element.getSize().getHeight();
-        // Point point = element.getLocation();
-        // int xcord = point.getX();
-        // int ycord = point.getY();
-        //
-        // BufferedImage bi = getImage(screenshot);
-        // BufferedImage dest = bi.getSubimage(xcord, ycord, imageWidth, imageHeight);
-        // ImageIO.write(dest, "png", outputStream);
-        //
-        // return new Dimension(dest.getWidth(), dest.getHeight());
-        // }
+    }
+
+    protected byte[] takeScreenshot() {
+        try {
+            return ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
+        } catch (ClassCastException e) {
+            throw new ScreenshotUnavailableException("driver does not implement TakesScreenshot");
+        }
+
+    }
+
+    private Stack<WebElement> cycleThroughFramesToTheParent() {
+        Stack<WebElement> frames = new Stack<WebElement>();
+
+        do {
+
+            WebElement frame = (WebElement) ((JavascriptExecutor) driver).executeScript("return window.frameElement");
+
+            if (frame == null) {
+                break;
+            } else {
+                frames.add(frame);
+            }
+
+            this.driver.switchTo().parentFrame();
+
+        } while (true);
+
+        return frames;
+    }
+
+    private void cycleThroughFramesToTheChild(Stack<WebElement> frames) {
+        while (frames.size() > 0) {
+            driver.switchTo().frame(frames.pop());
+        }
     }
 
     private Dimension getImageDimension(byte[] screenshot) throws IOException {
@@ -143,27 +139,6 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
 
         throw new RuntimeException("Unable to read image dimensions");
     }
-
-
-    // private BufferedImage getImage(byte[] screenshot) throws IOException {
-    // try (ImageInputStream in = ImageIO.createImageInputStream(new ByteArrayInputStream(screenshot))) {
-    // final Iterator<ImageReader> readers = ImageIO.getImageReaders(in);
-    // if (readers.hasNext()) {
-    // ImageReader reader = readers.next();
-    // try {
-    // reader.setInput(in);
-    //
-    // return reader.read(0);
-    //
-    // // return new Dimension(reader.getWidth(0), reader.getHeight(0));
-    // } finally {
-    // reader.dispose();
-    // }
-    // }
-    // }
-    //
-    // throw new RuntimeException("Unable to read image dimensions");
-    // }
 
     @Override
     public String getFileExtension() {
