@@ -8,13 +8,17 @@ public class DurationParser {
 
     /**
      * A human readable representation of a duration using ISO-8601 based representation, such as PT8H6M12.345S.
-     * 
+     * <br>
+     * <br>
      * Examples:
-     * - PT20.345S -> 20.345 seconds
-     * - PT15M -> 15 Minutes
-     * - PT10H -> 10 Hours
-     * - PT48H -> 48 Hours
+     * <ul>
+     * <li>PT20.345S - 20.345 seconds</li>
+     * <li>PT15M - 15 Minutes</li>
+     * <li>PT10H - 10 Hours</li>
+     * <li>PT48H - 48 Hours</li>
+     * </ul>
      * 
+     * <pre>
      * https://en.wikipedia.org/wiki/ISO_8601
      * P is the duration designator (for period) placed at the start of the duration representation.
      * Y is the year designator that follows the value for the number of years.
@@ -25,7 +29,8 @@ public class DurationParser {
      * H is the hour designator that follows the value for the number of hours.
      * M is the minute designator that follows the value for the number of minutes.
      * S is the second designator that follows the value for the number of seconds.
-     *
+     * </pre>
+     * 
      * @param duration
      * @return a human readable version of an ISO-8601 duration
      */
