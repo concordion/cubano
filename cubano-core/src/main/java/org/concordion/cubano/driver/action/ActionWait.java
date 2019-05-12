@@ -243,7 +243,7 @@ public class ActionWait {
         attempts = 0;
 
         Instant start = clock.instant();
-        Instant end = clock.instant();
+        Instant end = start;
 
         if (isWaitStyleTimeout()) {
             end = end.plus(timeout);
@@ -359,8 +359,8 @@ public class ActionWait {
             long waitTime = currentTime + TimeUnit.MILLISECONDS.convert(interval, pollingTimeUnit);
             long stretchTime = waitTime + TimeUnit.MILLISECONDS.convert(interval / 2, pollingTimeUnit);
 
-            // If going above timeout limit bring it back to that limit
-            // If closer than half current interval stretch it out
+            // If current interval duration is greater than the timeout limit bring it back to the timeout limit
+            // If current interval duration * 1.5 is greater than the timeout limit stretch interval out to the timeout limit
             if (waitTime > endTime || stretchTime > endTime) {
                 interval = pollingTimeUnit.convert(endTime - currentTime, TimeUnit.MILLISECONDS) + 1;
             }

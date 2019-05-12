@@ -7,16 +7,13 @@ import java.util.regex.Pattern;
 public class DurationParser {
 
     /**
-     * A string representation of this duration using ISO-8601 seconds based representation, such as PT8H6M12.345S.
-     * 
-     * The format of the returned string will be PTnHnMnS, where n is the relevant hours, minutes or seconds part of the duration. Any fractional seconds are placed after a decimal
-     * point i the seconds section.If a section has a zero value, it is omitted.The hours, minutes and seconds will all have the same sign.
+     * A human readable representation of a duration using ISO-8601 based representation, such as PT8H6M12.345S.
      * 
      * Examples:
-     * "20.345 seconds" -- "PT20.345S
-     * "15 minutes" (15 * 60 seconds) -- "PT15M"
-     * "10 hours" (10 * 3600 seconds) -- "PT10H"
-     * "2 days" (2 * 86400 seconds) -- "PT48H"
+     * - PT20.345S -> 20.345 seconds
+     * - PT15M -> 15 Minutes
+     * - PT10H -> 10 Hours
+     * - PT48H -> 48 Hours
      * 
      * https://en.wikipedia.org/wiki/ISO_8601
      * P is the duration designator (for period) placed at the start of the duration representation.
@@ -30,7 +27,7 @@ public class DurationParser {
      * S is the second designator that follows the value for the number of seconds.
      *
      * @param duration
-     * @return an ISO-8601 representation of this duration, not null
+     * @return a human readable version of an ISO-8601 duration
      */
     public static String toLongString(Duration duration) {
         if (duration == null) {

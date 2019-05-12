@@ -55,7 +55,7 @@ public class ActionWaitTests {
                 return (String) null;
             });
 
-            throw new Exception("Should have timed out");
+            throw new IllegalStateException("Should have timed out");
 
         } catch (TimeoutException ex) {
             Instant end = clock.instant();
