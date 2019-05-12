@@ -243,15 +243,19 @@ public class ActionWait {
         attempts = 0;
 
         Instant start = clock.instant();
-        Instant end = null;
+        Instant end = clock.instant();
 
         if (isWaitStyleTimeout()) {
-            end = clock.instant().plus(timeout);
+            end = end.plus(timeout);
+        }
+
+        if (pollingIntervals.size() == 0) {
+            throw new IllegalStateException("A polling interval must be specified");
         }
 
         LOGGER.debug("Trying for up to {} for {}", getWaitStyle(), getMessage());
 
-        while (hasMoreAttempts() || hasMoreTime(end)) {
+        while ((isWaitStyleMaxAttempts() && hasMoreAttempts()) || (isWaitStyleTimeout() && hasMoreTime(end))) {
             int interval = getNextPollingInterval(end);
 
             if (interval > 0) {
@@ -296,10 +300,11 @@ public class ActionWait {
     }
 
     private String getWaitStyle() {
+
         if (isWaitStyleMaxAttempts()) {
             return maxAttempts + " attempts";
         } else if (isWaitStyleTimeout()) {
-            return timeout.toString().toLowerCase();
+            return DurationParser.toLongString(timeout);
         } else {
             throw new IllegalStateException("Either timeout or max attempts must be set");
         }
@@ -331,18 +336,10 @@ public class ActionWait {
     }
 
     private boolean hasMoreAttempts() {
-        if (maxAttempts == 0) {
-            return false;
-        }
-
         return attempts < maxAttempts;
     }
 
     private boolean hasMoreTime(Instant end) {
-        if (timeout == null) {
-            return false;
-        }
-
         return clock.instant().isBefore(end);
     }
 
@@ -356,15 +353,17 @@ public class ActionWait {
             interval = pollingIntervals.get(attempts);
         }
 
-        long endTime = end.toEpochMilli();
-        long currentTime = clock.instant().toEpochMilli();
-        long waitTime = currentTime + TimeUnit.MILLISECONDS.convert(interval, pollingTimeUnit);
-        long stretchTime = waitTime + TimeUnit.MILLISECONDS.convert(interval / 2, pollingTimeUnit);
+        if (isWaitStyleTimeout()) {
+            long endTime = end.toEpochMilli();
+            long currentTime = clock.instant().toEpochMilli();
+            long waitTime = currentTime + TimeUnit.MILLISECONDS.convert(interval, pollingTimeUnit);
+            long stretchTime = waitTime + TimeUnit.MILLISECONDS.convert(interval / 2, pollingTimeUnit);
 
-        // If going above timeout limit bring it back to that limit
-        // If closer than half current interval stretch it out
-        if (waitTime > endTime || stretchTime > endTime) {
-            interval = pollingTimeUnit.convert(endTime - currentTime, TimeUnit.MILLISECONDS) + 1;
+            // If going above timeout limit bring it back to that limit
+            // If closer than half current interval stretch it out
+            if (waitTime > endTime || stretchTime > endTime) {
+                interval = pollingTimeUnit.convert(endTime - currentTime, TimeUnit.MILLISECONDS) + 1;
+            }
         }
 
         return (int) interval;
