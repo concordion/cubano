@@ -1,5 +1,9 @@
 package org.concordion.cubano.framework;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.concordion.api.AfterSuite;
 import org.concordion.api.BeforeExample;
 import org.concordion.cubano.driver.BrowserBasedTest;
@@ -7,8 +11,7 @@ import org.concordion.cubano.driver.web.Browser;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.cubano.framework.resource.ResourceScope;
-
-import java.util.*;
+import org.concordion.ext.ScreenshotTaker;
 
 /**
  * Concordion fixture for inheritance by any test classes that require a browser.
@@ -34,6 +37,10 @@ public abstract class ConcordionBrowserFixture extends ConcordionFixture impleme
         }
 
         browserTestRunCounted.set(false);
+    }
+
+    public static <T extends ScreenshotTaker> void setDefaultScreenshotTakerClass(Class<? extends ScreenshotTaker> screenshotTaker) {
+        Browser.setDefaultScreenshotTakerClass(screenshotTaker);
     }
 
     @Override

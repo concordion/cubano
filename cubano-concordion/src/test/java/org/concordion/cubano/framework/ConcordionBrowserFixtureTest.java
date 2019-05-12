@@ -1,19 +1,39 @@
 package org.concordion.cubano.framework;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+
 import org.concordion.cubano.driver.web.Browser;
+import org.concordion.cubano.driver.web.SeleniumScreenshotTaker;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 
-import java.io.IOException;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
-
 public class ConcordionBrowserFixtureTest {
     private ConcordionBrowserFixture test1 = new ConcordionBrowserFixture() {};
+
+    @Test
+    public void defaultScreenshotTaker() {
+
+        BrowserProvider mockProvider = mock(BrowserProvider.class);
+
+        Browser browser1 = test1.getBrowser("X", mockProvider);
+
+        assertThat(browser1.getDefaultScreenshotTakerClass(), is(SeleniumScreenshotTaker.class));
+
+        ConcordionBrowserFixture.setDefaultScreenshotTakerClass(CustomScreenshotTaker.class);
+
+        assertThat(browser1.getDefaultScreenshotTakerClass(), not(SeleniumScreenshotTaker.class));
+        assertThat(browser1.getDefaultScreenshotTakerClass(), is(CustomScreenshotTaker.class));
+
+    }
 
     @Test
     public void reusesBrowsersForSameKey() {
