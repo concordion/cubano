@@ -150,7 +150,7 @@ public class ActionWaitTests {
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(4)
                 .withPollingIntervals(TimeUnit.MILLISECONDS, 10)
-                .withWarningIntervals(TimeUnit.MILLISECONDS, 8, 12, 25, 30, 120)
+                .withWarningIntervals(TimeUnit.MILLISECONDS, 8, 12, 29, 30, 120)
                 .withTimeoutReturningResult();
 
         Clock clock = Clock.systemDefaultZone();
