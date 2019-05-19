@@ -11,6 +11,7 @@ import org.concordion.slf4j.ext.ReportLoggerFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.TargetLocator;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -323,14 +324,18 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
 
     /**
      * A convenience method for executing ExpectedConditions.
+     * 
+     * Ignore {@link WebDriverException}. When a DOM operation is happening on the page it may
+     * temporarily cause the element to be inaccessible. Ignore these hierarchy of Exceptions.
      *
-     * @param condition        The expected condition
+     * @param condition The expected condition
      * @param timeOutInSeconds how long to wait for the expected condition to evaluate to true
      * @throws org.openqa.selenium.TimeoutException If the timeout expires
      */
     //CHECKSTYLE:ON
     protected void waitUntil(ExpectedCondition<?> condition, int timeOutInSeconds) {
         WebDriverWait wait = new WebDriverWait(getBrowser().getDriver(), timeOutInSeconds);
+        wait.ignoring(WebDriverException.class);
         wait.until(condition);
     }
 

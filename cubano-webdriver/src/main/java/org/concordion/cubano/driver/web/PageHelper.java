@@ -274,6 +274,9 @@ public class PageHelper {
     /**
      * Wait for the element to be clickable.
      * 
+     * Ignore {@link WebDriverException}. When a DOM operation is happening on a page it may
+     * temporarily cause the element to be inaccessible. Ignore these hierarchy of Exceptions.
+     * 
      * @param webElement The element to check is clickable.
      * @param timeOutInSeconds Timeout in Seconds.
      * 
@@ -429,6 +432,9 @@ public class PageHelper {
     }
 
     private String getClickMessage(WebElement element) {
+
+        waitForElementToClickable(element, 10);
+
         String label = element.getText();
 
         if (label == null || label.isEmpty()) {
