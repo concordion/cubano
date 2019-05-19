@@ -88,12 +88,23 @@ public class ActionWaitTests {
 
         Instant end = clock.instant();
 
-        assertThat(wait.getAttempts(), is(4));
+        if (wait.getAttempts() == 4) {
+            // Ideally this is where we want the test to end up, ...
+            assertThat(wait.getAttempts(), is(4));
 
-        ILoggingEvent le = appender.getLoggingEvents().get(4);
+            ILoggingEvent le = appender.getLoggingEvents().get(4);
 
-        assertThat(le.getFormattedMessage(), startsWith("Pausing"));
-        assertThat((int) le.getArgumentArray()[0], greaterThan(220));
+            assertThat(le.getFormattedMessage(), startsWith("Pausing"));
+            assertThat((int) le.getArgumentArray()[0], greaterThan(221));
+        } else {
+            // ... however sometimes it will end up here
+            assertThat(wait.getAttempts(), is(5));
+
+            ILoggingEvent le = appender.getLoggingEvents().get(5);
+
+            assertThat(le.getFormattedMessage(), startsWith("Pausing"));
+            assertThat((int) le.getArgumentArray()[0], lessThan(220));
+        }
 
         assertThat(Duration.between(start, end).toMillis(), is(greaterThan(999L)));
     }
