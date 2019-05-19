@@ -25,8 +25,7 @@ public class ActionWaitTests {
     public void withTimeout() {
         ActionWait wait = new ActionWait()
                 .withTimeout(TimeUnit.SECONDS, 2)
-                .withPollingIntervals(TimeUnit.MILLISECONDS, 500)
-                .withMessage("some data to appear");
+                .withPollingIntervals(TimeUnit.MILLISECONDS, 500);
 
         Clock clock = Clock.systemDefaultZone();
         Instant start = clock.instant();
@@ -50,8 +49,7 @@ public class ActionWaitTests {
     public void withPollingIntervalStartingWithZero() {
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(3)
-                .withPollingIntervals(TimeUnit.MILLISECONDS, 0, 5)
-                .withMessage("some data to appear");
+                .withPollingIntervals(TimeUnit.MILLISECONDS, 0, 5);
 
         Clock clock = Clock.systemDefaultZone();
         Instant start = clock.instant();
@@ -75,8 +73,7 @@ public class ActionWaitTests {
     public void withMaxAttempts() {
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(3)
-                .withPollingIntervals(TimeUnit.MILLISECONDS, 5)
-                .withMessage("some data to appear");
+                .withPollingIntervals(TimeUnit.MILLISECONDS, 5);
 
         Clock clock = Clock.systemDefaultZone();
         Instant start = clock.instant();
@@ -101,7 +98,6 @@ public class ActionWaitTests {
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(3)
                 .withPollingIntervals(TimeUnit.MILLISECONDS, 5)
-                .withMessage("some data to appear")
                 .ignoring(ExecutionException.class);
 
         Clock clock = Clock.systemDefaultZone();
@@ -127,7 +123,6 @@ public class ActionWaitTests {
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(2)
                 .withPollingIntervals(TimeUnit.MILLISECONDS, 5)
-                .withMessage("some data to appear")
                 .withTimeoutReturningResult();
 
         Clock clock = Clock.systemDefaultZone();
@@ -155,7 +150,7 @@ public class ActionWaitTests {
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(4)
                 .withPollingIntervals(TimeUnit.MILLISECONDS, 10)
-                .withWarningIntervals(TimeUnit.MILLISECONDS, 8, 12, 20, 30, 120)
+                .withWarningIntervals(TimeUnit.MILLISECONDS, 8, 12, 25, 30, 120)
                 .withTimeoutReturningResult();
 
         Clock clock = Clock.systemDefaultZone();
