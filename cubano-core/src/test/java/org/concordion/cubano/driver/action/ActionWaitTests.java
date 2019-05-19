@@ -2,6 +2,8 @@ package org.concordion.cubano.driver.action;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -13,19 +15,38 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 
 public class ActionWaitTests {
+    TestAppender appender;
+    ch.qos.logback.classic.Logger logger;
 
+    @Before
+    public void beforeTest() {
+        appender = new TestAppender();
+        appender.start();
+
+        logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ActionWait.class);
+        logger.addAppender(appender);
+    }
+
+    @After
+    public void afterTest() {
+        appender.stop();
+        logger.detachAppender(appender);
+    }
 
     @Test
-    public void withTimeout() {
+    public void withTimeoutReduceInterval() {
         ActionWait wait = new ActionWait()
-                .withTimeout(TimeUnit.SECONDS, 2)
-                .withPollingIntervals(TimeUnit.MILLISECONDS, 500);
+                .withTimeout(TimeUnit.SECONDS, 1)
+                .withPollingIntervals(TimeUnit.MILLISECONDS, 250);
 
         Clock clock = Clock.systemDefaultZone();
         Instant start = clock.instant();
@@ -41,8 +62,40 @@ public class ActionWaitTests {
             Instant end = clock.instant();
 
             assertThat(wait.getAttempts(), is(4));
-            assertThat(Duration.between(start, end).toMillis(), is(greaterThan(2000L)));
+
+            ILoggingEvent le = appender.getLoggingEvents().get(4);
+
+            assertThat(le.getFormattedMessage(), startsWith("Pausing"));
+            assertThat((int) le.getArgumentArray()[0], lessThan(250));
+
+            assertThat(Duration.between(start, end).toMillis(), is(greaterThan(999L)));
         }
+    }
+
+    @Test
+    public void withTimeoutStretchInterval() {
+        ActionWait wait = new ActionWait()
+                .withTimeout(TimeUnit.SECONDS, 1)
+                .withPollingIntervals(TimeUnit.MILLISECONDS, 220)
+                .withTimeoutReturningResult();
+
+        Clock clock = Clock.systemDefaultZone();
+        Instant start = clock.instant();
+
+        wait.until(() -> {
+            return false;
+        });
+
+        Instant end = clock.instant();
+
+        assertThat(wait.getAttempts(), is(4));
+
+        ILoggingEvent le = appender.getLoggingEvents().get(4);
+
+        assertThat(le.getFormattedMessage(), startsWith("Pausing"));
+        assertThat((int) le.getArgumentArray()[0], greaterThan(220));
+
+        assertThat(Duration.between(start, end).toMillis(), is(greaterThan(999L)));
     }
 
     @Test
@@ -141,12 +194,6 @@ public class ActionWaitTests {
 
     @Test
     public void withWarningIntervals() {
-        TestAppender appender = new TestAppender();
-        appender.start();
-
-        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ActionWait.class);
-        logger.addAppender(appender);
-
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(4)
                 .withPollingIntervals(TimeUnit.MILLISECONDS, 10)
@@ -162,9 +209,6 @@ public class ActionWaitTests {
 
         Instant end = clock.instant();
 
-        appender.stop();
-        logger.detachAppender(appender);
-
         List<String> msgs = appender.getLoggingEvents().stream().filter(e -> e.getLevel().equals(Level.WARN)).map(e -> e.getFormattedMessage()).collect(Collectors.toList());
 
         assertThat(wait.getAttempts(), is(4));
@@ -176,12 +220,6 @@ public class ActionWaitTests {
 
     @Test
     public void withCustomWaitMessage() {
-        TestAppender appender = new TestAppender();
-        appender.start();
-
-        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ActionWait.class);
-        logger.addAppender(appender);
-
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(1)
                 .withPollingIntervals(TimeUnit.MILLISECONDS, 0)
@@ -192,9 +230,6 @@ public class ActionWaitTests {
             return false;
         });
 
-        appender.stop();
-        logger.detachAppender(appender);
-
         String msg = appender.getLoggingEvents().get(0).getFormattedMessage();
 
         assertThat(msg, is("Trying for up to 1 attempts for some data to appear"));
@@ -202,12 +237,6 @@ public class ActionWaitTests {
 
     @Test
     public void withDefaultWaitMessage() {
-        TestAppender appender = new TestAppender();
-        appender.start();
-
-        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ActionWait.class);
-        logger.addAppender(appender);
-
         ActionWait wait = new ActionWait()
                 .withTimeout(TimeUnit.MILLISECONDS, 10)
                 .withPollingIntervals(TimeUnit.MILLISECONDS, 0)
@@ -216,9 +245,6 @@ public class ActionWaitTests {
         boolean result = wait.until(() -> {
             return false;
         });
-
-        appender.stop();
-        logger.detachAppender(appender);
 
         String msg = appender.getLoggingEvents().get(0).getFormattedMessage();
 
