@@ -1,6 +1,5 @@
 package org.concordion.cubano.driver.action;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -173,13 +172,10 @@ public class ActionWaitTests {
 
         List<String> msgs = appender.getLoggingEvents().stream().filter(e -> e.getLevel().equals(Level.WARN)).map(e -> e.getFormattedMessage()).collect(Collectors.toList());
 
-        org.slf4j.Logger log = LoggerFactory.getLogger(ActionWait.class);
-        for (String string : msgs) {
-            log.debug(string);
-        }
-
         assertThat(wait.getAttempts(), is(4));
-        assertThat(msgs, contains("Have been in waiting for over 12 for MILLISECONDS", "Have been in waiting for over 30 for MILLISECONDS"));
+        assertThat(msgs.size(), is(2));
+        assertThat(msgs.get(0), is("Have been in waiting for over 12 for MILLISECONDS"));
+        assertThat(msgs.get(1), is("Have been in waiting for over 30 for MILLISECONDS"));
         assertThat(Duration.between(start, end).toMillis(), is(greaterThan(9L)));
     }
 
