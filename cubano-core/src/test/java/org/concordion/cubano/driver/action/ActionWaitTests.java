@@ -173,6 +173,11 @@ public class ActionWaitTests {
 
         List<String> msgs = appender.getLoggingEvents().stream().filter(e -> e.getLevel().equals(Level.WARN)).map(e -> e.getFormattedMessage()).collect(Collectors.toList());
 
+        org.slf4j.Logger log = LoggerFactory.getLogger(ActionWait.class);
+        for (String string : msgs) {
+            log.debug(string);
+        }
+
         assertThat(wait.getAttempts(), is(4));
         assertThat(msgs, contains("Have been in waiting for over 12 for MILLISECONDS", "Have been in waiting for over 30 for MILLISECONDS"));
         assertThat(Duration.between(start, end).toMillis(), is(greaterThan(9L)));
