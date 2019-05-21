@@ -21,12 +21,13 @@ import ru.yandex.qatools.htmlelements.element.TypifiedElement;
  * 
  * <p>
  * The recommended location strategy for dojo elements is:
+ * </p>
  * 
  * <pre>
  *     {@literal @FindBy}(css = "[id='uniqueid']")
  *     {@link DojoDropDownSelect} yourElementName;
  * </pre>
- * </p>
+ * 
  * 
  * @author Andrew Sumner
  */
@@ -89,6 +90,7 @@ public class DojoDropDownSelect extends TypifiedElement implements WebDriverAwar
     /**
      * 
      * @param timeout {@link Duration} to use for any timeout.
+     * @return {@link DojoDropDownSelect}
      */
     public DojoDropDownSelect withTimeout(Duration timeout) {
         this.timeout = timeout;
@@ -98,6 +100,7 @@ public class DojoDropDownSelect extends TypifiedElement implements WebDriverAwar
     /**
      * 
      * @param pollingEvery {@link Duration} to use for polling.
+     * @return {@link DojoDropDownSelect}
      */
     public DojoDropDownSelect withPollingEvery(Duration pollingEvery) {
         this.pollingEvery = pollingEvery;
