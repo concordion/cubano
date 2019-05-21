@@ -68,7 +68,7 @@ public class DojoDropDownSelect extends TypifiedElement implements WebDriverAwar
     /**
      * For a dijit select that performs a search and shows a list of available items.
      * 
-     * @param charSequences Item to search for
+     * @param charSequence Item to search for
      * 
      * @throws IllegalArgumentException if search text not found in dropdown list
      */
@@ -79,7 +79,7 @@ public class DojoDropDownSelect extends TypifiedElement implements WebDriverAwar
     /**
      * For a dijit select that performs a search and shows a list of available items.
      * 
-     * @param charSequences Item to search for
+     * @param charSequence Item to search for
      * 
      * @return Returns false if search text not found in dropdown list
      */
