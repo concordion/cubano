@@ -33,6 +33,7 @@ public class ConcordionBrowserFixtureTest {
         assertThat(browser1.getDefaultScreenshotTakerClass(), not(SeleniumScreenshotTaker.class));
         assertThat(browser1.getDefaultScreenshotTakerClass(), is(CustomScreenshotTaker.class));
 
+        ConcordionBrowserFixture.setDefaultScreenshotTakerClass(SeleniumScreenshotTaker.class);
     }
 
     @Test
