@@ -208,7 +208,7 @@ public class ActionWaitTests {
         ActionWait wait = new ActionWait()
                 .withMaxAttempts(4)
                 .withPollingIntervals(TimeUnit.MILLISECONDS, 10)
-                .withWarningIntervals(TimeUnit.MILLISECONDS, 8, 12, 29, 30, 120)
+                .withWarningIntervals(TimeUnit.MILLISECONDS, 8, 18, 29, 30, 120)
                 .withTimeoutReturningResult();
 
         Clock clock = Clock.systemDefaultZone();
@@ -224,7 +224,7 @@ public class ActionWaitTests {
 
         assertThat(wait.getAttempts(), is(4));
         assertThat(msgs.size(), is(2));
-        assertThat(msgs.get(0), is("Have been in waiting for over 12 for MILLISECONDS"));
+        assertThat(msgs.get(0), is("Have been in waiting for over 18 for MILLISECONDS"));
         assertThat(msgs.get(1), is("Have been in waiting for over 30 for MILLISECONDS"));
         assertThat(Duration.between(start, end).toMillis(), is(greaterThan(9L)));
     }
