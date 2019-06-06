@@ -1,11 +1,13 @@
 package org.concordion.cubano.driver.web;
 
 import java.io.Closeable;
+import java.lang.reflect.InvocationTargetException;
 
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.concordion.cubano.driver.web.pagefactory.PageObjectAwareHtmlElementsLoader;
 import org.concordion.cubano.driver.web.provider.BrowserProvider;
 import org.concordion.cubano.driver.web.provider.RemoteBrowserProvider;
+import org.concordion.ext.ScreenshotTaker;
 import org.concordion.slf4j.ext.ReportLoggerFactory;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -30,6 +32,7 @@ public class Browser implements Closeable {
     private SeleniumEventLogger eventListener = null;
     private SessionId sessionId = null;
     private BrowserProvider browserProvider = null;
+    private static Class<? extends ScreenshotTaker> screenshotTaker = SeleniumScreenshotTaker.class;
 
     /**
      * Constructor - does not start the browser.
@@ -218,7 +221,19 @@ public class Browser implements Closeable {
      */
     public void registerScreenshotTaker() {
         if (!ReportLoggerFactory.hasScreenshotTaker()) {
-            ReportLoggerFactory.setScreenshotTaker(new SeleniumScreenshotTaker(wrappedDriver));
+            ScreenshotTaker screenshotTaker;
+
+            try {
+                screenshotTaker = getDefaultScreenshotTakerClass().getDeclaredConstructor(WebDriver.class).newInstance(wrappedDriver);
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                if (e.getMessage() == null && e.getCause() != null) {
+                    throw new RuntimeException(e.getCause());
+                } else {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            ReportLoggerFactory.setScreenshotTaker(screenshotTaker);
         }
     }
 
@@ -227,5 +242,13 @@ public class Browser implements Closeable {
      */
     public void removeScreenshotTaker() {
         ReportLoggerFactory.removeScreenshotTaker();
+    }
+
+    public static void setDefaultScreenshotTakerClass(Class<? extends ScreenshotTaker> screenshotTakerClass) {
+        screenshotTaker = screenshotTakerClass;
+    }
+    
+    public Class<? extends ScreenshotTaker> getDefaultScreenshotTakerClass() {
+        return screenshotTaker;
     }
 }

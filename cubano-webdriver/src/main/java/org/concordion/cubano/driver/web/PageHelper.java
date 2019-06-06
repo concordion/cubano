@@ -193,7 +193,22 @@ public class PageHelper {
      */
     public void capturePage(WebElement element, String description, CardResult result) {
 
-        capture(new SeleniumScreenshotTaker(pageObject.getBrowser().getDriver(), element),
+        ScreenshotTaker screenshotTaker;
+
+        try {
+            screenshotTaker = pageObject.getBrowser().getDefaultScreenshotTakerClass()
+                    .getDeclaredConstructor(WebDriver.class, WebElement.class)
+                    .newInstance(pageObject.getBrowser().getDriver(), element);
+
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            if (e.getMessage() == null && e.getCause() != null) {
+                throw new RuntimeException(e.getCause());
+            } else {
+                throw new RuntimeException(e);
+            }
+        }
+        
+        capture(screenshotTaker,
                 description,
                 StoryboardMarkerFactory.addCard(pageObject.getSimpleName(), null, result));
     }
@@ -308,8 +323,7 @@ public class PageHelper {
 
             // Account for PageObjects that only have a BrowserBasedTest constructor.
             if (params.length > 0) {
-                @SuppressWarnings("rawtypes")
-                Class[] constructorArguments = new Class[2];
+                Class<?>[] constructorArguments = new Class<?>[2];
                 constructorArguments[0] = BrowserBasedTest.class;
                 constructorArguments[1] = Object[].class;
 

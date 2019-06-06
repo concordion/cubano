@@ -79,7 +79,7 @@ public class PageHelperTest {
         when(browserBasedTestMock.getBrowser()).thenReturn(browserMock);
         when(browserMock.getDriver()).thenReturn(webDriverMock);
 
-        BasePageObject basePageObjectMock = mock(BasePageObject.class);
+        BasePageObject<?> basePageObjectMock = mock(BasePageObject.class);
         when(basePageObjectMock.getTest()).thenReturn(browserBasedTestMock);
 
         return new PageHelper(basePageObjectMock);
