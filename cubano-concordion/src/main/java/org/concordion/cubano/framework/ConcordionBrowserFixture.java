@@ -39,8 +39,8 @@ public abstract class ConcordionBrowserFixture extends ConcordionFixture impleme
         browserTestRunCounted.set(false);
     }
 
-    public static <T extends ScreenshotTaker> void setDefaultScreenshotTakerClass(Class<? extends ScreenshotTaker> screenshotTaker) {
-        Browser.setDefaultScreenshotTakerClass(screenshotTaker);
+    public static <T extends ScreenshotTaker> void setScreenshotTakerClass(Class<? extends ScreenshotTaker> screenshotTaker) {
+        Browser.setScreenshotTakerClass(screenshotTaker);
     }
 
     @Override
