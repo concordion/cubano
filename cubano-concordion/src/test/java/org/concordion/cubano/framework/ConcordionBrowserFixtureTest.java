@@ -26,14 +26,14 @@ public class ConcordionBrowserFixtureTest {
 
         Browser browser1 = test1.getBrowser("X", mockProvider);
 
-        assertThat(browser1.getDefaultScreenshotTakerClass(), is(SeleniumScreenshotTaker.class));
+        assertThat(browser1.getScreenshotTakerClass(), is(SeleniumScreenshotTaker.class));
 
-        ConcordionBrowserFixture.setDefaultScreenshotTakerClass(CustomScreenshotTaker.class);
+        ConcordionBrowserFixture.setScreenshotTakerClass(CustomScreenshotTaker.class);
 
-        assertThat(browser1.getDefaultScreenshotTakerClass(), not(SeleniumScreenshotTaker.class));
-        assertThat(browser1.getDefaultScreenshotTakerClass(), is(CustomScreenshotTaker.class));
+        assertThat(browser1.getScreenshotTakerClass(), not(SeleniumScreenshotTaker.class));
+        assertThat(browser1.getScreenshotTakerClass(), is(CustomScreenshotTaker.class));
 
-        ConcordionBrowserFixture.setDefaultScreenshotTakerClass(SeleniumScreenshotTaker.class);
+        ConcordionBrowserFixture.setScreenshotTakerClass(SeleniumScreenshotTaker.class);
     }
 
     @Test

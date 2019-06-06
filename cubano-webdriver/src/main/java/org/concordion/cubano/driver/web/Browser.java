@@ -224,7 +224,7 @@ public class Browser implements Closeable {
             ScreenshotTaker screenshotTaker;
 
             try {
-                screenshotTaker = getDefaultScreenshotTakerClass().getDeclaredConstructor(WebDriver.class).newInstance(wrappedDriver);
+                screenshotTaker = getScreenshotTakerClass().getDeclaredConstructor(WebDriver.class).newInstance(wrappedDriver);
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                 if (e.getMessage() == null && e.getCause() != null) {
                     throw new RuntimeException(e.getCause());
@@ -244,11 +244,11 @@ public class Browser implements Closeable {
         ReportLoggerFactory.removeScreenshotTaker();
     }
 
-    public static void setDefaultScreenshotTakerClass(Class<? extends ScreenshotTaker> screenshotTakerClass) {
+    public static void setScreenshotTakerClass(Class<? extends ScreenshotTaker> screenshotTakerClass) {
         screenshotTaker = screenshotTakerClass;
     }
     
-    public Class<? extends ScreenshotTaker> getDefaultScreenshotTakerClass() {
+    public Class<? extends ScreenshotTaker> getScreenshotTakerClass() {
         return screenshotTaker;
     }
 }

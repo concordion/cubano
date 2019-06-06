@@ -83,7 +83,7 @@ public class ActionWait {
     private Clock clock;
     private Sleeper sleeper;
     private int attempts;
-    private int warnings;
+    private int warningsMade;
 
     public ActionWait() {
         clock = Clock.systemDefaultZone();
@@ -217,7 +217,7 @@ public class ActionWait {
      * @return The number of attempts taken, starting at 1
      */
     public int getAttempts() {
-        return attempts + 1;
+        return attempts;
     }
 
     /**
@@ -240,19 +240,24 @@ public class ActionWait {
         Throwable lastException = null;
         V value = null;
 
-        attempts = 0;
-
-        Instant start = clock.instant();
-        Instant end = null;
-
-        if (isWaitStyleTimeout()) {
-            end = clock.instant().plus(timeout);
+        if (pollingIntervals.size() == 0) {
+            throw new IllegalStateException("A polling interval must be specified");
         }
 
         LOGGER.debug("Trying for up to {} for {}", getWaitStyle(), getMessage());
 
-        while (hasMoreAttempts() || hasMoreTime(end)) {
+        attempts = 0;
+
+        Instant start = clock.instant();
+        Instant end = start;
+
+        if (isWaitStyleTimeout()) {
+            end = end.plus(timeout);
+        }
+
+        while ((isWaitStyleMaxAttempts() && hasMoreAttempts()) || (isWaitStyleTimeout() && hasMoreTime(end))) {
             int interval = getNextPollingInterval(end);
+            attempts++;
 
             if (interval > 0) {
                 try {
@@ -262,8 +267,6 @@ public class ActionWait {
                     throw new TimeoutException("Sleep failed", e);
                 }
             }
-
-            logWarningMessageIfRequired(start);
 
             try {
                 value = isTrue.apply();
@@ -280,8 +283,8 @@ public class ActionWait {
             } catch (Throwable e) {
                 lastException = propagateIfNotIngored(e);
             }
-
-            attempts++;
+            
+            logWarningMessageIfRequired(start);
         }
 
         String timeoutMessage = String.format("Expected result was not found after %s while waiting for %s", getWaitStyle(), getMessage());
@@ -296,10 +299,11 @@ public class ActionWait {
     }
 
     private String getWaitStyle() {
+
         if (isWaitStyleMaxAttempts()) {
             return maxAttempts + " attempts";
         } else if (isWaitStyleTimeout()) {
-            return timeout.toString().toLowerCase();
+            return DurationParser.toLongString(timeout);
         } else {
             throw new IllegalStateException("Either timeout or max attempts must be set");
         }
@@ -331,18 +335,10 @@ public class ActionWait {
     }
 
     private boolean hasMoreAttempts() {
-        if (maxAttempts == 0) {
-            return false;
-        }
-
         return attempts < maxAttempts;
     }
 
     private boolean hasMoreTime(Instant end) {
-        if (timeout == null) {
-            return false;
-        }
-
         return clock.instant().isBefore(end);
     }
 
@@ -356,35 +352,41 @@ public class ActionWait {
             interval = pollingIntervals.get(attempts);
         }
 
-        long endTime = end.toEpochMilli();
-        long currentTime = clock.instant().toEpochMilli();
-        long waitTime = currentTime + TimeUnit.MILLISECONDS.convert(interval, pollingTimeUnit);
-        long stretchTime = waitTime + TimeUnit.MILLISECONDS.convert(interval / 2, pollingTimeUnit);
+        if (isWaitStyleTimeout()) {
+            long endTime = end.toEpochMilli();
+            long currentTime = clock.instant().toEpochMilli();
+            long waitTime = currentTime + TimeUnit.MILLISECONDS.convert(interval, pollingTimeUnit);
+            long stretchTime = waitTime + TimeUnit.MILLISECONDS.convert(interval / 2, pollingTimeUnit);
 
-        // If going above timeout limit bring it back to that limit
-        // If closer than half current interval stretch it out
-        if (waitTime > endTime || stretchTime > endTime) {
-            interval = pollingTimeUnit.convert(endTime - currentTime, TimeUnit.MILLISECONDS) + 1;
+            // If current interval duration is greater than the timeout limit bring it back to the timeout limit
+            // If current interval duration * 1.5 is greater than the timeout limit stretch interval out to the timeout limit
+            if (waitTime > endTime || stretchTime > endTime) {
+                interval = pollingTimeUnit.convert(endTime - currentTime, TimeUnit.MILLISECONDS) + 1;
+            }
         }
 
         return (int) interval;
     }
 
     private void logWarningMessageIfRequired(Instant start) {
-        int interval;
+        int warning = 0;
+        Instant now = clock.instant();
 
-        if (warnings > warningIntervals.size() - 1) {
-            return;
+        for (int i = warningsMade; i < warningIntervals.size(); i++) {
+            int interval = warningIntervals.get(i);
+
+            Instant nextWarnTime = start.plus(interval, toChronoUnit(warningTimeUnit));
+
+            if (now.equals(nextWarnTime) || now.isAfter(nextWarnTime)) {
+                warning = i;
+            } else {
+                break;
+            }
         }
 
-        interval = warningIntervals.get(warnings);
-
-        Instant nextWarnTime = start.plus(interval, toChronoUnit(warningTimeUnit));
-
-        if (clock.instant().equals(nextWarnTime) || clock.instant().isAfter(nextWarnTime)) {
-            LOGGER.warn("Have been in waiting for over {} for {}", interval, warningTimeUnit.toString(), getMessage());
-
-            warnings++;
+        if (warning > 0) {
+            LOGGER.warn("Have been in waiting for over {} for {}", warningIntervals.get(warning), warningTimeUnit.toString(), getMessage());
+            warningsMade = warning + 1;
         }
     }
 

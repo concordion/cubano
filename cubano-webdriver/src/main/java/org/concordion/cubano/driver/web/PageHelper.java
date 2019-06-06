@@ -196,7 +196,7 @@ public class PageHelper {
         ScreenshotTaker screenshotTaker;
 
         try {
-            screenshotTaker = pageObject.getBrowser().getDefaultScreenshotTakerClass()
+            screenshotTaker = pageObject.getBrowser().getScreenshotTakerClass()
                     .getDeclaredConstructor(WebDriver.class, WebElement.class)
                     .newInstance(pageObject.getBrowser().getDriver(), element);
 
