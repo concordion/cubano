@@ -6,6 +6,7 @@ import java.util.Map;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.ProfilesIni;
@@ -88,11 +89,12 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         //options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.)
         //options.setAcceptInsecureCerts(acceptInsecureCerts)
         //options.addArguments(arguments)
-    	//options.setHeadless(headless) ????
+
+        options.setHeadless(getPropertyAsBoolean("headless", "false"));
         
         stopLogging();
-        // I have raised issue https://github.com/mozilla/geckodriver/issues/1016 as this is being ignored
-        // options.setLogLevel(FirefoxDriverLogLevel.INFO);
+
+        options.setLogLevel(FirefoxDriverLogLevel.fromString(""));
                 
         WebDriver driver = new FirefoxDriver(options);
 
