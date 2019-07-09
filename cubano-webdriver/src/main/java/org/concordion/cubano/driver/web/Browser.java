@@ -186,7 +186,11 @@ public class Browser implements Closeable {
         		this.eventFiringDriver.unregister(this.eventListener);
         	}
 
-            getActiveDriver().quit();
+            if (isRemoteDriver()) {
+                ((RemoteWebDriver) getWrappedDriver()).quit();
+            } else {
+                getActiveDriver().quit();
+            }
         } catch (Exception ex) {
             // TODO remove this
             LOGGER.warn("Exception > " + ex);
