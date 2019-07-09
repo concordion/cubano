@@ -188,6 +188,8 @@ public class Browser implements Closeable {
 
             getActiveDriver().quit();
         } catch (Exception ex) {
+            // TODO remove this
+            LOGGER.warn("Exception > " + ex);
             LOGGER.warn("Exception attempting to quit the browser: " + ex.getMessage());
         }
 
