@@ -187,7 +187,9 @@ public class Browser implements Closeable {
         	}
 
             if (isRemoteDriver()) {
+                LOGGER.warn("Closing RemoteDriver");
                 ((RemoteWebDriver) getWrappedDriver()).quit();
+                LOGGER.warn("Closed RemoteDriver");
             } else {
                 getActiveDriver().quit();
             }
