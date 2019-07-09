@@ -6,6 +6,7 @@ import java.util.Map;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.ProfilesIni;
@@ -88,11 +89,10 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         //options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.)
         //options.setAcceptInsecureCerts(acceptInsecureCerts)
         //options.addArguments(arguments)
-    	//options.setHeadless(headless) ????
+
+        options.setHeadless(getPropertyAsBoolean("headless", "false"));
         
-        stopLogging();
-        // I have raised issue https://github.com/mozilla/geckodriver/issues/1016 as this is being ignored
-        // options.setLogLevel(FirefoxDriverLogLevel.INFO);
+        configLogging(options);
                 
         WebDriver driver = new FirefoxDriver(options);
 
@@ -101,16 +101,27 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         return driver;
     }
 
-    private void stopLogging() {
-    	if (getPropertyAsBoolean("disable.logs", "true")) {
-        	//TODO Add config
-        	//TODO See if can pass arguments to driver fire FirefoxDriver
-        	// https://stackoverflow.com/questions/41387794/how-do-i-disable-firefox-logging-in-selenium-using-geckodriver
-            String osNullOutput = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0 ? "NUL" : "/dev/null"; 
+    private void configLogging(FirefoxOptions options) {
+        // Due to the ongoing issues with turning off logs, see below.
+        // This appears to be the only way to do so.
+        if (getPropertyAsBoolean("disable.logs", "true")) {
+            // https://stackoverflow.com/questions/41387794/how-do-i-disable-firefox-logging-in-selenium-using-geckodriver
+            String osNullOutput = System.getProperty("os.name").toLowerCase().indexOf("win") >= 0 ? "NUL" : "/dev/null";
 
             System.setProperty(FirefoxDriver.SystemProperty.BROWSER_LOGFILE, osNullOutput);
-    	}
-	}
+
+            return;
+        }
+
+        // If we do want logging, then the TRACE log is set as default,
+        // and appears to combine all logs.
+        // https://github.com/mozilla/geckodriver/issues/1046
+        // https://github.com/mozilla/geckodriver/issues/1317
+        FirefoxDriverLogLevel logLevel = FirefoxDriverLogLevel.fromString(
+                getProperty("FirefoxDriverLogLevel", "TRACE"));
+
+        options.setLogLevel(logLevel);
+    }
 
 	private void addProfileProperties(FirefoxProfile profile) {
         Map<String, String> properties = getPropertiesStartingWith("profile.");
