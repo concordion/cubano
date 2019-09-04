@@ -277,7 +277,7 @@ public class PageHelper {
 
         capturePage(element, description);
 
-        element.click();
+        waitAndClickElement(element, timeoutSeconds);
 
         if (expectedPage == null) {
             return null;
@@ -302,6 +302,27 @@ public class PageHelper {
                 .until((WebDriver d) -> {
 
                     ExpectedConditions.elementToBeClickable(webElement);
+                    return true;
+
+                });
+    }
+
+    /**
+     * Wait and click the element.
+     * 
+     * Ignore {@link WebDriverException}. When a DOM operation is happening on a page it may
+     * temporarily cause the element to be inaccessible. Ignore these hierarchy of Exceptions.
+     * 
+     * @param webElement Can click the element.
+     * @param timeOutInSeconds Timeout in Seconds.
+     * 
+     */
+    private void waitAndClickElement(WebElement element, int timeoutSeconds) {
+
+        new WebDriverWait(this.pageObject.getBrowser().getDriver(), timeoutSeconds).ignoring(WebDriverException.class)
+                .until((WebDriver d) -> {
+
+                    element.click();
                     return true;
 
                 });
