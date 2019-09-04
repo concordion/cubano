@@ -62,7 +62,7 @@ public class LogManager {
     }
 
     public void flushRequest() {
-        if (logRequestDetails && buffer.length() > 0) {
+        if (buffer.length() > 0) {
             trimNewLine();
             logWriter.request(buffer.toString());
         }
@@ -71,7 +71,7 @@ public class LogManager {
     }
 
     public void flushResponse() {
-        if (logRequestDetails && buffer.length() > 0) {
+        if (buffer.length() > 0) {
             trimNewLine();
             logWriter.response(buffer.toString());
         }
