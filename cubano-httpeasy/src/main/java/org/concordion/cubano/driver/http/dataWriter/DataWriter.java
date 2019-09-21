@@ -1,13 +1,15 @@
-package org.concordion.cubano.driver.http;
+package org.concordion.cubano.driver.http.dataWriter;
 
 import java.io.IOException;
+
+import org.concordion.cubano.driver.http.logging.LogManager;
 
 /**
  * Http request data writer interface.
  *
  * @author Andrew Sumner
  */
-interface DataWriter {
+public interface DataWriter {
 
     /**
      * Add data to Http request.

@@ -29,6 +29,14 @@ import java.util.Optional;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.concordion.cubano.driver.http.dataWriter.DataWriter;
+import org.concordion.cubano.driver.http.dataWriter.Field;
+import org.concordion.cubano.driver.http.dataWriter.FormDataWriter;
+import org.concordion.cubano.driver.http.dataWriter.FormUrlEncodedDataWriter;
+import org.concordion.cubano.driver.http.dataWriter.RawDataWriter;
+import org.concordion.cubano.driver.http.logging.LogManager;
+import org.concordion.cubano.driver.http.logging.LogWriter;
+
 import com.google.common.base.Strings;
 import com.google.common.net.MediaType;
 
@@ -684,7 +692,11 @@ public class HttpEasy {
                 dataWriter.write(logManager);
             }
         } finally {
-            this.logManager.flushRequest();
+            if (this.logManager.isLogRequestDetails()) {
+                this.logManager.flushRequest();
+            } else {
+                this.logManager.flushInfo();
+            }
         }
 
         return connection;
@@ -725,30 +737,30 @@ public class HttpEasy {
         this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, logUrl);
 
         if (logManager.isLogRequestDetails()) {
-            logManager.buffer("Request Method: ").bufferLine(connection.getRequestMethod());
-            logManager.buffer("Request URI: ").bufferLine(connection.getURL().toString());
-            logManager.buffer("Proxy: ").bufferLine(HttpEasyDefaults.getProxy(url).toString());
+            logManager.getBuffer().write("Request Method: ").writeLine(connection.getRequestMethod());
+            logManager.getBuffer().write("Request URI: ").writeLine(connection.getURL().toString());
+            logManager.getBuffer().write("Proxy: ").writeLine(HttpEasyDefaults.getProxy(url).toString());
             if (!Strings.isNullOrEmpty(user)) {
-                logManager.buffer("Basic Authorization User: ").bufferLine(user);
+                logManager.getBuffer().write("Basic Authorization User: ").writeLine(user);
             }
 
             if (query.length() > 0) {
-                logManager.bufferLine("Query Params:");
+                logManager.getBuffer().writeLine("Query Params:");
                 for (String value : query.toString().split("&")) {
                     for (String key : HttpEasyDefaults.getSensitiveParameters()) {
                         value = value.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=*****");
                     }
-                    logManager.bufferIndentedLine(value);
+                    logManager.getBuffer().writeIndentedLine(value);
                 }
             }
 
-            logManager.bufferLine("Request Headers:");
+            logManager.getBuffer().writeLine("Request Headers:");
             List<String> headers = new ArrayList<>();
 
             for (Entry<String, List<String>> header : connection.getRequestProperties().entrySet()) {
                 for (String value : header.getValue()) {
                     if (header.getKey() == null || header.getKey().isEmpty()) {
-                        logManager.bufferIndentedLine(value);
+                        logManager.getBuffer().writeIndentedLine(value);
                     } else {
                         headers.add(String.format("%s: %s", header.getKey(), value));
                     }
@@ -758,7 +770,7 @@ public class HttpEasy {
             headers.sort((h1, h2) -> h1.compareTo(h2));
 
             for (String value : headers) {
-                logManager.bufferIndentedLine(value);
+                logManager.getBuffer().writeIndentedLine(value);
             }
         }
     }

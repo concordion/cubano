@@ -1,5 +1,6 @@
-package org.concordion.cubano.driver.http;
+package org.concordion.cubano.driver.http.logging;
 
+import org.concordion.cubano.driver.http.HttpEasy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

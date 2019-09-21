@@ -1,4 +1,4 @@
-package org.concordion.cubano.driver.http;
+package org.concordion.cubano.driver.http.logging;
 
 /**
  * An interface for proving custom logging output.

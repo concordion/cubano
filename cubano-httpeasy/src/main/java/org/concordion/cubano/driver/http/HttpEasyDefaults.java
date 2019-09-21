@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.concordion.cubano.driver.http.logging.LogWriter;
+import org.concordion.cubano.driver.http.logging.LoggerLogWriter;
+
 import com.github.markusbernhardt.proxy.ProxySearch;
 import com.github.markusbernhardt.proxy.util.Logger;
 

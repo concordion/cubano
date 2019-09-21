@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.concordion.cubano.driver.http.logging.LogManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -68,12 +69,12 @@ public class HttpEasyReader {
         LogManager logger = request.getLogManager();
         List<String> headers = new ArrayList<>();
 
-        logger.bufferLine("Response Headers:");
+        logger.getBuffer().writeLine("Response Headers:");
 
         for (Entry<String, List<String>> header : getConnection().getHeaderFields().entrySet()) {
             for (String value : header.getValue()) {
                 if (header.getKey() == null || header.getKey().isEmpty()) {
-                    logger.bufferIndentedLine(value);
+                    logger.getBuffer().writeIndentedLine(value);
                 } else {
                     headers.add(String.format("%s: %s", header.getKey(), value));
                 }
@@ -83,11 +84,11 @@ public class HttpEasyReader {
         headers.sort((h1, h2) -> h1.compareTo(h2));
 
         for (String value : headers) {
-            logger.bufferIndentedLine(value);
+            logger.getBuffer().writeIndentedLine(value);
         }
 
-        logger.bufferLine("Response:");
-        logger.buffer(formatAsReaderUsingContentType(getConnection().getContentType()));
+        logger.getBuffer().writeLine("Response:");
+        logger.getBuffer().write(formatAsReaderUsingContentType(getConnection().getContentType()));
         logger.flushResponse();
     }
 
