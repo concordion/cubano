@@ -35,7 +35,6 @@ import org.concordion.cubano.driver.http.dataWriter.FormDataWriter;
 import org.concordion.cubano.driver.http.dataWriter.FormUrlEncodedDataWriter;
 import org.concordion.cubano.driver.http.dataWriter.RawDataWriter;
 import org.concordion.cubano.driver.http.logging.LogManager;
-import org.concordion.cubano.driver.http.logging.LogWriter;
 
 import com.google.common.base.Strings;
 import com.google.common.net.MediaType;

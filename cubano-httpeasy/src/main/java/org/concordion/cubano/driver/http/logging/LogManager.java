@@ -1,6 +1,7 @@
 package org.concordion.cubano.driver.http.logging;
 
 import org.concordion.cubano.driver.http.HttpEasyDefaults;
+import org.concordion.cubano.driver.http.LogWriter;
 
 public class LogManager {
     private boolean logRequest;
