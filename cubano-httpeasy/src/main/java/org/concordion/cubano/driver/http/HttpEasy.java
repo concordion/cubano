@@ -733,7 +733,7 @@ public class HttpEasy {
             logUrl = logUrl.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=*****");
         }
 
-        this.logManager.info("Sending {}{} to {}", requestMethod, authMsg, logUrl);
+        this.logManager.info("Sending {0}{1} to {2}", requestMethod, authMsg, logUrl);
 
         if (logManager.isLogRequestDetails()) {
             logManager.getBuffer().write("Request Method: ").writeLine(connection.getRequestMethod());
