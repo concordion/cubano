@@ -11,8 +11,13 @@ public class LogManager {
     private LogBuffer logBuffer = null;
 
     public LogManager(LogWriter logWriter, boolean logRequestDetails) {
-        this.logRequest = HttpEasyDefaults.getLogRequest() || logRequestDetails;
-        this.logRequestDetails = logRequestDetails;
+        if (logWriter == null) {
+            this.logRequest = false;
+            this.logRequestDetails = false;
+        } else {
+            this.logRequest = HttpEasyDefaults.getLogRequest() || logRequestDetails;
+            this.logRequestDetails = logRequestDetails;
+        }
 
         this.logWriter = logWriter;
     }
@@ -22,24 +27,32 @@ public class LogManager {
     }
 
     public void info(String msg, Object... args) {
+        if (logWriter == null)
+            return;
+
         if (logRequest) {
             logWriter.info(msg, args);
         }
     }
 
     public void error(String message, Throwable t) {
+        if (logWriter == null)
+            return;
+
         logWriter.error(message, t);
     }
 
     public void flushInfo() {
-        if (this.logRequest && logBuffer != null) {
-            if (logBuffer.length() > 0) {
-                logBuffer.trimNewLine();
+        if (logWriter != null) {
+            if (this.logRequest && logBuffer != null) {
+                if (logBuffer.length() > 0) {
+                    logBuffer.trimNewLine();
 
-                String[] lines = logBuffer.toString().split("\\r?\\n");
+                    String[] lines = logBuffer.toString().split("\\r?\\n");
 
-                for (String line : lines) {
-                    logWriter.info(line);
+                    for (String line : lines) {
+                        logWriter.info(line);
+                    }
                 }
             }
         }
@@ -48,10 +61,12 @@ public class LogManager {
     }
 
     public void flushRequest() {
-        if (this.logRequestDetails && logBuffer != null) {
-            if (logBuffer.length() > 0) {
-                logBuffer.trimNewLine();
-                logWriter.request(logBuffer.toString());
+        if (logWriter != null) {
+            if (this.logRequestDetails && logBuffer != null) {
+                if (logBuffer.length() > 0) {
+                    logBuffer.trimNewLine();
+                    logWriter.request(logBuffer.toString());
+                }
             }
         }
 
@@ -59,10 +74,12 @@ public class LogManager {
     }
 
     public void flushResponse() {
-        if (this.logRequestDetails && logBuffer != null) {
-            if (logBuffer.length() > 0) {
-                logBuffer.trimNewLine();
-                logWriter.response(logBuffer.toString());
+        if (logWriter != null) {
+            if (this.logRequestDetails && logBuffer != null) {
+                if (logBuffer.length() > 0) {
+                    logBuffer.trimNewLine();
+                    logWriter.response(logBuffer.toString());
+                }
             }
         }
 
