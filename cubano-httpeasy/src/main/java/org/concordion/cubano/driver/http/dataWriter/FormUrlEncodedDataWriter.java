@@ -24,9 +24,9 @@ public class FormUrlEncodedDataWriter implements DataWriter {
      * Constructor.
      *
      * @param connection The connection
-     * @param query      Query string
-     * @param fields     Fields to write to form
-     * @throws UnsupportedEncodingException
+     * @param query Query string
+     * @param fields Fields to write to form
+     * @throws UnsupportedEncodingException The character encoding is not supported
      */
     public FormUrlEncodedDataWriter(HttpURLConnection connection, String query, List<Field> fields) throws UnsupportedEncodingException {
         this.connection = connection;

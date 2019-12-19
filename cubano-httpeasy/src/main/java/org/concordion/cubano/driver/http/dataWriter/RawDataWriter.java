@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 
@@ -34,7 +33,6 @@ public class RawDataWriter implements DataWriter {
      * @param rawData          data (File or String)
      * @param rawDataMediaType Type of attachment
      * @param fileName         file name for InputStream
-     * @throws UnsupportedEncodingException
      */
     public RawDataWriter(HttpURLConnection connection, Object rawData, MediaType rawDataMediaType, String fileName) {
         this.connection = connection;
