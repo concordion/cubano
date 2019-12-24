@@ -1,4 +1,4 @@
-package org.concordion.cubano.driver.http;
+package org.concordion.cubano.driver.http.dataWriter;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,12 +8,15 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.concordion.cubano.driver.http.HttpEasyDefaults;
+import org.concordion.cubano.driver.http.logging.LogManager;
+
 /**
  * Attach an "application/x-www-form-urlencoded" form to an http request.
  *
  * @author Andrew Sumner
  */
-class FormUrlEncodedDataWriter implements DataWriter {
+public class FormUrlEncodedDataWriter implements DataWriter {
     private final HttpURLConnection connection;
     private final byte[] postEndcoded;
 
@@ -21,9 +24,9 @@ class FormUrlEncodedDataWriter implements DataWriter {
      * Constructor.
      *
      * @param connection The connection
-     * @param query      Query string
-     * @param fields     Fields to write to form
-     * @throws UnsupportedEncodingException
+     * @param query Query string
+     * @param fields Fields to write to form
+     * @throws UnsupportedEncodingException The character encoding is not supported
      */
     public FormUrlEncodedDataWriter(HttpURLConnection connection, String query, List<Field> fields) throws UnsupportedEncodingException {
         this.connection = connection;
@@ -58,8 +61,12 @@ class FormUrlEncodedDataWriter implements DataWriter {
             logparams = logparams.replaceFirst("(?i)(?<=\\?|&|^)" + key + "=.*?(?=$|&)", key + "=*****");
         }
 
-        logger.bufferLine("Request Content (application/x-www-form-urlencoded):");
-        logger.bufferIndentedLine(logparams);
+        if (logger.isLogRequestDetails()) {
+            logger.getBuffer().writeLine("Request Content (application/x-www-form-urlencoded):");
+        } else {
+            logger.getBuffer().setIndentLevel(1).writeLine("With application/x-www-form-urlencoded content:");
+        }
+        logger.getBuffer().writeIndentedLine(logparams);
 
         try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
             wr.write(postEndcoded);

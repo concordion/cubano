@@ -1,4 +1,4 @@
-package org.concordion.cubano.driver.http;
+package org.concordion.cubano.driver.http.dataWriter;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -6,9 +6,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+
+import org.concordion.cubano.driver.http.logging.LogManager;
 
 import com.google.common.net.MediaType;
 
@@ -17,7 +18,7 @@ import com.google.common.net.MediaType;
  *
  * @author Andrew Sumner
  */
-class RawDataWriter implements DataWriter {
+public class RawDataWriter implements DataWriter {
     private HttpURLConnection connection;
     private String mediaType;
     private byte[] postEndcoded = null;
@@ -32,7 +33,6 @@ class RawDataWriter implements DataWriter {
      * @param rawData          data (File or String)
      * @param rawDataMediaType Type of attachment
      * @param fileName         file name for InputStream
-     * @throws UnsupportedEncodingException
      */
     public RawDataWriter(HttpURLConnection connection, Object rawData, MediaType rawDataMediaType, String fileName) {
         this.connection = connection;
@@ -60,23 +60,27 @@ class RawDataWriter implements DataWriter {
 
     @Override
     public void write(LogManager logger) throws IOException {
-        logger.bufferLine("Request Content (" + mediaType + "):");
+        if (logger.isLogRequestDetails()) {
+            logger.getBuffer().writeLine("Request Content (" + mediaType + "):");
+        } else {
+            logger.getBuffer().setIndentLevel(1).writeLine("With " + mediaType + " content:");
+        }
 
         if (uploadFile != null) {
-            logger.bufferIndented("File: ").bufferLine(uploadFile.getAbsolutePath());
+            logger.getBuffer().writeIndented("File: ").writeLine(uploadFile.getAbsolutePath());
 
             try (FileInputStream inputStream = new FileInputStream(uploadFile)) {
                 write(inputStream);
             }
 
         } else if (uploadStream != null) {
-            logger.bufferIndented("File: ").bufferLine(uploadFileName);
+            logger.getBuffer().writeIndented("File: ").writeLine(uploadFileName);
 
             long length = write(uploadStream);
             connection.setRequestProperty("Content-Length", Long.toString(length));
 
         } else {
-            logger.bufferIndentedLines(new String(postEndcoded, StandardCharsets.UTF_8));
+            logger.getBuffer().writeIndentedLines(new String(postEndcoded, StandardCharsets.UTF_8));
 
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
                 wr.write(postEndcoded);

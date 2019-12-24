@@ -1,4 +1,4 @@
-package org.concordion.cubano.driver.http;
+package org.concordion.cubano.driver.http.dataWriter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +13,9 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.concordion.cubano.driver.http.HttpEasyDefaults;
+import org.concordion.cubano.driver.http.logging.LogManager;
+
 import com.google.common.net.MediaType;
 
 /**
@@ -20,7 +23,7 @@ import com.google.common.net.MediaType;
  *
  * @author Andrew Sumner
  */
-class FormDataWriter implements DataWriter {
+public class FormDataWriter implements DataWriter {
     private final HttpURLConnection connection;
     private final List<Field> fields;
     private final String boundary = "FormBoundary" + System.currentTimeMillis();
@@ -52,7 +55,11 @@ class FormDataWriter implements DataWriter {
         try {
             writer = new PrintWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), true);
 
-            logger.bufferLine("Request Content (multipart/form-data):");
+            if (logger.isLogRequestDetails()) {
+                logger.getBuffer().writeLine("Request Content (multipart/form-data):");
+            } else {
+                logger.getBuffer().setIndentLevel(1).writeLine("With multipart/form-data content:");
+            }
 
             for (Field field : fields) {
                 if (field.value instanceof File) {
@@ -76,7 +83,7 @@ class FormDataWriter implements DataWriter {
         StringBuilder buf = new StringBuilder();
         buf.append("--").append(boundary).append(NEW_LINE);
 
-        logger.bufferIndented(buf.toString());
+        logger.getBuffer().writeIndented(buf.toString());
 
         writer.append(buf);
     }
@@ -85,7 +92,7 @@ class FormDataWriter implements DataWriter {
         StringBuilder buf = new StringBuilder();
         buf.append("--").append(boundary).append("--").append(NEW_LINE);
 
-        logger.bufferIndented(buf.toString());
+        logger.getBuffer().writeIndented(buf.toString());
 
         writer.append(buf);
     }
@@ -104,11 +111,11 @@ class FormDataWriter implements DataWriter {
         // buf.append("Content-Type: text/plain; charset=utf-8").append(NEW_LINE);
         buf.append(NEW_LINE);
 
-        logger.bufferIndentedLines(buf.toString());
+        logger.getBuffer().writeIndentedLines(buf.toString());
         if (HttpEasyDefaults.getSensitiveParameters().contains(name)) {
-            logger.bufferLine("*****");
+            logger.getBuffer().writeLine("*****");
         } else {
-            logger.bufferLine(String.valueOf(value));
+            logger.getBuffer().writeLine(String.valueOf(value));
         }
 
         buf.append(String.valueOf(value)).append(NEW_LINE);
@@ -154,8 +161,8 @@ class FormDataWriter implements DataWriter {
         // buf.append("Content-Transfer-Encoding: binary").append(NEW_LINE);
         buf.append(NEW_LINE);
 
-        logger.bufferIndentedLines(buf.toString());
-        logger.bufferLine("... Content of file ").buffer(fileName).bufferLine(" ...");
+        logger.getBuffer().writeIndentedLines(buf.toString());
+        logger.getBuffer().writeLine("... Content of file ").write(fileName).writeLine(" ...");
 
         writer.append(buf);
         writer.flush();
