@@ -42,6 +42,7 @@ public class RawDataWriter implements DataWriter {
             uploadFile = (File) rawData;
             connection.setRequestProperty("Content-Type", rawDataMediaType.toString());
             connection.setRequestProperty("Content-Length", Long.toString(uploadFile.length()));
+            connection.setFixedLengthStreamingMode(uploadFile.length());
 
         } else if (rawData instanceof InputStream) {
             uploadStream = (InputStream) rawData;
