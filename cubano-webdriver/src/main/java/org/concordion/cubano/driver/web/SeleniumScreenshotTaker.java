@@ -169,8 +169,13 @@ public class SeleniumScreenshotTaker implements ScreenshotTaker {
                 executor.executeScript("arguments[0].scrollIntoView(true);", element);
             }
 
-            // executor.executeScript("arguments[0].style.outline='2px dashed red'; arguments[0].style.outlineOffset='1px';", element);
-            executor.executeScript("arguments[0].style.border='2px dashed red';", element);
+            // Some info here on differences btwn outline and border properties
+            // https://www.lifewire.com/css-outline-styles-3466217
+            if (element.getTagName().equals("tr")) {
+                executor.executeScript("arguments[0].style.outline='2px dashed red';", element);
+            } else {
+                executor.executeScript("arguments[0].style.border='2px dashed red';", element);
+            }
 
         } catch (Exception e) {
             LOGGER.warn("Unable to set border style");
