@@ -120,11 +120,7 @@ subprojects {
     targetCompatibility = 1.8
     
     repositories {
-    	maven { 
-    		url 'https://jitpack.io' 
-    	}
-    	
-        mavenCentral()
+    	mavenCentral()
     }
 
     configurations {
