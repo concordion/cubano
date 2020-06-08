@@ -31,7 +31,7 @@ public class HttpEasyReaderTests {
                 .get()
                 .getJsonReader();
 
-        assertThat(json.getAsString("url"), is("https://httpbin.org/get?name=fred"));
+        assertThat(json.getAsString("url"), is("http://httpbin.org/get?name=fred"));
 
     }
 
