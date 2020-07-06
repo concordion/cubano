@@ -2,7 +2,7 @@ dependencies {
     compile project(':cubano-core')
     compile project(':cubano-webdriver-manager')
     
-    compile 'org.concordion:concordion:3.0.0'
+    compile 'org.concordion:concordion:3.0.1'
     compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
     compile 'org.concordion:concordion-timestamp-formatter-extension:1.1.2'
     compile 'org.concordion:concordion-run-totals-extension:1.2.0'
