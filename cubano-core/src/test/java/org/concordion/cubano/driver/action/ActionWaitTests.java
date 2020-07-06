@@ -66,7 +66,7 @@ public class ActionWaitTests {
             ILoggingEvent le = appender.getLoggingEvents().get(4);
 
             assertThat(le.getFormattedMessage(), startsWith("Pausing"));
-            assertThat((int) le.getArgumentArray()[0], lessThan(250));
+            assertThat((int) le.getArgumentArray()[0], lessThan(251));
 
             assertThat(Duration.between(start, end).toMillis(), is(greaterThan(999L)));
         }

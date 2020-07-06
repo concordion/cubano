@@ -30,7 +30,8 @@ public class FormDataWriter implements DataWriter {
     private OutputStream outputStream;
     private PrintWriter writer = null;
     private LogManager logger = null;
-    private static final String NEW_LINE = System.lineSeparator();
+    // private static final String NEW_LINE = System.lineSeparator();
+    private static final String NEW_LINE = "\r\n";
 
     /**
      * Constructor.
