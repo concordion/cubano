@@ -21,8 +21,8 @@ import org.openqa.selenium.remote.CapabilityType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.bonigarcia.wdm.Architecture;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.github.bonigarcia.wdm.config.Architecture;
 
 /**
  * Base class for local browser providers.
@@ -82,7 +82,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
                             throw new RuntimeException("Unable to update last checked date", e);
                         }
                     } else {
-                        instance.forceCache();
+//                        instance.forceCache();
                     }
                 }
                 break;
@@ -100,7 +100,7 @@ public abstract class LocalBrowserProvider implements BrowserProvider {
 
         instance.setup();
 
-        driverPath = instance.getBinaryPath();
+        driverPath = instance.getDownloadedDriverPath();
     }
 
     /**

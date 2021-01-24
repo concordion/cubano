@@ -1,13 +1,14 @@
 package org.concordion.cubano.driver.web.provider;
 
+import static io.github.bonigarcia.wdm.config.DriverManagerType.OPERA;
+
 import java.util.Map;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.opera.OperaOptions;
 
-import io.github.bonigarcia.wdm.DriverManagerType;
-import io.github.bonigarcia.wdm.OperaDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 /**
  * Automatically download, configure and start the WebDriver Manager and browser for Opera.
@@ -30,7 +31,7 @@ public class OperaBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(OperaDriverManager.getInstance(DriverManagerType.OPERA));
+        setupBrowserManager(WebDriverManager.getInstance(OPERA));
 
         OperaOptions options = new OperaOptions();
 
