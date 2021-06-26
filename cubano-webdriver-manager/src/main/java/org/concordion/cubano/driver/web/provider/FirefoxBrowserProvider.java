@@ -3,6 +3,7 @@ package org.concordion.cubano.driver.web.provider;
 import java.io.File;
 import java.util.Map;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -11,8 +12,7 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.firefox.ProfilesIni;
 
-import io.github.bonigarcia.wdm.DriverManagerType;
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
+import static io.github.bonigarcia.wdm.config.DriverManagerType.FIREFOX;
 
 /**
  * Automatically download, configure and start the WebDriver Manager and browser for Firefox.
@@ -44,7 +44,7 @@ public class FirefoxBrowserProvider extends LocalBrowserProvider {
         boolean useLegacyDriver = getPropertyAsBoolean("useLegacyDriver", "false");
 
         if (!useLegacyDriver) {
-            setupBrowserManager(FirefoxDriverManager.getInstance(DriverManagerType.FIREFOX));
+            setupBrowserManager(WebDriverManager.getInstance(FIREFOX));
         }
 
         FirefoxOptions options = new FirefoxOptions();

@@ -1,16 +1,16 @@
 package org.concordion.cubano.driver.web.provider;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.concordion.cubano.driver.web.config.WebDriverConfig;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
-import io.github.bonigarcia.wdm.ChromeDriverManager;
-import io.github.bonigarcia.wdm.DriverManagerType;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.github.bonigarcia.wdm.config.DriverManagerType.CHROME;
 
 /**
  * Automatically download, configure and start the WebDriver Manager and browser for Chrome.
@@ -33,7 +33,7 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(ChromeDriverManager.getInstance(DriverManagerType.CHROME));
+        setupBrowserManager(WebDriverManager.getInstance(CHROME));
 
         ChromeOptions options = new ChromeOptions();
 
