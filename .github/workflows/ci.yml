@@ -27,6 +27,9 @@ jobs:
         run: chmod +x gradlew
       - name: Build and Test with Gradle
         run: ./gradlew clean build javadoc
+      - name: Javadoc
+        if: matrix.java == '8'
+        run: ./gradlew javadoc
         
       - name: Upload Unit Test Results And Specification
         if: always()
