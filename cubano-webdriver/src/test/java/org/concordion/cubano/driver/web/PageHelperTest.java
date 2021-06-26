@@ -1,9 +1,6 @@
 package org.concordion.cubano.driver.web;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,7 +50,8 @@ public class PageHelperTest {
         thrown.expectCause(allOf(
                 instanceOf(NoSuchMethodException.class),
                 hasProperty("message",
-                        is("org.concordion.cubano.driver.web.TestPageObjectNoParams.<init>(org.concordion.cubano.driver.BrowserBasedTest, [Ljava.lang.Object;)"))));
+                        is(anyOf(is("org.concordion.cubano.driver.web.TestPageObjectNoParams.<init>(org.concordion.cubano.driver.BrowserBasedTest, [Ljava.lang.Object;)"),
+                                is("org.concordion.cubano.driver.web.TestPageObjectNoParams.<init>(org.concordion.cubano.driver.BrowserBasedTest,[Ljava.lang.Object;)"))))));
 
         tpo.newInstance(TestPageObjectNoParams.class, "ShouldFailAsNoParamsConstructor");
     }

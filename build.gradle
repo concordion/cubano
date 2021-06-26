@@ -163,9 +163,10 @@ subprojects {
         api 'ch.qos.logback:logback-classic:1.2.3'
 
         // JUnit
-        testImplementation 'junit:junit:4.12'
-        testImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
-        testImplementation 'org.mockito:mockito-core:2.28.2'
+        testImplementation 'junit:junit:4.13.2'
+        testImplementation 'org.hamcrest:hamcrest:2.2'
+        testImplementation 'org.hamcrest:hamcrest-library:2.2'
+        testImplementation 'org.mockito:mockito-core:3.11.2'
         testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
     }
 
