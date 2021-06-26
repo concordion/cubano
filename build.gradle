@@ -1,20 +1,42 @@
+// buildscript {
+//     repositories {
+//         mavenCentral()
+//     }
+//     dependencies {
+//         classpath 'net.researchgate:gradle-release:2.8.1'
+//         classpath 'org.ajoberstar:gradle-git-publish:2.1.3'
+//         classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:2.2.+'
+//         classpath 'net.nemerosa:versioning:2.7.1'
+//     }
+// }
+
+// apply plugin: 'nebula-aggregate-javadocs'
+// apply plugin: 'org.ajoberstar.git-publish'
+// apply plugin: 'net.researchgate.release'
+// apply plugin: 'net.nemerosa.versioning'
+
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
-        classpath 'net.researchgate:gradle-release:2.8.1'
-        classpath 'org.ajoberstar:gradle-git-publish:2.1.3'
-        classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:2.2.+'
-        classpath 'net.nemerosa:versioning:2.7.1'
+  repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+   }
+   dependencies {
+        classpath 'io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:1.1.0'
+        classpath 'net.nemerosa.versioning:net.nemerosa.versioning.gradle.plugin:2.14.0'
+        classpath 'net.researchgate.release:net.researchgate.release.gradle.plugin:2.8.1'
+        classpath 'org.ajoberstar:gradle-git-publish:3.0.0'
     }
 }
 
-apply plugin: 'nebula-aggregate-javadocs'
-apply plugin: 'org.ajoberstar.git-publish'
-apply plugin: 'net.researchgate.release'
-apply plugin: 'net.nemerosa.versioning'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'wrapper'
+apply plugin: io.github.gradlenexus.publishplugin.NexusPublishPlugin
+apply plugin: net.nemerosa.versioning.VersioningPlugin
+apply plugin: net.researchgate.release.ReleasePlugin
+apply plugin: org.ajoberstar.gradle.git.publish.GitPublishPlugin
 
 ext {
     githubUrl = "https://github.com/concordion/${project.name}"
@@ -42,38 +64,40 @@ ext {
 
 group = 'org.concordion'
 
-task build {
-    dependsOn subprojects*.tasks*.findByName('build').minus(null)
-}
+// task build {
+//     dependsOn subprojects*.tasks*.findByName('build').minus(null)
+// }
 
-task publishDocs(dependsOn: ['gitPublishPush'])
+// task publishDocs(dependsOn: ['gitPublishPush'])
 
-gitPublishCopy.dependsOn ':aggregateJavadocs'
+// gitPublishCopy.dependsOn ':aggregateJavadocs'
 
-gitPublish {
-    repoUri = 'git@github.com:concordion/cubano.git'
-    branch = 'gh-pages'
+// gitPublish {
+//     repoUri = 'git@github.com:concordion/cubano.git'
+//     branch = 'gh-pages'
 
-    contents {
-        from(':aggregateJavadocs') {
-            into 'api'
-        }
-    }
+//     contents {
+//         from(':aggregateJavadocs') {
+//             into 'api'
+//         }
+//     }
 
-    // message used when committing changes
-    commitMessage = 'Automatically publishing new Github pages'
+//     // message used when committing changes
+//     commitMessage = 'Automatically publishing new Github pages'
+// }
+
+wrapper {
+    gradleVersion = "7.1"
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'findbugs'
+    apply plugin: 'java-library'
+    // apply plugin: 'findbugs'
     apply plugin: 'checkstyle'
     apply plugin: 'eclipse'
     apply plugin: 'jacoco'
-    apply plugin: 'maven'
+    // apply plugin: 'maven'
     apply plugin: 'maven-publish'
-    apply plugin: com.jfrog.bintray.gradle.BintrayPlugin
-
 
 	jar {
 	    manifest {
@@ -86,7 +110,7 @@ subprojects {
 	                'Created-By'            : System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')',
 	                'Built-With'            : "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}",
 	                'Build-Time'            : String.format("%tFT%<tRZ", Calendar.getInstance(TimeZone.getTimeZone("Z"))),
-	                'Build-Revision'        : versioning.info.commit,
+	                // 'Build-Revision'        : versioning.info.commit,
 	                'Build-OS'              : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
 	    }
 	}
@@ -135,25 +159,25 @@ subprojects {
         javaDoclet 'ch.raffael.pegdown-doclet:pegdown-doclet:1.3'
 
         // Logging
-        compile 'org.slf4j:slf4j-api:1.7.25'
-        compile 'ch.qos.logback:logback-classic:1.2.3'
+        api 'org.slf4j:slf4j-api:1.7.25'
+        api 'ch.qos.logback:logback-classic:1.2.3'
 
         // JUnit
-        testCompile 'junit:junit:4.12'
-        testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
-        testCompile 'org.mockito:mockito-core:2.28.2'
-        testCompile 'com.github.stefanbirkner:system-rules:1.19.0'
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
+        testImplementation 'org.mockito:mockito-core:2.28.2'
+        testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
     }
 
-    checkstyle {
-        ignoreFailures = true
-        configDir = new File("${rootDir}/config/checkstyle")
-    }
+    // checkstyle {
+    //     ignoreFailures = true
+    //     configDir = new File("${rootDir}/config/checkstyle")
+    // }
 
-    findbugs {
-        toolVersion = "3.0.1"
-        ignoreFailures = true
-    }
+    // findbugs {
+    //     toolVersion = "3.0.1"
+    //     ignoreFailures = true
+    // }
     
     javadoc {
         outputs.upToDateWhen { false } // ensure the task runs each time, even if no changes to code
@@ -289,39 +313,6 @@ subprojects {
                         it.scope*.value = 'compile'
                     }
                 }
-            }
-        }
-    }
-
-    bintray {
-        user = bintrayUsername   // set this in your ~/.gradle/gradle.properties file
-        key = bintrayApiKey         // set this in your ~/.gradle/gradle.properties file
-        publications = ['main'] // see publications closure
-//        dryRun = true
-        publish = false
-        pkg {
-            repo = 'maven'
-            userOrg = 'concordion'
-            name = project.name
-            desc = project.description
-            licenses = ['Apache-2.0']
-            issueTrackerUrl = issuesUrl
-            vcsUrl = gitVcsUrl
-            websiteUrl = 'https://concordion.org/cubano'
-            version {
-                name = project.version
-                released = new Date()
-                vcsTag = project.version
-                gpg {
-                    sign = true
-                    passphrase = bintrayPassphrase // set this in your ~/.gradle/gradle.properties file
-                }
-                mavenCentralSync {
-                    sync = false
-                    user = sonatypeUsername              // set this in your ~/.gradle/gradle.properties file
-                    password = sonatypePassword          // OSS user password// set this in your ~/.gradle/gradle.properties file
-                    close = '1'
-               }
             }
         }
     }

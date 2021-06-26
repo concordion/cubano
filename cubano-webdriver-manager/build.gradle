@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':cubano-webdriver')
+    api project(':cubano-webdriver')
 
-    compile 'io.github.bonigarcia:webdrivermanager:4.3.1'
+    api 'io.github.bonigarcia:webdrivermanager:4.3.1'
 }
