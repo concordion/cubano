@@ -1,17 +1,17 @@
 dependencies {
-    compile project(':cubano-core')
-    compile project(':cubano-webdriver-manager')
+    implementation project(':cubano-core')
+    implementation project(':cubano-webdriver-manager')
     
-    compile 'org.concordion:concordion:3.0.1'
-    compile 'org.concordion:concordion-parallel-run-extension:1.1.0'
-    compile 'org.concordion:concordion-timestamp-formatter-extension:1.1.2'
-    compile 'org.concordion:concordion-run-totals-extension:1.2.0'
-    compile 'org.concordion:concordion-logging-tooltip-extension:1.1.2'
-    compile 'org.concordion:concordion-embed-extension:1.2.0'
-    compile 'org.concordion:concordion-executeonlyif-extension:0.3.0'
-    compile 'org.concordion:concordion-logback-extension:2.1.0'
-    compile 'org.concordion:concordion-storyboard-extension:2.0.0'
-    compile 'org.concordion:concordion-status-info-extension:1.0.4'
+    api 'org.concordion:concordion:3.0.1'
+    api 'org.concordion:concordion-parallel-run-extension:1.1.0'
+    api 'org.concordion:concordion-timestamp-formatter-extension:1.1.2'
+    api 'org.concordion:concordion-run-totals-extension:1.2.0'
+    api 'org.concordion:concordion-logging-tooltip-extension:1.1.2'
+    api 'org.concordion:concordion-embed-extension:1.2.0'
+    api 'org.concordion:concordion-executeonlyif-extension:0.3.0'
+    api 'org.concordion:concordion-logback-extension:2.1.0'
+    api 'org.concordion:concordion-storyboard-extension:2.0.0'
+    api 'org.concordion:concordion-status-info-extension:1.0.4'
 
-    testCompile 'org.mockito:mockito-core:2.5.4'
+    testImplementation 'org.mockito:mockito-core:2.5.4'
 }

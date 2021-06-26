@@ -1,21 +1,21 @@
 
 dependencies {
-    compile project(':cubano-config')
+    api project(':cubano-config')
 
     // Selenium WebDriver    
-    compile "org.seleniumhq.selenium:selenium-java:3.141.59"
+    api "org.seleniumhq.selenium:selenium-java:3.141.59"
     
     // Html Elements
-    compile('ru.yandex.qatools.htmlelements:htmlelements-java:1.20.0') {
+    api('ru.yandex.qatools.htmlelements:htmlelements-java:1.20.0') {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
     
-    compile 'org.jsoup:jsoup:1.8.3'
+    implementation 'org.jsoup:jsoup:1.8.3'
 
     // TODO remove dependencies
-    compile 'org.concordion:concordion:3.0.1'
-    compile 'org.concordion:concordion-logback-extension:2.0.0'
-    compile 'org.concordion:concordion-storyboard-extension:2.0.0'
+    implementation 'org.concordion:concordion:3.0.1'
+    implementation 'org.concordion:concordion-logback-extension:2.0.0'
+    implementation 'org.concordion:concordion-storyboard-extension:2.0.0'
 }
 
 // TODO Remove this once a release version of yandex is in use
