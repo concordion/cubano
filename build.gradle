@@ -4,16 +4,10 @@
 //     }
 //     dependencies {
 //         classpath 'net.researchgate:gradle-release:2.8.1'
-//         classpath 'org.ajoberstar:gradle-git-publish:2.1.3'
-//         classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:2.2.+'
-//         classpath 'net.nemerosa:versioning:2.7.1'
 //     }
 // }
 
-// apply plugin: 'nebula-aggregate-javadocs'
-// apply plugin: 'org.ajoberstar.git-publish'
 // apply plugin: 'net.researchgate.release'
-// apply plugin: 'net.nemerosa.versioning'
 
 buildscript {
   repositories {
@@ -22,6 +16,7 @@ buildscript {
         }
    }
    dependencies {
+        classpath 'com.netflix.nebula:gradle-aggregate-javadocs-plugin:2.2.+'
         classpath 'io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin:1.1.0'
         classpath 'net.nemerosa.versioning:net.nemerosa.versioning.gradle.plugin:2.14.0'
         classpath 'net.researchgate.release:net.researchgate.release.gradle.plugin:2.8.1'
@@ -32,7 +27,7 @@ buildscript {
 apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
-apply plugin: 'wrapper'
+apply plugin: 'nebula-aggregate-javadocs'
 apply plugin: io.github.gradlenexus.publishplugin.NexusPublishPlugin
 apply plugin: net.nemerosa.versioning.VersioningPlugin
 apply plugin: net.researchgate.release.ReleasePlugin
@@ -45,15 +40,6 @@ ext {
     gitRepoUri = "git@github.com:concordion/${project.name}.git"
     vcsConnection = "scm:git:git://github.com/concordion/${project.name}.git"
 
-    if (!project.hasProperty("bintrayUsername")) {
-        bintrayUsername = ''
-    }
-    if (!project.hasProperty("bintrayApiKey")) {
-        bintrayApiKey = ''
-    }
-    if (!project.hasProperty("bintrayPassphrase")) {
-        bintrayPassphrase = ''
-    }
     if (!project.hasProperty("sonatypeUsername")) {
         sonatypeUsername = ''
     }
@@ -68,26 +54,22 @@ group = 'org.concordion'
 //     dependsOn subprojects*.tasks*.findByName('build').minus(null)
 // }
 
-// task publishDocs(dependsOn: ['gitPublishPush'])
+task publishDocs(dependsOn: ['gitPublishPush'])
 
-// gitPublishCopy.dependsOn ':aggregateJavadocs'
+gitPublishCopy.dependsOn ':aggregateJavadocs'
 
-// gitPublish {
-//     repoUri = 'git@github.com:concordion/cubano.git'
-//     branch = 'gh-pages'
+gitPublish {
+    repoUri = 'git@github.com:concordion/cubano.git'
+    branch = 'gh-pages'
 
-//     contents {
-//         from(':aggregateJavadocs') {
-//             into 'api'
-//         }
-//     }
+    contents {
+        from(':aggregateJavadocs') {
+            into 'api'
+        }
+    }
 
-//     // message used when committing changes
-//     commitMessage = 'Automatically publishing new Github pages'
-// }
-
-wrapper {
-    gradleVersion = "7.1"
+    // message used when committing changes
+    commitMessage = 'Automatically publishing new Github pages'
 }
 
 subprojects {
@@ -103,14 +85,14 @@ subprojects {
 	    manifest {
 	        attributes  'Specification-Title'   : project.name,
 	                'Implementation-Title'  : project.name,
-	                'Specification-Version' : version.substring(0, version.lastIndexOf(".") != -1 ? version.lastIndexOf(".") : version.length()),
-	                'Implementation-Version': version,
+	                'Specification-Version' : project.version.substring(0, project.version.lastIndexOf(".") != -1 ? project.version.lastIndexOf(".") : project.version.length()),
+	                'Implementation-Version': project.version,
 	                'Implementation-Vendor' : 'concordion.org',
 	                'Specification-Vendor'  : 'concordion.org',
 	                'Created-By'            : System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')',
 	                'Built-With'            : "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}",
 	                'Build-Time'            : String.format("%tFT%<tRZ", Calendar.getInstance(TimeZone.getTimeZone("Z"))),
-	                // 'Build-Revision'        : versioning.info.commit,
+                    'Build-Revision'        : versioning.info.commit,
 	                'Build-OS'              : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
 	    }
 	}
@@ -215,40 +197,40 @@ subprojects {
         testLogging.showExceptions = true
     }
 
-    // Publishing
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-    
-    artifacts {
-         archives sourcesJar
-    }
+//    // Publishing
+//    task sourcesJar(type: Jar, dependsOn: classes) {
+//        classifier = 'sources'
+//        from sourceSets.main.allSource
+//    }
+//
+//    artifacts {
+//         archives sourcesJar
+//    }
     
     // task javadocJar(type: Jar, dependsOn: javadoc) {
     //     classifier = 'javadoc'
     //     from javadoc.destinationDir
     // }
 
-    task publishSnapshot(dependsOn: ['test', 'publishMainPublicationToMavenRepository'])
+//    task publishSnapshot(dependsOn: ['test', 'publishMainPublicationToMavenRepository'])
 
-    publishing {
-        repositories {
-            maven {
-                if (project.version.endsWith('-SNAPSHOT')) {
-                    url "http://oss.jfrog.org/artifactory/simple/oss-snapshot-local/"
-                    credentials {
-                        username bintrayUsername
-                        password bintrayApiKey
-                    }
-                }
-            }
-        }
-    }
+//    publishing {
+//        repositories {
+//            maven {
+//                if (project.version.endsWith('-SNAPSHOT')) {
+//                    url "http://oss.jfrog.org/artifactory/simple/oss-snapshot-local/"
+//                    credentials {
+//                        username bintrayUsername
+//                        password bintrayApiKey
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     publishing {
         publications {
-            main(MavenPublication) {
+            mavenJava(MavenPublication) {
                 // artifact sourcesJar {
                 //     classifier "sources"
                 // }
@@ -307,7 +289,7 @@ subprojects {
                         }
                     }
                     asNode().dependencies.'*'.findAll() {
-                        it.scope.text() == 'runtime' && project.configurations.compile.allDependencies.find { dep ->
+                        it.scope.text() == 'runtime' && project.configurations.implementation.allDependencies.find { dep ->
                             dep.name == it.artifactId.text()
                         }
                     }.each() {

@@ -29,7 +29,7 @@ jobs:
         run: ./gradlew clean build
       - name: Javadoc
         if: matrix.java == '8'
-        run: ./gradlew javadoc
+        run: ./gradlew aggregateJavadocs
         
       - name: Upload Unit Test Results And Specification
         if: always()
