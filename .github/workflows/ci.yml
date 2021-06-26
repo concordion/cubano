@@ -27,8 +27,6 @@ jobs:
         run: chmod +x gradlew
       - name: Build and Test with Gradle
         run: ./gradlew clean build javadoc
-        env:
-          HEADLESS_CHROME: true
         
       - name: Upload Unit Test Results And Specification
         if: always()
@@ -36,11 +34,10 @@ jobs:
         with:
           name: reports-java-${{ matrix.java }}
           path: |
-            build/test-results/**/*.xml
-            build/reports/spec/
+            cubano-*/build/test-results/**/*.xml
 
   publish-test-results:
-    name: "Publish Test Results and Specifications"
+    name: "Publish Test Results"
     needs: build-and-test
     runs-on: ubuntu-latest
     # the build-and-test job might be skipped, we don't need to run this job then
@@ -56,12 +53,3 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
           files: artifacts/**/test-results/**/*.xml
-          
-      - name: Publish Specifications
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          external_repository: concordion/concordion-specifications
-          publish_branch: main
-          publish_dir: artifacts/reports-java-8/reports/spec
-          destination_dir: cubano
