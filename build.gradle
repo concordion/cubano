@@ -224,10 +224,10 @@ subprojects {
          archives sourcesJar
     }
     
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
-        from javadoc.destinationDir
-    }
+    // task javadocJar(type: Jar, dependsOn: javadoc) {
+    //     classifier = 'javadoc'
+    //     from javadoc.destinationDir
+    // }
 
     task publishSnapshot(dependsOn: ['test', 'publishMainPublicationToMavenRepository'])
 
@@ -248,13 +248,13 @@ subprojects {
     publishing {
         publications {
             main(MavenPublication) {
-                artifact sourcesJar {
-                    classifier "sources"
-                }
+                // artifact sourcesJar {
+                //     classifier "sources"
+                // }
 
-                artifact javadocJar {
-                    classifier "javadoc"
-                }
+                // artifact javadocJar {
+                //     classifier "javadoc"
+                // }
 
                 from components.java
 
