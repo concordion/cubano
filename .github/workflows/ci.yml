@@ -26,7 +26,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build and Test with Gradle
-        run: ./gradlew clean build javadoc
+        run: ./gradlew clean build
       - name: Javadoc
         if: matrix.java == '8'
         run: ./gradlew javadoc
