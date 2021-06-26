@@ -93,8 +93,8 @@ wrapper {
 subprojects {
     apply plugin: 'java-library'
     // apply plugin: 'findbugs'
-    apply plugin: 'checkstyle'
-    apply plugin: 'eclipse'
+    // apply plugin: 'checkstyle'
+    // apply plugin: 'eclipse'
     apply plugin: 'jacoco'
     // apply plugin: 'maven'
     apply plugin: 'maven-publish'
@@ -121,15 +121,15 @@ subprojects {
 
     // This is a work around for an outstanding issue getting eclipse plugin to honour encoding options for java
     // https://issues.gradle.org/browse/GRADLE-2274
-    eclipse {
-        File f = file('.settings')
+    // eclipse {
+    //     File f = file('.settings')
 
-        if (f.exists()) {
-            f = file('.settings/org.eclipse.core.resources.prefs')
-            f.write('eclipse.preferences.version=1\n')
-            f.append('encoding/<project>=UTF-8')
-        }
-    }
+    //     if (f.exists()) {
+    //         f = file('.settings/org.eclipse.core.resources.prefs')
+    //         f.write('eclipse.preferences.version=1\n')
+    //         f.append('encoding/<project>=UTF-8')
+    //     }
+    // }
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
