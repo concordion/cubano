@@ -2,12 +2,12 @@ package org.concordion.cubano.driver.web.provider;
 
 import java.util.Map;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 
-import io.github.bonigarcia.wdm.DriverManagerType;
-import io.github.bonigarcia.wdm.EdgeDriverManager;
+import static io.github.bonigarcia.wdm.config.DriverManagerType.EDGE;
 
 /**
  * Automatically download, configure and start the WebDriver Manager and browser for Microsoft Edge.
@@ -30,7 +30,7 @@ public class EdgeBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(EdgeDriverManager.getInstance(DriverManagerType.EDGE));
+        setupBrowserManager(WebDriverManager.getInstance(EDGE));
 
         EdgeOptions options = new EdgeOptions();
 

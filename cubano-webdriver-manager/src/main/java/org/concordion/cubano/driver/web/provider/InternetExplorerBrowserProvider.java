@@ -1,5 +1,7 @@
 package org.concordion.cubano.driver.web.provider;
 
+import static io.github.bonigarcia.wdm.config.DriverManagerType.IEXPLORER;
+
 import java.util.Map;
 
 import org.openqa.selenium.WebDriver;
@@ -7,8 +9,7 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.CapabilityType;
 
-import io.github.bonigarcia.wdm.DriverManagerType;
-import io.github.bonigarcia.wdm.InternetExplorerDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 /**
  * Automatically download, configure and start the WebDriver Manager and browser for Microsoft Internet Explorer.
@@ -31,7 +32,7 @@ public class InternetExplorerBrowserProvider extends LocalBrowserProvider {
      */
     @Override
     public WebDriver createDriver() {
-        setupBrowserManager(InternetExplorerDriverManager.getInstance(DriverManagerType.IEXPLORER));
+        setupBrowserManager(WebDriverManager.getInstance(IEXPLORER));
 
         InternetExplorerOptions options = new InternetExplorerOptions();
 
