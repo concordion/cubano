@@ -26,10 +26,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build and Test with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean test
       - name: Javadoc
         if: matrix.java == '8'
-        run: ./gradlew aggregateJavadocs
+        run: ./gradlew build aggregateJavadocs
         
       - name: Upload Unit Test Results And Specification
         if: always()
