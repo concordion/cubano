@@ -17,7 +17,6 @@ buildscript {
 apply plugin: 'checkstyle'
 apply plugin: 'com.github.spotbugs'
 apply plugin: 'java-library'
-apply plugin: 'maven-publish'
 apply plugin: 'nebula-aggregate-javadocs'
 apply plugin: io.github.gradlenexus.publishplugin.NexusPublishPlugin
 apply plugin: net.nemerosa.versioning.VersioningPlugin
@@ -57,12 +56,6 @@ gitPublish {
 
     // message used when committing changes
     commitMessage = 'Automatically publishing new Github pages'
-}
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-        }
-    }
 }
 
 checkstyle {
