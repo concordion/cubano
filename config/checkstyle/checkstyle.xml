@@ -21,23 +21,30 @@
 
 	<property name="severity" value="info"/>
 
+	<!-- CUSTOM: Increased to 180 -->
+	<module name="LineLength">
+		<property name="ignorePattern" value="\@see"/>
+		<property name="max" value="180"/>
+		<property name="tabWidth" value="4"/>
+	</module>
+
 	<module name="TreeWalker">
 		<property name="severity" value="warning"/>
 		
 		<module name="SuppressWarningsHolder" />
 		
-		<module name="FileContentsHolder"/>
-		<module name="JavadocType">
+<!--		<module name="FileContentsHolder"/>-->
+		<module name="MissingJavadocType">
 			<metadata name="com.atlassw.tools.eclipse.checkstyle.comment" value="Switch off at developer level to trigger the creation of meaningful comments after class is complete and checked in."/>
 		</module>
-		<module name="JavadocMethod">
+		<module name="MissingJavadocMethod">
 			<property name="scope" value="package"/>
-			<property name="allowUndeclaredRTE" value="true"/>
-			<property name="allowMissingThrowsTags" value="true"/>
+<!--			<property name="allowUndeclaredRTE" value="true"/>-->
+<!--			<property name="allowMissingThrowsTags" value="true"/>-->
 			<property name="allowMissingPropertyJavadoc" value="true"/>
-			<property name="allowThrowsTagsForSubclasses" value="true"/>
-			<property name="suppressLoadErrors" value="true"/>
-			<!-- ignore setters that return a value (catches any method name starting with set[A-Z] -->
+<!--			<property name="allowThrowsTagsForSubclasses" value="true"/>-->
+<!--			<property name="suppressLoadErrors" value="true"/>-->
+<!--			&lt;!&ndash; ignore setters that return a value (catches any method name starting with set[A-Z] &ndash;&gt;-->
 			<property name="ignoreMethodNamesRegex" value = "^set[A-Z].*$"/>
 		</module>
 		<module name="JavadocStyle">
@@ -60,13 +67,6 @@
 		<module name="RedundantImport"/>
 		<module name="UnusedImports">
 			<metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
-		</module>
-		
-		<!-- CUSTOM: Increased to 180 -->
-		<module name="LineLength">
-			<property name="ignorePattern" value="\@see"/>
-			<property name="max" value="180"/>
-			<property name="tabWidth" value="4"/>
 		</module>
 		
 		<module name="MethodLength"/>
@@ -160,7 +160,7 @@
 	</module>
 	
 	<module name="FileLength"/>
-	<module name="SuppressionCommentFilter"/>
+<!--	<module name="SuppressionCommentFilter"/>-->
 	<module name="NewlineAtEndOfFile">
 		<property name="severity" value="ignore"/>
 		<metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
