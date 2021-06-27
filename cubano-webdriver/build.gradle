@@ -13,7 +13,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.8.3'
 
     // TODO remove dependencies
-    implementation 'org.concordion:concordion:3.0.1'
+    implementation 'org.concordion:concordion:3.1.2'
     implementation 'org.concordion:concordion-logback-extension:2.0.0'
     implementation 'org.concordion:concordion-storyboard-extension:2.0.0'
 }
