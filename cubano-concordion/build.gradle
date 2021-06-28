@@ -1,6 +1,6 @@
 dependencies {
-    implementation project(':cubano-core')
-    implementation project(':cubano-webdriver-manager')
+    api project(':cubano-core')
+    api project(':cubano-webdriver-manager')
     
     api 'org.concordion:concordion:3.1.2'
     api 'org.concordion:concordion-parallel-run-extension:1.1.0'
