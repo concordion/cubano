@@ -44,6 +44,15 @@ task publishDocs(dependsOn: ['gitPublishPush'])
 
 gitPublishCopy.dependsOn ':aggregateJavadocs'
 
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = sonatypeUsername
+            password = sonatypePassword
+        }
+    }
+}
+
 gitPublish {
     repoUri = 'git@github.com:concordion/cubano.git'
     branch = 'gh-pages'
