@@ -10,7 +10,7 @@ dependencies {
         exclude group: 'org.seleniumhq.selenium', module: 'selenium-java'
     }
     
-    implementation 'org.jsoup:jsoup:1.8.3'
+    implementation 'org.jsoup:jsoup:1.13.1'
 
     // TODO remove dependencies
     implementation 'org.concordion:concordion:3.1.2'
