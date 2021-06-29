@@ -13,5 +13,5 @@ dependencies {
     api 'org.concordion:concordion-storyboard-extension:2.0.0'
     api 'org.concordion:concordion-status-info-extension:1.0.4'
 
-    testImplementation 'org.mockito:mockito-core:2.5.4'
+    testImplementation 'org.mockito:mockito-core:3.11.2'
 }

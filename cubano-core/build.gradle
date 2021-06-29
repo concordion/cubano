@@ -3,5 +3,5 @@ dependencies {
     api project(':cubano-httpeasy')
     implementation project(':cubano-webdriver')
 
-	api 'commons-io:commons-io:2.5'
+	api 'commons-io:commons-io:2.10.0'
 }
