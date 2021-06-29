@@ -49,7 +49,9 @@ public class ChromeBrowserProvider extends LocalBrowserProvider {
         addOptions(options);
         addPreferences(options);
         addExtensions(options);
-        
+
+        options.setHeadless(getPropertyAsBoolean("headless", "false"));
+
         WebDriver driver = new ChromeDriver(options);
 
         return driver;
