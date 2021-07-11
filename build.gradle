@@ -119,7 +119,7 @@ subprojects {
         javaDoclet 'ch.raffael.pegdown-doclet:pegdown-doclet:1.3'
 
         // Logging
-        api 'org.slf4j:slf4j-api:1.7.25'
+        api 'org.slf4j:slf4j-api:1.7.31'
         api 'ch.qos.logback:logback-classic:1.2.3'
 
         // JUnit
