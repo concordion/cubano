@@ -9,7 +9,7 @@ dependencies {
     api 'org.concordion:concordion-logging-tooltip-extension:1.1.2'
     api 'org.concordion:concordion-embed-extension:1.2.0'
     api 'org.concordion:concordion-executeonlyif-extension:0.3.0'
-    api 'org.concordion:concordion-logback-extension:2.1.0'
+    api 'org.concordion:concordion-logback-extension:2.1.2'
     api 'org.concordion:concordion-storyboard-extension:2.0.0'
     api 'org.concordion:concordion-status-info-extension:1.0.4'
 
