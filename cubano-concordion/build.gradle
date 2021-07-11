@@ -2,8 +2,8 @@ dependencies {
     api project(':cubano-core')
     api project(':cubano-webdriver-manager')
     
-    api 'org.concordion:concordion:3.1.2'
-    api 'org.concordion:concordion-parallel-run-extension:1.1.0'
+    api 'org.concordion:concordion:3.1.3'
+    api 'org.concordion:concordion-parallel-run-extension:1.1.1'
     api 'org.concordion:concordion-timestamp-formatter-extension:1.1.2'
     api 'org.concordion:concordion-run-totals-extension:1.2.0'
     api 'org.concordion:concordion-logging-tooltip-extension:1.1.2'
