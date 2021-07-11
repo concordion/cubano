@@ -71,7 +71,42 @@ For eclipse:
 
 ## Releasing
 
-To create a release, you will need to run `gradlew clean test javadoc build sourcesJar javadocJar publishDocs release bintrayUpload`. This depends on having appropriate permissions to publish to the Concordion organisation. The build takes over 15 minutes since it also releases to Maven Central. It will then take about another 15 minutes for the artifacts to appear in [Maven Central](https://repo.maven.apache.org/maven2/org/concordion/). 
+The project is released to Maven Central using a few plugins defined in `build.gradle`.
+
+### <a name="Pre-conditions"></a>Pre-conditions[](#Pre-conditions)
+
+*   A GPG client is installed on your command line path. For more information, please refer to [http://www.gnupg.org/](http://www.gnupg.org/).
+*   You have created your GPG keys and distributed your public key. For more information, please refer to [Gradle Signing Plugin](https://docs.gradle.org/current/userguide/signing_plugin.html).
+*   You have a [Sonatype JIRA account](https://issues.sonatype.org), which has [approval](https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-3.CreateaJIRAticket) for publishing to the Concordion project.
+
+*   You have configured your gradle.properties, typically located in your ~/.gradle directory: 
+```
+sonatypeUsername=<your-jira-username>
+sonatypePassword=<your-jira-password>
+
+signing.keyId=<public GPG key>
+signing.password=<private GPG key passphrase>
+signing.secretKeyRingFile=<path to secret key ring file containing your private key>
+```
+where _<your-jira-username>_ and _<your-jira-password>_ are the credentials for your Sonatype JIRA account.
+
+<!--
+# Publishing a snapshot
+
+*   Ensure the `gradle.properties` file contains the correct version, and ends with `-SNAPSHOT`.
+*   Commit and push all the changes to GitHub.
+*   Run `./gradlew -b publish.gradle publishSnapshot`.
+*   The snapshot should appear under [https://oss.jfrog.org/artifactory/libs-snapshot/org/concordion](https://oss.jfrog.org/artifactory/libs-snapshot/org/concordion).
+-->
+
+### Performing a release
+
+* Check that `gradle.properties` contains the desired version number.
+* Commit and push all the changes to GitHub. (The release plugin will fail if you have any changes that aren't committed and pushed.)
+* Checkout the master branch, if not already checked out.
+* Either run `./gradlew clean test javadoc gitPublishPush publishToSonatype closeSonatypeStagingRepository` and manually release the build from the Nexus staging repository or run `./gradlew clean test javadoc gitPublishPush publishToSonatype closeAndReleaseSonatypeStagingRepository` if you are confident. See the [Gradle Nexus Publish Plugin](https://github.com/gradle-nexus/publish-plugin) for more details.
+<!--During this build, Gradle will prompt for the version number of the release, and for the next version number to use. See [here](https://github.com/townsfolk/gradle-release#introduction) for the steps taken by the release plugin.-->
+* Create [release notes](https://github.com/concordion/cubano/releases) on Github, selecting the version number of the release as the tag.
 
 To build a local release and publish to your local Maven repository, you can run `gradlew clean publishToMavenLocal`.
 
