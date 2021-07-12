@@ -317,7 +317,7 @@ public class PageHelper {
      * @param timeOutInSeconds Timeout in Seconds.
      * 
      */
-    private void waitAndClickElement(WebElement element, int timeoutSeconds) {
+    protected void waitAndClickElement(WebElement element, int timeoutSeconds) {
 
         new WebDriverWait(this.pageObject.getBrowser().getDriver(), timeoutSeconds).ignoring(WebDriverException.class)
                 .until((WebDriver d) -> {

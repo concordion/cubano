@@ -153,6 +153,16 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
     }
 
     /**
+     * Check to see if the element is visible or not.
+     *
+     * @param element WebElement to search for
+     * @return found or not
+     */
+    protected boolean isElementVisible(WebElement element) {
+        return pageHelper.isElementVisible(element);
+    }
+
+    /**
      * Check to see if the element is on the page or not.
      *
      * @param driver Reference to WebDriver
@@ -300,6 +310,20 @@ public abstract class BasePageObject<T extends BasePageObject<T>> {
      */
     public void waitForElementToClickable(WebElement webElement, int timeOutInSeconds) {
         pageHelper.waitForElementToClickable(webElement, timeOutInSeconds);
+    }
+
+    /**
+     * Wait and click the element.
+     * 
+     * Ignore {@link WebDriverException}. When a DOM operation is happening on a page it may
+     * temporarily cause the element to be inaccessible. Ignore these hierarchy of Exceptions.
+     * 
+     * @param webElement Can click the element.
+     * @param timeOutInSeconds Timeout in Seconds.
+     * 
+     */
+    public void waitAndClickElement(WebElement webElement, int timeOutInSeconds) {
+        pageHelper.waitAndClickElement(webElement, timeOutInSeconds);
     }
 
     /**
